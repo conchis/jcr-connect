@@ -1,0 +1,11 @@
+setenv CLASSPATH bin
+foreach jarfile (lib/*.jar)
+	setenv CLASSPATH ${CLASSPATH}:$jarfile
+end
+
+alias b "ant"
+alias t "java Test"
+alias start-webapp "cd ../jcr-tck-1/bin/tck-webapp ; java -Xmx500m -jar start.jar"
+alias r "java UnitTestRunner"
+alias restore-jackrabbit "rm -rf jackrabbit; cp -r virgin-jackrabbit jackrabbit"
+alias git "/usr/local/git/bin/git"

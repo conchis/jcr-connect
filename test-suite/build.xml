@@ -1,0 +1,31 @@
+<project name="jcr" default="compile" basedir=".">
+
+	<path id="classpath">
+		<pathelement path="bin"/>
+		<fileset dir="lib">
+			<include name="*.jar"/>
+		</fileset>
+ 	</path>
+
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="bin"/>
+		<copy todir="bin/org/apache/jackrabbit/test/api/nodetype/spec">
+			<fileset dir="src/org/apache/jackrabbit/test/api/nodetype/spec"/>
+		</copy>
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="src" destdir="bin" classpathref="classpath"
+			debug="on" deprecation="on"/>
+	</target>
+	
+	<target name="full" depends="clean,compile"/>
+	
+</project>
+
+
+
