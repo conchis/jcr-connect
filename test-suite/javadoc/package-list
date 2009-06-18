@@ -1,0 +1,9 @@
+edu.northwestern.at.jcrconnect.test
+org.apache.jackrabbit.test
+org.apache.jackrabbit.test.api
+org.apache.jackrabbit.test.api.lock
+org.apache.jackrabbit.test.api.nodetype
+org.apache.jackrabbit.test.api.observation
+org.apache.jackrabbit.test.api.query
+org.apache.jackrabbit.test.api.util
+org.apache.jackrabbit.test.api.version

@@ -1,0 +1,396 @@
+<html>
+
+<head>
+<title>The JCR Connect Test Suite</title>
+<style type="text/css">
+body {
+	margin-left: 10%;
+	margin-right: 10%;
+	background: white;
+	font-family: sansserif;
+}
+</style>
+</head>
+
+<body>
+
+<center>
+<h1>The JCR Connect Test Suite</h1>
+</center>
+
+<hr>
+
+<h2>Introduction</h2>
+
+<hr>
+
+<p>This document describes the test suite for our NU JCR Connect project. 
+
+<p>The test suite comprises JUnit test classes extracted from the JCR 170 TCK (Technology Compatibility Kit), along with a main program that runs the tests.
+
+
+<hr>
+
+<h2>The RepositoryStubImpl.properties Configuration File</h2>
+
+<hr>
+
+<p>The file <code>RepositoryStubImpl.properties</code> is used to configure the test suite. In most if not all cases, the default values can be used as is. In some cases, you may find it useful to change the values.
+
+<p>The test suite uses a convention for specifying properties at four scopes: test case, test class, test package, and global. For example, in the package <code>org.apache.jackrabbit.test.api</code>, there is a test class named <code>NodeReadMethodsTest</code> that contains a case <code>testGetPath</code> that uses a property named <code>testroot</code>. This property can be defined in <code>RepositoryStubImpl.properties</code> in one or more of the following four ways:
+
+<ol>
+<li>Test case scope: <code>javax.jct.tck.NodeReadMethodsTest.testGetPath.testroot=</code><i>value</i>
+<li>Test class scope: <code>javax.jct.tck.NodeReadMethodsTest.testroot=</code><i>value</i>
+<li>Test package scope: <code>javax.jct.tck.api.testroot=</code><i>value</i>
+<li>Global scope: <code>javax.jcr.tck.testroot=</code><i>value</i>
+</ol>
+
+<p>These definitions are used in the order listed, from most specific scope to less specific scope. In our example, in the default <code>RepositoryStubImpl.properties</code> file, two of these scopes are specified for the <code>testroot</code> property:
+
+<blockquote><code><pre>
+javax.jcr.tck.testroot=/testroot
+javax.jcr.tck.NodeReadMethodsTest.testroot=/testdata
+</pre></code></blockquote>
+
+<p>In this example, which has definitions for the <code>testroot</code> property at both the global and test class scopes, the more specific class scope value <code>/testdata</code> is used for all the methods in the <code>NodeReadMethodsTest</code> class. The global scope value <code>/testroot</code> is used only in those situations where there is no more specific scope value specified.
+
+<hr>
+
+<h2>Credentials</h2>
+
+<hr>
+
+<p>The TCK requires three sets of credentials for accessing the test repository:
+
+<ol>
+
+<li>Read-only credentials. 
+
+<p>These credentials must provide read-only access to the nodes used by the test. The default values defined in <code>RepositoryStubImpl.properties</code> are:
+
+<blockquote><code><pre>
+javax.jcr.tck.readonly.name=anonymous
+javax.jcr.tck.readonly.pwd=
+</pre></code></blockquote>
+
+<li>Read/write credentials. 
+
+<p>These credentials must provide read and write access to the nodes used by the test. The default values defined in <code>RepositoryStubImpl.properties</code> are:
+
+<blockquote><code><pre>
+javax.jcr.tck.readwrite.name=user
+javax.jcr.tck.readwrite.pwd=
+</pre></code></blockquote>
+
+<li>Superuser credentials. 
+
+<p>These credentials must provide read and write access to the entire repository. The default values defined in <code>RepositoryStubImpl.properties</code> are:
+
+<blockquote><code><pre>
+javax.jcr.tck.superuser.name=superuser
+javax.jcr.tck.superuser.pwd=
+</pre></code></blockquote>
+
+</ol>
+<hr>
+
+<h2>Workspaces</h2>
+
+<hr>
+
+<p>The test repository must contain at least two workspaces.
+
+<p>A default workspace. This is the workspace returned by the <code>login</code> method of the <code>Repository</code> class when the read-only credentials are used and the <code>workspaceName</code> parameter is missing or null. This workspace contains most of the test data and is the only one used by most of the tests. In the Jackrabbit test repository, this workspace is appropriately named "default".
+
+<p>A second "test" workspace. The name of this workspace is supplied by the <code>workspacename</code> property. The default value defined in <code>RepositoryStubImpl.properties</code> is:
+<blockquote><code><pre>
+javax.jct.tck.workspacename=test
+</pre></code></blockquote>
+</ol>
+
+<p>Both of these workspaces must be accessible using the read-only credentials.
+
+<hr>
+
+<h2>Test Classes</h2>
+
+<hr>
+
+<h3>Basic Level 1 Tests</h3>
+
+<b><code>org.apache.jackrabbit.test.api.RootNodeTest</code></b>
+
+<blockquote>
+Tests the root node.
+
+<p>Workspaces used: default
+<br>Nodes used: /
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.NodeReadMethodsTest</code></b>
+
+<blockquote>
+Tests the read methods of the <code>Node</code> interface, including those inherited from <code>Item</code>.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one child node, at least one descendant node with a primary item, at least one descendant node without a primary item, at least one descendant node with a non-multivalued reference property, at least one descendant node which is referenceable, and at least one descendant node which is non-referenceable. If same name siblings are permitted, it should also have at least one descendant node with a same name sibling.
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.PropertyTypeTest</code></b>
+
+<blockquote>
+Tests property types.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.NodeDiscoveringNodeTypesTest</code></b>
+
+<blockquote>
+Tests the node type discovery methods.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one child node, and at least one descendant node with mixin types.
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.BinaryPropertyTest</code></b>
+
+<blockquote>
+Tests a binary property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a binary property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.BooleanPropertyTest</code></b>
+
+<blockquote>
+Tests a boolean property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a boolean property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.DatePropertyTest</code></b>
+
+<blockquote>
+Tests a date property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a date property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.DoublePropertyTest</code></b>
+
+<blockquote>
+Tests a double property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a double property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.LongPropertyTest</code></b>
+
+<blockquote>
+Tests a long property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a long property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.NamePropertyTest</code></b>
+
+<blockquote>
+Tests a name property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a name property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.PathPropertyTest</code></b>
+
+<blockquote>
+Tests a path property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a path property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.ReferencePropertyTest</code></b>
+
+<blockquote>
+Tests a reference property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a reference property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.StringPropertyTest</code></b>
+
+<blockquote>
+Tests a string property.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a string property (single value or non-empty multivalue).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.UndefinedPropertyTest</code></b>
+
+<blockquote>
+Tests to make sure that no descendant property of the test root is undefined.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.NamespaceRegistryReadMethodsTest</code></b>
+
+<blockquote>
+Tests the read methods of the <code>NamespaceRegistry</code> interface.
+
+<p>Workspaces used: default
+<br>Nodes used: none
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.NamespaceRemappingTest</code></b>
+
+<blockquote>
+Tests transient namespace remapping.
+
+<p>Workspaces used: default
+<br>Nodes used: /
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.NodeIteratorTest</code></b>
+
+<blockquote>
+Tests the implementation of the <code>NodeIterator</code> interface.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) should have at least a few children to properly exercise this test.
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.PropertyReadMethodsTest</code></b>
+
+<blockquote>
+Tests the read methods of the <code>Property</code> interface, including those inherited from <code>Item</code>.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one single valued descendant property and at least one multivalued descendant property.
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.RepositoryDescriptorTest</code></b>
+
+<blockquote>
+Tests to make sure that all the required repository descriptor keys are present.
+
+<p>Workspaces used: default
+<br>Nodes used: none
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.SessionReadMethodsTest</code></b>
+
+<blockquote>
+Tests the read methods of the <code>Session</code> interface.
+
+<p>Workspaces used: default
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+
+<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one referenceable descendant node.
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.WorkspaceReadMethodsTest</code></b>
+
+<blockquote>
+Tests the read methods of the <code>Workspace</code> interface.
+
+<p>Workspaces used: default, all other workspaces in the repository with are accessible via read-only credentials.
+<br>Nodes used: none
+<br>Credentials used: read-only
+
+<p>Requirements: To properly exercise this test, the test repository should contain at least one workspace other than the default workspace which is accessible via read-only credentials. This is the "test" workspace in the Jackrabbit test repository.
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.ReferenceableRootNodesTest</code></b>
+
+<blockquote>
+Tests referenceable nodes between different workspaces.
+
+<p>Workspaces used: default, test
+<br>Nodes used: /
+<br>Credentials used: read-only
+
+<p>Requirements: In order to properly exercise this test, the root nodes of both the default workspace and the workspace specified by the <code>workspacename</code> property (<code>test</code> by default) should be referenceable. If they are not, this test does nothing. If they are, this test makes sure that they have the same UUID. Note that in the Jackrabbit test repository, the root nodes are not referenceable(!).
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.ExportSysViewTest</code></b>
+
+<blockquote>
+Tests system view export.
+
+<p>Workspaces used: default</code>
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+</blockquote>
+
+<b><code>org.apache.jackrabbit.test.api.ExportDocViewTest</code></b>
+
+<blockquote>
+Tests document view export.
+
+<p>Workspaces used: default</code>
+<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
+<br>Credentials used: read-only
+</blockquote>
+
+</body>
+
+</html>

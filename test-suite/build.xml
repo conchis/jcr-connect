@@ -9,6 +9,7 @@
 
 	<target name="clean">
 		<delete dir="bin"/>
+		<delete dir="javadoc"/>
 	</target>
 
 	<target name="init">
@@ -24,6 +25,15 @@
 	</target>
 	
 	<target name="full" depends="clean,compile"/>
+	
+	<target name="doc" depends="init">
+		<javadoc sourcepath="src" destdir="javadoc"
+				windowtitle="JCR Connect"
+				classpathref="classpath"
+				access="public">
+			<doctitle><![CDATA[<h2>JCR Connect</h2>]]></doctitle>
+		</javadoc>
+	</target>
 	
 </project>
 
