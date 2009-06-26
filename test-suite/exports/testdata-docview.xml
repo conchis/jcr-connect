@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testdata jcr:primaryType="nt:unstructured" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:rep="internal" xmlns:test="http://www.apache.org/jackrabbit/test" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2004/10/xpath-functions" xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns="">
+	<query jcr:primaryType="nt:unstructured">
+		<node1 jcr:primaryType="nt:unstructured" prop1="You_x0020_can_x0020_have_x0020_it_x0020_good,_x0020_cheap,_x0020_or_x0020_fast._x0020_Any_x0020_two." />
+		<node1 jcr:primaryType="nt:unstructured" prop1="foo_x0020_bar" />
+		<node1 jcr:primaryType="nt:unstructured" prop1="Hello_x0020_world!" />
+		<node2 jcr:primaryType="nt:unstructured" prop1="Apache_x0020_Jackrabbit" />
+	</query>
+	<node jcr:primaryType="nt:unstructured">
+		<myResource jcr:primaryType="nt:resource" jcr:uuid="2cdd6e03-cdd2-4d02-a7a7-c29ef60298e3" jcr:encoding="UTF-8" jcr:mimeType="text/plain" jcr:data="SGVsbG8gd8O2cmxkLg==" jcr:lastModified="2005-05-17T12:13:50.238+02:00" />
+		<reference jcr:primaryType="nt:unstructured" jcr:mixinTypes="mix:referenceable" jcr:uuid="e5621200-46b4-4c6f-969b-8ffccca9cae2" ref="2cdd6e03-cdd2-4d02-a7a7-c29ef60298e3" />
+		<multiReference jcr:primaryType="nt:unstructured" ref="2cdd6e03-cdd2-4d02-a7a7-c29ef60298e3 e5621200-46b4-4c6f-969b-8ffccca9cae2" />
+	</node>
+	<property jcr:primaryType="nt:unstructured" boolean="true" double="3.141592653589793" long="90834953485278298" calendar="2005-07-18T17:30:50.368+02:00" path="/" multi="one two three" />
+	<docViewTest jcr:primaryType="nt:unstructured">
+		<invalidXmlName jcr:primaryType="nt:unstructured" propName="some_x0020_text" />
+		A text without any special character.
+		<some-element jcr:primaryType="nt:unstructured" />
+		The entity reference characters: &lt;, ', ,&amp;, &gt;, " should be escaped in xml export. 
+		<some-element jcr:primaryType="nt:unstructured" />
+		A text without any special character.
+		<bigNode jcr:primaryType="nt:unstructured" propName0="U0dWc2JHOGdkOE8yY214a0xnPT0= U0dWc2JHOGdkOE8yY214a0xnPT0=" propName1="text_x0020_1" propName2="multival_x0020_text_x0020_1 multival_x0020_text_x0020_2 multival_x0020_text_x0020_3" propName3="text_x0020_1" />
+		<validNames jcr:primaryType="nt:unstructured">
+			<validMultiNoBin jcr:primaryType="nt:unstructured" propName="multival_x0020_text_x0020_1 multival_x0020_text_x0020_2 multival_x0020_text_x0020_3" />
+			<validMultiBin jcr:primaryType="nt:unstructured" jcr:encoding="UTF-8" jcr:mimeType="text/plain" jcrData="U0dWc2JHOGdkOE8yY214a0xnPT0= U0dWc2JHOGdkOE8yY214a0xnPT0=" jcr:lastModified="2005-05-17T12:13:50.458+02:00" />
+			<validNoBin jcr:primaryType="nt:unstructured" propName="text_x0020_1" />
+			<validBin jcr:primaryType="nt:unstructured" jcr:encoding="UTF-8" jcr:mimeType="text/plain" jcrData="SGVsbG8gd8O2cmxkLg==" jcr:lastModified="2005-05-17T12:13:50.458+02:00" />
+		</validNames>
+		<invalidNames jcr:primaryType="nt:unstructured">
+			<invalidMultiNoBin jcr:primaryType="nt:unstructured" Prop_x003c__x003e_prop="multival_x0020_text_x0020_1 multival_x0020_text_x0020_2 multival_x0020_text_x0020_3" />
+			<invalidMultiBin jcr:primaryType="nt:unstructured" jcr:encoding="UTF-8" jcr:mimeType="text/plain" Prop_x003c__x003e_prop="U0dWc2JHOGdkOE8yY214a0xnPT0= U0dWc2JHOGdkOE8yY214a0xnPT0=" jcr:lastModified="2005-05-17T12:13:50.468+02:00" />
+			<invalidNoBin jcr:primaryType="nt:unstructured" Prop_x003c__x003e_prop="text_x0020_1" />
+			<invalidBin jcr:primaryType="nt:unstructured" jcr:encoding="UTF-8" jcr:mimeType="text/plain" Prop_x003c__x003e_prop="SGVsbG8gd8O2cmxkLg==" jcr:lastModified="2005-05-17T12:13:50.468+02:00" />
+		</invalidNames>
+	</docViewTest>
+</testdata>
