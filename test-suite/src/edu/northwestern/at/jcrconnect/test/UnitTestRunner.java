@@ -42,8 +42,7 @@ public class UnitTestRunner {
 	private static Class[] testClasses =
 	
 		new Class[] {
-			org.apache.jackrabbit.test.api.NodeReadMethodsTest.class,
-/*
+
 			// Basic level 1 tests.
 
 			org.apache.jackrabbit.test.api.RootNodeTest.class,
@@ -246,7 +245,6 @@ public class UnitTestRunner {
         	org.apache.jackrabbit.test.api.version.MergeNodeTest.class,
         	org.apache.jackrabbit.test.api.version.MergeNonVersionableSubNodeTest.class,
         	org.apache.jackrabbit.test.api.version.MergeSubNodeTest.class,
-*/        	
 		};
 		
 	/**	Gets the repository instance to be tested.

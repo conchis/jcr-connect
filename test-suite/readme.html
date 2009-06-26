@@ -9,6 +9,9 @@ body {
 	background: white;
 	font-family: sansserif;
 }
+li.space {
+	margin-top: 1em;
+}
 </style>
 </head>
 
@@ -16,26 +19,170 @@ body {
 
 <center>
 <h1>The JCR Connect Test Suite</h1>
+
+<p>John Norstad
+<br><code>j-norstad@northwestern.edu</code>
 </center>
 
 <hr>
 
+<h2>Table of Contents</h2>
+
+<hr>
+
+<ul>
+<li><a href="#intro">Introduction</a>
+<li><a href="#testing">Testing a New JCR Implementation</a>
+<li><a href="#customizing">Customizing UnitTestRunner</a>
+<li><a href="#repconfig">The RepositoryStubImpl.properties Configuration File</a>
+<li><a href="#credentials">Credentials</a>
+<li><a href="#namespaces">Namespaces and Node Types</a>
+<li><a href="#workspaces">Workspaces</a>
+<li><a href="#optional">Optional Features</a>
+<li><a href="#bugsfixed">Bugs Fixed</a>
+<li><a href="#todo">To Do</a>
+</ul>
+
+<hr>
+
+<a name="intro">
 <h2>Introduction</h2>
 
 <hr>
 
 <p>This document describes the test suite for our NU JCR Connect project. 
 
-<p>The test suite comprises JUnit test classes extracted from the JCR 170 TCK (Technology Compatibility Kit), along with a main program that runs the tests.
+<p>The test suite comprises JUnit test classes extracted from the JCR 170 TCK (Technology Compatibility Kit), a main program that runs the tests, and a sample Jackrabbit target test repository.
 
+<p>The suite is available in our JCR Connect GIT repository as the package named <code>test-suite</code>. The main directory contains the following files and subdirectories:
+
+<ul>
+<li><code>bin</code>: Compiled class files.
+<li><code>build.xml</code>: Ant build script.
+<li><code>exports</code>: Various system and document view exports of the Jackrabbit test repository.
+<li><code>jackrabbit</code>: The home directory for the Jackrabbit test repository.
+<li><code>javadoc</code>: Javadoc.
+<li><code>jsr170-1.0.pdf</code>: A copy of the JSR 170 specification.
+<li><code>lib</code>: Library jar files used by the test suite.
+<li><code>log4j.properties</code>: Log4j configuration file.
+<li><code>readme.html</code>: This readme document.
+<li><code>repository.xml</code>: Jackrabbit test repository configuration file.
+<li><code>repositoryStubImpl.properties</code>: Test suite configuration file.
+<li><code>setup</code>: A C shell setup file that defines the classpath and some useful aliases.
+<li><code>src</code>: The Java source code.
+<li><code>virgin-jacrabbit</code>: An unmodified copy of the original Jackrabbit test repository home directory which can be used to restore the test repository to its original state.
+</ul>
+
+<p>The class <code>edu.northwestern.at.jcrconnect.test.UnitTestRunner</code> contains the main program. To run the test suite, use the following command:
+
+<blockquote><code>
+java edu.northwestern.at.jcrconnect.test.UnitTestRunner
+</code></blockquote>
+
+<p>The results of the test are printed on <code>stdout</code>:
+
+<blockquote><code><pre>
+% java edu.northwestern.at.jcrconnect.test.UnitTestRunner
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.........................................
+.......
+Time: 94.484
+
+OK (1032 tests)
+</pre></code></blockquote>
 
 <hr>
 
+<a name="testing">
+<h2>Testing a New JCR Implementation</h2>
+
+<hr>
+
+<p>To use the suite to test a new JCR implementation, you must do the following:
+
+<ol>
+
+<li>Populate the <code>lib</code> directory with a jar file for your JCR implementation and any other jar files that your implementation requires that aren't already present in the directory. Or, if you prefer, include the source for your implementation in the <code>src</code> directory.
+
+<li class="space">Customize the main program <code>UnitTestRunner</code>.
+
+<li class="space">Modify the <code>RepositoryStubImpl.properties</code> configuration file, if necessary.
+
+<li class="space">Create a test repository and populate it with the data needed by the tests.
+
+</ol>
+
+These steps are discussed in more detail in the rest of this document.
+
+<hr>
+
+<a name="customizing">
+<h2>Customizing UnitTestRunner</h2>
+
+<hr>
+
+<p>You must customize <code>UnitTestRunner.java</code> for the repository you are testing. As distributed, it is programmed to test the Jackrabbit test repository.
+
+<p>To customize <code>UnitTestRunner.java</code> for your own test repository, replace the following method:
+
+<blockquote><code><pre>
+    /** Gets the repository instance to be tested.
+     *
+     *  The code here gets a Jackrabbit 1.0 test repository. To test 
+     *  some other repository, replace this method.
+     *
+     *  @return     Repository to be tested.
+     *
+     *  @throws     Exception
+     */
+        
+    private static Repository getRepository () 
+        throws Exception
+    {
+        File configFile = new File("repository.xml");
+        InputStream configFileInputStream = new FileInputStream(configFile);
+        InputSource configFileInputSource = new InputSource(configFileInputStream);
+        File repositoryHome = new File("jackrabbit");
+        RepositoryConfig config = 
+            RepositoryConfig.create(configFileInputSource, repositoryHome.getAbsolutePath());
+        configFileInputStream.close();
+        return RepositoryImpl.create(config);
+    }
+</pre></code></blockquote>
+
+<p>You can also customize the test suite to run only a subset of the tests. This is often useful during development. At the beginning of <code>UnitTestRunner.java</code>, an array named <code>testClasses</code> is defined. This array lists all of the test classes in the suite. To run a subset of the tests, comment out the classes you do not want to run.
+
+<hr>
+
+<a name="repconfig">
 <h2>The RepositoryStubImpl.properties Configuration File</h2>
 
 <hr>
 
-<p>The file <code>RepositoryStubImpl.properties</code> is used to configure the test suite. In most if not all cases, the default values can be used as is. In some cases, you may find it useful to change the values.
+<p>The file <code>RepositoryStubImpl.properties</code> is used to configure the test suite. In most if not all cases, the default values can be used as is. In some cases, you may find it useful to change the values. We recommend starting with the default values and customizing the file only if and when it becomes necessary.
 
 <p>The test suite uses a convention for specifying properties at four scopes: test case, test class, test package, and global. For example, in the package <code>org.apache.jackrabbit.test.api</code>, there is a test class named <code>NodeReadMethodsTest</code> that contains a case <code>testGetPath</code> that uses a property named <code>testroot</code>. This property can be defined in <code>RepositoryStubImpl.properties</code> in one or more of the following four ways:
 
@@ -57,6 +204,7 @@ javax.jcr.tck.NodeReadMethodsTest.testroot=/testdata
 
 <hr>
 
+<a name="credentials">
 <h2>Credentials</h2>
 
 <hr>
@@ -93,303 +241,132 @@ javax.jcr.tck.superuser.pwd=
 </pre></code></blockquote>
 
 </ol>
+
 <hr>
 
+<a name="namespaces">
+<h2>Namespaces and Node Types</h2>
+
+<hr>
+
+<p>In the remainder of this document we assume that you are using the default <code>RepositoryImplStub.properties</code> configuration file, and that your test repository has the same structure and content as the Jackrabbit test repository.
+
+<p>The repository should contain the following mapping in its namespace registry, in addition to the mappings for the required built-in prefixes (<code>jcr</code>, <code>nt</code>, <code>mix</code>, <code>xml</code>, and the empty prefix):
+
+<blockquote><code>
+test --> http://www.apache.org/jackrabbit/test
+</code></blockquote>
+
+<p>The repository should define the following node types in addition to the required built-in node types. For details see the document view export file <code>exports/default-docview.xml</code>.
+
+<ul>
+<li><code>test:canSetProperty</code>
+<li><code>test:refTargetNode</code>
+<li><code>test:setProperty</code>
+<li><code>test:setPropertyAssumingType</code>
+<li><code>test:sameNameSibsFalseChildNodeDefinition</code>
+<li><code>test:canAddChildNode</code>
+<li><code>test:versionable</code>
+</ul>
+
+<hr>
+
+<a name="workspaces">
 <h2>Workspaces</h2>
 
 <hr>
 
-<p>The test repository must contain at least two workspaces.
+<p>The test repository must contain two workspaces: the "default" workspace and a "test" workspace.
 
-<p>A default workspace. This is the workspace returned by the <code>login</code> method of the <code>Repository</code> class when the read-only credentials are used and the <code>workspaceName</code> parameter is missing or null. This workspace contains most of the test data and is the only one used by most of the tests. In the Jackrabbit test repository, this workspace is appropriately named "default".
+<p>The files <code>exports/default-docview.xml</code> and <code>exports/default-sysview.xml</code> contain document view and system view exports of these workspaces in the Jackrabbit test repository. See those files for the many details. We only give an overview of the workspaces here.
 
-<p>A second "test" workspace. The name of this workspace is supplied by the <code>workspacename</code> property. The default value defined in <code>RepositoryStubImpl.properties</code> is:
+<p>The default workspace is the workspace returned by the <code>login</code> method of the <code>Repository</code> class when the <code>workspaceName</code> parameter is null. This workspace contains most of the test data and is the only one used by most of the tests. In the Jackrabbit test repository, this workspace is appropriately named "default".
+
+<p>The default workspace contains a child node of the root node name <code>testdata</code>, which in turn contains child nodes named <code>query</code>, <code>node</code>, <code>property</code>, and <code>docViewTest</code>. This subtree rooted at <code>testdata</code> contains data for the level 1 (read) tests. See the XML export files for details.
+
+<p>The default workspace also contains a child node of the root node named <code>testroot</code>, with no children or properties. The level 2 tests use this node. They create the data they need as subnodes of this node, deleting the termporary test nodes at the end of the tests.
+
+<p>If your target test JCR implementation supports XML import, you may find it useful to import the data for these nodes from the files <code>exports/testdata-sysview.xml</code> and <code>exports/testroot-sysview.xml</code>. Use these system view files, not the document view files.
+
+<p>A second "test" workspace is used by some of the tests. The name of this workspace is supplied by the <code>workspacename</code> property. The default value defined in <code>RepositoryStubImpl.properties</code> is:
 <blockquote><code><pre>
-javax.jct.tck.workspacename=test
+javax.jcr.tck.workspacename=test
 </pre></code></blockquote>
 </ol>
 
-<p>Both of these workspaces must be accessible using the read-only credentials.
+<p>The test workspace is a empty. It contains only a root node.
 
 <hr>
 
-<h2>Test Classes</h2>
+<a name="optional">
+<h2>Optional Features</h2>
 
 <hr>
 
-<h3>Basic Level 1 Tests</h3>
+<p>Many features of the JCR specification are optional - level 2, locking, versioning, etc.
 
-<b><code>org.apache.jackrabbit.test.api.RootNodeTest</code></b>
+<p>In a test case for an optional feature, if the feature is not supported by the test JCR implementation, the test case throws <code>NotExecutableException</code>. The test suite uses a custom JUnit test result class that special cases this exception so that it is not treated as a unit test failure. Instead, the exception is logged at DEBUG level with a message explaining why the test could not be run.
 
-<blockquote>
-Tests the root node.
+<p>As distributed, the <code>log4j.properties</code> file in our test suite has the logging level set to FATAL, so these messages do not appear in the log when the suite is run.
 
-<p>Workspaces used: default
-<br>Nodes used: /
-<br>Credentials used: read-only
-</blockquote>
+<p>This convention is also frequently used if the test repository does not contain the proper data to run a test for a feature that may in fact be implemented. For this reason, it's important to at least periodically check all of the "not executatble" debug messages.
 
-<b><code>org.apache.jackrabbit.test.api.NodeReadMethodsTest</code></b>
+<p>To see the "not executable" messages, set the root logger level to DEBUG in <code>log4j.properties</code>:
 
-<blockquote>
-Tests the read methods of the <code>Node</code> interface, including those inherited from <code>Item</code>.
+<blockquote><code>
+log4j.rootLogger=DEBUG, stdout, file
+</code></blockquote>
 
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
+<p>This generates a large log file. We recommend redirecting stdout to a file when you run the test suite. After the test finishes, search the output file for the string "not executable".
 
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one child node, at least one descendant node with a primary item, at least one descendant node without a primary item, at least one descendant node with a non-multivalued reference property, at least one descendant node which is referenceable, and at least one descendant node which is non-referenceable. If same name siblings are permitted, it should also have at least one descendant node with a same name sibling.
-</blockquote>
+<hr>
 
-<b><code>org.apache.jackrabbit.test.api.PropertyTypeTest</code></b>
+<a name="bugsfixed">
+<h2>Bugs Fixed</h2>
 
-<blockquote>
-Tests property types.
+<hr>
 
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.NodeDiscoveringNodeTypesTest</code></b>
+<b><code>org.apache.jackrabbit.test.api.nodetype.PredefinedNodeTypeTest</code></b>
 
 <blockquote>
-Tests the node type discovery methods.
+This class tests to make sure that the predefined node types are all defined correctly. For each node type, it dumps the node type to a string in a standard format, then compares the result to the known correct answer, which is stored in a resource in the package <code>org.apache.jackrabbit.test.api.nodetype.spec</code>.
 
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
+<p>The problem is that the known correct answers are stored with DOS line separators (CRLF), so the string comparison operation fails if the test suite is run on a system which uses a different line separator, e.g., on a Mac OS X system or some other kind of UNIX system.
 
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one child node, and at least one descendant node with mixin types.
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.BinaryPropertyTest</code></b>
-
-<blockquote>
-Tests a binary property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a binary property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.BooleanPropertyTest</code></b>
-
-<blockquote>
-Tests a boolean property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a boolean property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.DatePropertyTest</code></b>
-
-<blockquote>
-Tests a date property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a date property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.DoublePropertyTest</code></b>
-
-<blockquote>
-Tests a double property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a double property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.LongPropertyTest</code></b>
-
-<blockquote>
-Tests a long property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a long property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.NamePropertyTest</code></b>
-
-<blockquote>
-Tests a name property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a name property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.PathPropertyTest</code></b>
-
-<blockquote>
-Tests a path property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a path property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.ReferencePropertyTest</code></b>
-
-<blockquote>
-Tests a reference property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a reference property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.StringPropertyTest</code></b>
-
-<blockquote>
-Tests a string property.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one descendant node with a string property (single value or non-empty multivalue).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.UndefinedPropertyTest</code></b>
-
-<blockquote>
-Tests to make sure that no descendant property of the test root is undefined.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.NamespaceRegistryReadMethodsTest</code></b>
-
-<blockquote>
-Tests the read methods of the <code>NamespaceRegistry</code> interface.
-
-<p>Workspaces used: default
-<br>Nodes used: none
-<br>Credentials used: read-only
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.NamespaceRemappingTest</code></b>
-
-<blockquote>
-Tests transient namespace remapping.
-
-<p>Workspaces used: default
-<br>Nodes used: /
-<br>Credentials used: read-only
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.NodeIteratorTest</code></b>
-
-<blockquote>
-Tests the implementation of the <code>NodeIterator</code> interface.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) should have at least a few children to properly exercise this test.
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.PropertyReadMethodsTest</code></b>
-
-<blockquote>
-Tests the read methods of the <code>Property</code> interface, including those inherited from <code>Item</code>.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one single valued descendant property and at least one multivalued descendant property.
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.RepositoryDescriptorTest</code></b>
-
-<blockquote>
-Tests to make sure that all the required repository descriptor keys are present.
-
-<p>Workspaces used: default
-<br>Nodes used: none
-<br>Credentials used: read-only
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.SessionReadMethodsTest</code></b>
-
-<blockquote>
-Tests the read methods of the <code>Session</code> interface.
-
-<p>Workspaces used: default
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
-
-<p>Requirements: The test root node (<code>/testdata</code> by default) must have at least one referenceable descendant node.
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.WorkspaceReadMethodsTest</code></b>
-
-<blockquote>
-Tests the read methods of the <code>Workspace</code> interface.
-
-<p>Workspaces used: default, all other workspaces in the repository with are accessible via read-only credentials.
-<br>Nodes used: none
-<br>Credentials used: read-only
-
-<p>Requirements: To properly exercise this test, the test repository should contain at least one workspace other than the default workspace which is accessible via read-only credentials. This is the "test" workspace in the Jackrabbit test repository.
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.ReferenceableRootNodesTest</code></b>
-
-<blockquote>
-Tests referenceable nodes between different workspaces.
-
-<p>Workspaces used: default, test
-<br>Nodes used: /
-<br>Credentials used: read-only
-
-<p>Requirements: In order to properly exercise this test, the root nodes of both the default workspace and the workspace specified by the <code>workspacename</code> property (<code>test</code> by default) should be referenceable. If they are not, this test does nothing. If they are, this test makes sure that they have the same UUID. Note that in the Jackrabbit test repository, the root nodes are not referenceable(!).
-</blockquote>
-
-<b><code>org.apache.jackrabbit.test.api.ExportSysViewTest</code></b>
-
-<blockquote>
-Tests system view export.
-
-<p>Workspaces used: default</code>
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
+<p>We fixed this bug by normalizing both strings to use single LF separators before doing the comparison.
 </blockquote>
 
 <b><code>org.apache.jackrabbit.test.api.ExportDocViewTest</code></b>
 
 <blockquote>
-Tests document view export.
+This class tests the <code>Session.exportDocView</code> method. We fixed two bugs in this class, both involving the way the namespace registry is exported using <code>xmlns</code> attributes on the root element.
 
-<p>Workspaces used: default</code>
-<br>Nodes used: Specified by the <code>testroot</code> property (<code>/testdata</code> by default)
-<br>Credentials used: read-only
+<p>The specification and the reference implementation seem to be confused about the empty namespace. This namespace maps the empty prefix to the empty URI and is required by the spec. Should it be exported? Section 6.4.2.1 of the spec says that the <code>xml</code> namespace is not exported because it would be redundant, but that all other "relevant" mappings must be exported. This seems to impoly that the empty namespace should be exported. In the examples presented in the spec, however, it is not exported! Jackrabbit 1.0 exports it as
+
+<blockquote><code>
+xmlns=""
+</code></blockquote>
+
+<p>Jackrabbit 1.5, however, does not export the empty namespace.
+
+<p>The first bug was in the innner class <code>AttributeSeparator</code>, which did not properly recognize the empty namespace attribute as shown above.
+
+<p>The second bug (feature?) was in the <code>compareNamespaces</code> method, which insisted that the number of exported namespaces be exactly one less than the number of namespaces in the test repository (one less to account for the unexported <code>xml</code> namespace). In other words, the test was insisting that the empty namespace must be exported. We relaxed this test to make this optional, so both versions of Jackrabbit pass the test.
 </blockquote>
+
+<hr>
+
+<a name="todo">
+<h2>To Do</h2>
+
+<hr>
+
+<p>What happens if level 2 is not supported? The level 2 tests should test for this and throw <code>NotExecutableException</code> if level 2 is not supported, but it looks like this isn't being done. Investigate.
+
+<p>Who is leaving garbage behind and not properly getting rid of created items?
+
+<p>With the Jackrabbit test repository, we get several "not executable" messages. Investigate.
+
 
 </body>
 

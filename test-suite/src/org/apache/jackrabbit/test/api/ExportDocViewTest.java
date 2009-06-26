@@ -585,8 +585,14 @@ public class ExportDocViewTest extends AbstractJCRTest {
             assertEquals("Uri of prefix " + prefix + "is not exported correctly.",
                     nsr.getURI(prefix), URI);
         }
-        assertEquals("Not all namespace declarations are exported.",
-                nameSpaces.size(), nsr.getPrefixes().length - 1);
+        assertNull("Prefix xml should not be exported", nameSpaces.getProperty("xml"));
+        String prefixes[] = nsr.getPrefixes();
+        for (int i = 0; i < prefixes.length; i++) {
+        	String prefix = prefixes[i];
+        	if (prefix.equals("") || prefix.equals("xml")) continue;
+        	String URI = nsr.getURI(prefix);
+        	assertNotNull("Prefix " + prefix  + " not exported.", nameSpaces.getProperty(prefix));
+        }
     }
 
     /**

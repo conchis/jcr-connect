@@ -202,12 +202,84 @@ public class Test {
 		System.out.println("===== Test Predefined Node Type Fix =====");
 		testPredefinedNodeType("nt:file");
 	}
+	
+	private static void importTest ()
+		throws Exception
+	{
+		System.out.println("");
+		System.out.println("===== Import Test =====");
+		
+		Node root = session.getRootNode();
+		System.out.println("root.isProtected(): " + root.getDefinition().isProtected());
+		Node jcrSystemNode = root.getNode("jcr:system");
+		System.out.println("jcrSystemNode.isProtected(): " + jcrSystemNode.getDefinition().isProtected());
+		Node jcrNodeTypesNode = jcrSystemNode.getNode("jcr:nodeTypes");
+		System.out.println("jcrNodeTypesNode.isProtected(): " + jcrNodeTypesNode.getDefinition().isProtected());
+		Node ntVersionLabelsNode = jcrNodeTypesNode.getNode("nt:versionLabels");
+		System.out.println("ntVersionLabelsNode.isProtected(): " + ntVersionLabelsNode.getDefinition().isProtected());
+		if (true) return;
+		
+		String workspaceName = session.getWorkspace().getName();
+		String fileName = workspaceName + ".xml";
+		File file = new File(fileName);
+		FileInputStream fis = new FileInputStream(file);
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		session.importXML("/", bis, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW);
+		session.save();
+	}
+	
+	private static void exportDocView (String nodePath, String fileName)
+		throws Exception
+	{
+		System.out.println("");
+		System.out.println("===== Export In Document View =====");
+		File file = new File(fileName);
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		session.exportDocumentView(nodePath, bos, false, false);
+		bos.close();
+		System.out.println(nodePath + " exported to " + fileName);
+	}
+	
+	private static void exportSystemView (String nodePath, String fileName)
+		throws Exception
+	{
+		System.out.println("");
+		System.out.println("===== Export In System View =====");
+		File file = new File(fileName);
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		session.exportSystemView(nodePath, bos, false, false);
+		bos.close();
+		System.out.println(nodePath + " exported to " + fileName);
+	}
+	
+	private static void importNode (String fileName, String parentPath, String name)
+		throws Exception
+	{
+		System.out.println("");
+		System.out.println("===== Import Node =====");
+		
+		Node parentNode = (Node)session.getItem(parentPath);
+		try {
+			parentNode.getNode(name).remove();
+		} catch (Exception e) {
+			// ignore
+		}
+		
+		File file = new File(fileName);
+		FileInputStream fis = new FileInputStream(file);
+		BufferedInputStream bis = new BufferedInputStream(fis);
+		session.importXML(parentPath, bis, ImportUUIDBehavior.IMPORT_UUID_CREATE_NEW);
+		session.save();
+	}
 
 	public static void main (String[] args) {
 		try {
 			initLog4j();
 			initRepository();
-			login("default", "xxx", "xxxx");
+			login("default", "superuser", "");
+			//login("test", "superuser", "");
 			//dumpNamespaceRegistry();
 			//dumpNodeTypes();
 			//dumpTree();
@@ -215,7 +287,16 @@ public class Test {
 			//login("test", "xxx", "xxx");
 			//exportDocView();
 			//dumpDocViewNamespaces();
-			testPredefinedNodeTypeFix();
+			//testPredefinedNodeTypeFix();
+			//importTest();
+			//exportDocView("/testroot", "testroot-docview.xml");
+			//exportDocView("/testdata", "testdata-docview.xml");
+			//importNode("testroot-docview.xml", "/", "testroot");
+			//importNode("testdata-docview.xml", "/", "testdata");
+			//dumpTree();
+			//exportSystemView("/testdata", "testdata-sysview.xml");
+			//exportSystemView("/testroot", "testroot-sysview.xml");
+			//exportSystemView("/", "exports/test-sysview.xml");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -303,6 +384,14 @@ public class Test {
 			System.out.println("test failed");
 		}
     }
+    
+    /**
+     * Normalizes the line separators in a string. All sequences of CR and LF are
+     * replaced by a single LF.
+     *
+     * @param str String
+     * @return Normalized string.
+     */
     
     private static String normalizeLineSeparators (String str) {
     	return str.replaceAll("[\\n\\r]*", "\\n");

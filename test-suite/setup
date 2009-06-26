@@ -4,7 +4,7 @@ foreach jarfile (lib/*.jar)
 end
 
 alias b "ant"
-alias t "java Test"
+alias t "java edu.northwestern.at.jcrconnect.test.Test"
 alias start-webapp "cd ../jcr-tck-1/bin/tck-webapp ; java -Xmx500m -jar start.jar"
 alias r "java edu.northwestern.at.jcrconnect.test.UnitTestRunner"
 alias restore-jackrabbit "rm -rf jackrabbit; cp -r virgin-jackrabbit jackrabbit"
