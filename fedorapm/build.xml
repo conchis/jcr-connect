@@ -1,0 +1,45 @@
+<project name="fedorapm" default="dist" basedir=".">
+
+  <property name="src" value="src"/>
+  <property name="build" value="bin"/>
+  <property name="lib" value="lib"/>
+  <property name="dist" value="dist"/>
+  <property name="jarfile" value="fedorapm.jar"/>
+
+
+	<path id="classpath">
+		<pathelement path="bin"/>
+		<fileset dir="lib">
+			<include name="*.jar"/>
+		</fileset>
+ 	</path>
+
+	<target name="clean">
+		<delete dir="bin"/>
+	</target>
+
+	<target name="init">
+		<mkdir dir="bin"/>
+		<mkdir dir="${dist}"/>
+	</target>
+
+	<target name="compile" depends="init">
+		<javac srcdir="src" destdir="bin" classpathref="classpath"
+			debug="on" deprecation="on"/>
+	</target>
+
+  <target name="dist" depends="compile"> 
+    <!-- create a jar file -->
+    <mkdir dir="${dist}"/>
+    <jar destfile="${dist}/${jarfile}" basedir="${build}"/>
+  </target>
+	
+	<target name="full" depends="clean,compile"/>
+
+  <target name="t" depends="compile" description="Test Program">
+    <java classname="Test"  fork="yes"  maxmemory="512m">
+      <classpath refid="classpath"/>
+    </java>
+  </target>
+	
+</project>
