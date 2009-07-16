@@ -26,6 +26,7 @@ import org.apache.jackrabbit.core.state.NodeReferences;
 import org.apache.jackrabbit.core.state.NodeReferencesId;
 import org.apache.jackrabbit.core.state.NodeState;
 import org.apache.jackrabbit.core.state.PropertyState;
+import org.apache.jackrabbit.core.value.BLOBFileValue;
 import org.apache.jackrabbit.core.value.InternalValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,6 +49,10 @@ import java.util.List;
 import java.util.ArrayList;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 /**
  * <code>FedoraPersistenceManager</code> is a Fedora-based
@@ -73,11 +78,16 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	private static Map<String, String> contentMap = 
 		new HashMap<String, String>();
 
+	/** list of IDs of nodes reprenting Sling folders */
+	private static List<String> slingNodeList = new ArrayList<String>();
+
 	/** fedora client handle */
 	private FedoraConnector fc;
 
 	/** list of nodes that are pending to persist */
-	private static List<NodeState> pendingNodes = new ArrayList<NodeState>();
+	private static Map<String, NodeState> pendingNodeMap = 
+		new HashMap<String, NodeState>(); 
+	// = new ArrayList<NodeState>();
 
 	/** list of properties that are pending to persist */
 	private static List<PropertyState> pendingProperties = 
@@ -126,7 +136,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		String id;
 
 		id = pid.replace("_", "__");
-		id = pid.replace(":", "_");
+		id = id.replace(":", "_");
 
 		return id;
 	}
@@ -138,14 +148,58 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	{
 		String [] parts = id.split("__");
 		String pid = "";
+		boolean colon = false;
 
 		for (int i = 0; i < parts.length; ++i) {
-			pid += parts[i].replaceAll("_", ":");
+			if (! colon) {
+				pid += parts[i].replaceFirst("_", ":");
+			}
+			else {
+				pid += parts[i];
+			}
+
+			if (pid.contains(":")) {
+				colon = true;
+			}
 
 			if (i < parts.length - 1) {
 				pid += "_";
 			}
 		}				
+
+		return pid;
+	}
+
+	/**
+	 * Convert Fedora pid to JCR path name for sling objects
+	 * id is xxxxx in sling:xxxxx
+	 */
+	private String escapePIDSling(String id)
+	{
+		String [] parts = id.split("__");
+		String pid = "";
+
+		for (int i = 0; i < parts.length; ++i) {
+			pid += parts[i].replaceAll("_", " ");
+
+			if (i < parts.length - 1) {
+				pid += "_";
+			}
+		}				
+
+		return pid;
+	}
+
+	/** 
+	 * Convert JCR path name to Fedora pid for sling objects
+	 * return xxxxx in sling:xxxxx
+	 */
+	private String unescapePIDSling(String id)
+	{
+		String pid;
+
+		pid = id.replaceAll("_", "__");
+		pid = pid.replaceAll("\\s+", "_");
 
 		return pid;
 	}
@@ -170,6 +224,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 		if (pid == null) {
 			return;
+		}
+
+		if (pid.indexOf(":") < 0) {
+			pid = "sling:" + pid;
 		}
 
 		System.out.println("list datastreams of " + pid);
@@ -298,11 +356,26 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			for (String pid : pidList) {
 				UUID uuid = UUID.randomUUID();
 
-				// put orignial pid to access datastreams
-				uuidMap.put(uuid.toString(), pid);
+				if (pid.startsWith("sling:")) {
+					// distinguish objects created in sling with other objects
+					// sling:untitled_folder
+					pid = pid.substring(6);	// untitled_folder
+					// put the part without sling: prefix
+					uuidMap.put(uuid.toString(), pid);
+					pid = escapePIDSling(pid); // untitled folder
 
-				// escape :
-				pid = escapePID(pid);
+					// add to sling node list
+					if (! slingNodeList.contains(uuid.toString())) {
+						slingNodeList.add(uuid.toString());
+					}
+				}
+				else {
+					// put orignial pid to access datastreams
+					uuidMap.put(uuid.toString(), pid);
+
+					// escape :
+					pid = escapePID(pid);
+				}
 
 				// name
 				name = NameFactoryImpl.getInstance().create("{}" + pid);
@@ -417,9 +490,14 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			dsID = propertyName.substring(propertyName.indexOf("}") + 1);
 		}
 
-		if (! dsID.equals("")) {
+		if (! dsID.equals("") &&
+			! propertyName.equals("{http://www.jcp.org/jcr/1.0}primaryType")) {
 			// get data stream
 			pid = uuidMap.get(nodeID);
+			if (pid.indexOf(":") < 0) {
+				pid = "sling:" + pid;
+			}
+
 			bytes = fc.getDataStream(pid, dsID);
 
 			try {
@@ -435,6 +513,25 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			} catch (Exception e) {
 
 			} 
+		}
+
+		if (propertyName.equals("{http://www.jcp.org/jcr/1.0}primaryType")) {
+			if (nodeID.equals("cafebabe-cafe-babe-cafe-babecafebabe")) {
+				// root
+				values[0] = InternalValue.valueOf("{internal}root", 1);
+			}
+			else if (uuidMap.get(nodeID) != null) {
+				// digital object node
+				values[0] = InternalValue.valueOf("{http://www.jcp.org/jcr/nt/1.0}unstructured", 1);
+			}
+			else if (dsMap.get(nodeID) != null) {
+				// data stream node
+				values[0] = InternalValue.valueOf("{http://www.jcp.org/jcr/nt/1.0}file", 1);
+			}
+			else if (contentMap.get(nodeID) != null) {
+				// content node
+				values[0] = InternalValue.valueOf("{http://www.jcp.org/jcr/nt/1.0}resource", 1);
+			}
 		}
 
 		state.setValues(values);
@@ -472,9 +569,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			throw new IllegalStateException("not initialized");
 		}
 
+		String pid;
 		String nodeID = state.getNodeId().toString();
-
-
+		String nodeType = state.getNodeTypeName().toString();
+		
 		if (nodeID.equals("deadbeef-cafe-babe-cafe-babecafebabe")) {
 			// do not store system node in Fedora
 			return;
@@ -488,41 +586,166 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
 				String uuid = entry.getId().toString();
 				String escapedPID = entry.getName().toString();
-				String pid = unescapePID(escapedPID);
+				if (slingNodeList.contains(uuid) ||
+					// must be a sling folder if the name contains space
+					escapedPID.contains(" ")) {
+					pid = unescapePIDSling(escapedPID);
+				}
+				else {
+					pid = unescapePID(escapedPID);
+				}
 
 				if (uuidMap.get(uuid) == null) {
 					uuidMap.put(uuid, pid.substring(pid.indexOf("}") + 1));
 				}
 
+				// flush if pending
+				NodeState st = pendingNodeMap.get(uuid);
+				if (st != null) {
+					store(st);
+					pendingNodeMap.remove(uuid);
+				}
 			}
 
-			// store all pending nodes - assuming a single-level hieararchy
-			for (NodeState ns : pendingNodes) {
-				store(ns);
-			}
+			System.out.println("storing root node");
 
-			pendingNodes.clear();
-
-			// store all pending properties
-			for (PropertyState ps : pendingProperties) {
-				store(ps);
-			}
-
-			pendingProperties.clear();
+			// // store all pending nodes - assuming a single-level hieararchy
+			// for (NodeState ns : pendingNodes) {
+			// 	store(ns);
+			// }
+			// 
+			// pendingNodes.clear();
+			// 
+			// // store all pending properties
+			// for (PropertyState ps : pendingProperties) {
+			// 	store(ps);
+			// }
+			// 
+			// pendingProperties.clear();
 
 			return;
 		}
+
+		System.out.println("storing node type " + nodeType);
 
 		// non-root and non-system
-		if (uuidMap.get(nodeID) == null) {
-			// not in map yet, add to the pending node list
-			pendingNodes.add(state);
-			
-			return;
-		}
+		if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}unstructured") ||
+			// newly created folder in Sling WebDAV drive
+			nodeType.equals("{http://sling.apache.org/jcr/sling/1.0}Folder")) {
+			// digital object node
 
-		// persist to Fedora repository
-		fc.createFedoraObject(uuidMap.get(nodeID));
+			// update data stream map
+			// child nodes (list of name/uuid pairs)
+			Collection c = state.getChildNodeEntries();
+			// System.out.println("Child nodes: " + c.size()); // count
+			for (Iterator iter = c.iterator(); iter.hasNext();) {
+				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
+				String uuid = entry.getId().toString();
+				String dsID = entry.getName().toString();
+
+				// associate the ds node with its parent do node
+				if (dsMap.get(uuid) == null) {
+					dsMap.put(uuid, nodeID);
+				}
+
+				// create a data stream
+				if (DataStream.getDSFromUUID(uuid) == null) {
+					DataStream dataStream = new DataStream(dsID);
+					dataStream.setUUID(uuid);
+				}
+			}
+
+			pid = uuidMap.get(nodeID);
+
+			if (pid == null) {
+				// not in map yet, add to the pending node list
+				pendingNodeMap.put(nodeID, state);
+			
+				return;
+			}
+
+			// deal with "untitled folder" in WebDAV drive
+			if (pid.indexOf(":") < 0) {
+				pid = "sling:" + pid;
+			}
+
+			// persist (the digital object) to Fedora repository if it does
+			// not exist already
+			if (! fc.existsObject(pid)) {
+				fc.createObject(pid);
+			}
+
+			// flush its children (DS nodes)
+			for (Iterator iter = c.iterator(); iter.hasNext();) {
+				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
+				String uuid = entry.getId().toString();
+				NodeState st = pendingNodeMap.get(uuid);
+				if (st != null) {
+					store(st);
+					pendingNodeMap.remove(uuid);
+				}
+			}
+		}
+		else if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}file")) {
+			// data stream node
+
+			// update content map
+			// child nodes (list of name/uuid pairs)
+			Collection c = state.getChildNodeEntries();
+			// System.out.println("Child nodes: " + c.size()); // count
+			for (Iterator iter = c.iterator(); iter.hasNext();) {
+				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
+				String uuid = entry.getId().toString();
+
+				// associate the content node with its parent ds node
+				if (contentMap.get(uuid) == null) {
+					contentMap.put(uuid, nodeID);
+				}
+			}
+
+			if (dsMap.get(nodeID) == null) {
+				// not hooked up with its parent yet
+				if (pendingNodeMap.get(nodeID) == null) {
+					pendingNodeMap.put(nodeID, state);
+					
+					return;
+				}
+			}
+
+			// flush its children (jcr:content nodes)
+			for (Iterator iter = c.iterator(); iter.hasNext();) {
+				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
+				String uuid = entry.getId().toString();
+				NodeState st = pendingNodeMap.get(uuid);
+				if (st != null) {
+					store(st);
+					pendingNodeMap.remove(uuid);
+				}
+			}
+		}
+		else if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}resource")) {
+			// jcr:content node, do not persist 
+			// (only the jcr:data property is persisted)
+
+			if (contentMap.get(nodeID) == null) {
+				// not hooked up with its parent yet
+				if (pendingNodeMap.get(nodeID) == null) {
+					pendingNodeMap.put(nodeID, state);
+					
+					return;
+				}
+			}
+
+			// flush its children (jcr:data properties)
+			for (Iterator<PropertyState> it = pendingProperties.iterator();
+				 it.hasNext();) {
+				PropertyState st = it.next();
+				if (st.getParentId().toString().equals(nodeID)) {
+					store(st);
+					it.remove();
+				}
+			}
+		}
 	}
 
 	/**
@@ -535,13 +758,28 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 		int index;
 		String nodeID, propertyName, pid;
+		String dsID;
+		String mimeType;
 		InternalValue[] values = state.getValues();
 		PropertyId id = state.getPropertyId();
-
+		
 		index = id.toString().indexOf("/");
 		nodeID = id.toString().substring(0, index);
+		// pid = uuidMap.get(nodeID);
 		propertyName = id.toString().substring(index + 1);
-		pid = uuidMap.get(nodeID);
+		pid = uuidMap.get(dsMap.get(contentMap.get(nodeID)));
+
+		if (!propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding") &&
+			!propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType") &&
+			!propertyName.equals("{http://www.jcp.org/jcr/1.0}data") &&
+			!propertyName.equals("{http://www.jcp.org/jcr/1.0}lastModified")) {
+			// ignore other properties
+			System.out.println("ignoring property: " + propertyName);
+			return;
+		}
+
+		System.out.println("storing property: " + propertyName);
+		System.out.println("pid: " + pid);
 
 		// non-root and non-system
 		if (pid == null) {
@@ -551,24 +789,83 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			return;
 		}
 
-		if (propertyName.equals("{}DC")) {
-			System.out.println("updating DC stream in " + pid);
+		if (pid.indexOf(":") < 0) {
+			pid = "sling:" + pid;
+		}
 
-			fc.modifyDCDataStream(pid, values[0].toString().getBytes());
+		// if (propertyName.equals("{}DC")) {
+		// 	System.out.println("updating DC stream in " + pid);
+		// 
+		// 	fc.modifyDCDataStream(pid, values[0].toString().getBytes());
+		// }
+		// else 
+		if (propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding")) {
+
+		}
+		else if (propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType") ) {
+			DataStream.getDSFromUUID(contentMap.get(nodeID)).setMIMEType(values[0].toString());
+		}
+		else if (propertyName.equals("{http://www.jcp.org/jcr/1.0}data")) {
+			// propertyName = 
+			// 	propertyName.substring(propertyName.indexOf("}") + 1);
+			// 
+			// if (propertyName.equals("primaryType")) {
+			// 	return;
+			// }
+			// 
+			// System.out.println("updating " + propertyName + " stream in " + 
+			// 				   pid);
+			// System.out.println(propertyName + ": " + values[0].toString());
+
+			String tmpFile = "fedora-upload-";
+			BLOBFileValue blobVal = values[0].getBLOBFileValue();
+			try {
+				InputStream in = blobVal.getStream();
+				File f = new File(tmpFile);
+				OutputStream out = new FileOutputStream(f);
+				byte buf[] = new byte[1024];
+				int len;
+				while ((len = in.read(buf)) > 0) {
+					out.write(buf, 0, len);
+				}
+				out.close();
+				in.close();
+
+				dsID = DataStream.getDSFromUUID(contentMap.get(nodeID)).id;
+				dsID = dsID.substring(dsID.indexOf("}") + 1);
+
+				if (dsID.startsWith("._")) {
+					// ignore
+					System.out.println("ignore data stream " + dsID);
+					return;
+				}
+
+				System.out.println("adding data stream " + dsID);
+
+				dsID = dsID.replaceAll("\\.", "");
+				mimeType = 
+					DataStream.getDSFromUUID(contentMap.get(nodeID)).mimeType;
+
+				if (fc.existsDataStream(pid, dsID)) {
+					// do not overwrite existing data stream
+					// return;
+					System.out.println("deleting data stream: " + dsID);
+					fc.deleteDataStream(pid, dsID);
+				}
+
+				// fc.addDataStream(pid, propertyName, 
+				fc.addDataStream(pid, 
+								 dsID,
+								 mimeType,
+								 // values[0].toString().getBytes());
+								 tmpFile);
+			} catch (Exception e) {
+
+			}
+                
 		}
 		else {
-			propertyName = 
-				propertyName.substring(propertyName.indexOf("}") + 1);
-
-			if (propertyName.equals("primaryType")) {
-				return;
-			}
-
-			System.out.println("updating " + propertyName + " stream in " + 
-							   pid);
-
-			fc.addDataStream(pid, propertyName, 
-							 values[0].toString().getBytes());
+			// not supported
 		}
 	}
 
@@ -587,11 +884,49 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	 * {@inheritDoc}
 	 */
 	protected void destroy(NodeState state) throws ItemStateException {
+		String pid;
+		String nodeID = state.getNodeId().toString();
+		String nodeType = state.getNodeTypeName().toString();
+		
 		if (!initialized) {
 			throw new IllegalStateException("not initialized");
 		}
 
 		// to be implemented
+		System.out.println("destroying node: " + nodeID);
+
+		// non-root and non-system
+		if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}unstructured") ||
+			// newly created folder in Sling WebDAV drive
+			nodeType.equals("{http://sling.apache.org/jcr/sling/1.0}Folder")) {
+			// digital object node
+
+			pid = uuidMap.get(nodeID);
+
+			if (pid == null) {
+				// should not happen
+			
+				return;
+			}
+
+			// deal with "untitled folder" in WebDAV drive
+			if (pid.indexOf(":") < 0) {
+				pid = "sling:" + pid;
+			}
+
+			// delete from Fedora repository if it exists
+			if (fc.existsObject(pid)) {
+				System.out.println("deleting digital object: " + pid);
+				fc.deleteObject(pid);
+			}
+		}
+		else if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}file")) {
+			// data stream node
+		}
+		else if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}resource")) {
+			// jcr:content node
+			// (only the jcr:data property is deleted)
+		}
 	}
 
 	/**
@@ -602,7 +937,69 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			throw new IllegalStateException("not initialized");
 		}
 
-		// to be implemented
+		int index;
+		String nodeID, propertyName, pid;
+		String dsID;
+		String mimeType;
+		PropertyId id = state.getPropertyId();
+		
+		index = id.toString().indexOf("/");
+		nodeID = id.toString().substring(0, index);
+		// pid = uuidMap.get(nodeID);
+		propertyName = id.toString().substring(index + 1);
+		pid = uuidMap.get(dsMap.get(contentMap.get(nodeID)));
+
+		if (!propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding") &&
+			!propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType") &&
+			!propertyName.equals("{http://www.jcp.org/jcr/1.0}data") &&
+			!propertyName.equals("{http://www.jcp.org/jcr/1.0}lastModified")) {
+			// ignore other properties
+			System.out.println("ignoring property: " + propertyName);
+			return;
+		}
+
+		System.out.println("destroying property: " + propertyName);
+
+		// non-root and non-system
+		if (pid == null) {
+			// not in map yet
+			// should not happen
+			// pendingProperties.add(state);
+			System.out.println("null pid!!!");
+			
+			return;
+		}
+
+		if (pid.indexOf(":") < 0) {
+			pid = "sling:" + pid;
+		}
+
+		if (propertyName.equals("{http://www.jcp.org/jcr/1.0}data")) {
+			dsID = DataStream.getDSFromUUID(contentMap.get(nodeID)).id;
+			dsID = dsID.substring(dsID.indexOf("}") + 1);
+
+			if (dsID.startsWith("._")) {
+				// ignore
+				System.out.println("ignore data stream " + dsID);
+				return;
+			}
+
+			dsID = dsID.replaceAll("\\.", "");
+
+			if (dsID.equals("DC")) {
+				// cannot delete DC data stream
+				return;
+			}
+
+			try {
+				if (fc.existsDataStream(pid, dsID)) {
+					System.out.println("deleting data stream: " + dsID);
+					fc.deleteDataStream(pid, dsID);
+				}
+			} catch (Exception e) {
+
+			}
+		}
 	}
 
 	/**
@@ -622,15 +1019,16 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	public synchronized boolean exists(PropertyId id) throws ItemStateException
 	{
 		int index;
-		String propertyName;
+		String nodeID, propertyName;
 
 		if (!initialized) {
 			throw new IllegalStateException("not initialized");
 		}
 
-		// System.out.println("check property existence: " + id.toString());
+		System.out.println("check property existence: " + id.toString());
 
 		index = id.toString().indexOf("/");
+		nodeID = id.toString().substring(0, index);
 		propertyName = id.toString().substring(index + 1);
 
 		// if (id.toString().equals("cafebabe-cafe-babe-cafe-babecafebabe") ||
@@ -641,8 +1039,14 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		if (contentMap.get(id.toString().substring(0, index)) != null &&
 				 (propertyName.equals("{http://www.jcp.org/jcr/1.0}data") ||
 				  propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding") ||
-				  propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType")))
-			{
+				  propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType"))
+			) {
+			return true;
+		}
+		else if (propertyName.equals("{http://www.jcp.org/jcr/1.0}primaryType") &&
+				 // ! nodeID.equals("cafebabe-cafe-babe-cafe-babecafebabe") &&
+				 ! nodeID.equals("deadbeef-cafe-babe-cafe-babecafebabe")) {
+			System.out.println("returning true");
 			return true;
 		}
 		else {
@@ -658,7 +1062,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			throw new IllegalStateException("not initialized");
 		}
 
-		// System.out.println("check node existence: " + id.toString());
+		System.out.println("check node existence: " + id.toString());
 
 		if (id.toString().equals("cafebabe-cafe-babe-cafe-babecafebabe") ||
 			id.toString().equals("deadbeef-cafe-babe-cafe-babecafebabe") ) {
@@ -691,6 +1095,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 		// to be implemented
 		
-		return true;
+		return false;
 	}
 }

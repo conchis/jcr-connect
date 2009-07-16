@@ -52,6 +52,24 @@ class DataStream {
 	}
 
 	/**
+	 * Creates a new <code>DataStream</code> instance.
+	 */
+	public DataStream(String id)
+	{
+		this.id = id;
+	}
+
+	public void setLabel(String label)
+	{
+		this.label = label;
+	}
+
+	public void setMIMEType(String mimeType)
+	{
+		this.mimeType = mimeType;
+	}
+
+	/**
 	 * Associate the data stream object with the UUID of JCR node
 	 */
 	public void setUUID(String uuid)

@@ -97,23 +97,23 @@ public class Test {
 			/////////////////////////////////////////////////////////////
 			// read digital objects and streams from Fedora
 
-			for (i = 1; i <= 12; ++i) {
-				test1 = root.getNode("canberra_" + i + "/DC/jcr:content");
-				// Node test2 = root.getNode("test_image1");
-				System.out.println(test1.getProperty("jcr:data").getString());
-			
-				test1 = root.getNode("canberra_" + i + "/image/jcr:content");
-				is = test1.getProperty("jcr:data").getStream();
-				writeStream(is, "canberra/canberra_" + i + ".jpg");
-			
-				test1 = root.getNode("canberra_" + i + "/thumb/jcr:content");
-				is = test1.getProperty("jcr:data").getStream();
-				writeStream(is, "canberra/canberra_" + i + "_thumb.jpg");
-			
-				if (i == 6) {
-					i = 8;
-				}
-			}			
+			// for (i = 1; i <= 12; ++i) {
+			// 	test1 = root.getNode("canberra_" + i + "/DC/jcr:content");
+			// 	// Node test2 = root.getNode("test_image1");
+			// 	System.out.println(test1.getProperty("jcr:data").getString());
+			// 
+			// 	test1 = root.getNode("canberra_" + i + "/image/jcr:content");
+			// 	is = test1.getProperty("jcr:data").getStream();
+			// 	writeStream(is, "canberra/canberra_" + i + ".jpg");
+			// 
+			// 	test1 = root.getNode("canberra_" + i + "/thumb/jcr:content");
+			// 	is = test1.getProperty("jcr:data").getStream();
+			// 	writeStream(is, "canberra/canberra_" + i + "_thumb.jpg");
+			// 
+			// 	if (i == 6) {
+			// 		i = 8;
+			// 	}
+			// }			
 
 			//////////////////////////////////////////////////////////////
 
@@ -128,11 +128,37 @@ public class Test {
 
 			/////////////////////////////////////////////////////////////
 			// write digital objects and streams to Fedora
-			// Node test = root.addNode("test_hello");
-			// test.setProperty("DC", "<oai_dc:dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\"><dc:title>Updated DC from JCR</dc:title><dc:identifier>test:test</dc:identifier></oai_dc:dc>");
-			// test.setProperty("image", 
-			// 				 new FileInputStream(new File("test.jpg")));
+			Node test = root;
+
+			try {
+				test = root.getNode("test_writer");
+			} catch (PathNotFoundException e) {
+				test = root.addNode("test_writer");
+			}
+			// test.setProperty("image", new FileInputStream(new File("test.jpg")));
+			test = test.addNode("image", "nt:file");
+
+			Node testDelete = root.getNode("test_writer/image"); // test;
+
+			test = test.addNode("jcr:content", "nt:resource");
+			// test.setProperty("jcr:data", "<oai_dc:dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\"><dc:title>Updated DC from JCR</dc:title><dc:identifier>test:test</dc:identifier></oai_dc:dc>");
+			// test.setProperty("jcr:data", session.getValueFactory().createValue("this is the content", PropertyType.STRING));
+			test.setProperty("jcr:data", session.getValueFactory().createValue(new FileInputStream(new File("test.jpg"))));
+			
+			// test.setProperty("jcr:mimeType", "text/html");
+			test.setProperty("jcr:mimeType", "image/jpeg");
+			test.setProperty("jcr:lastModified", "2009-07-08T00:00:00.000Z");
+			
 			// session.save();
+			/////////////////////////////////////////////////////////////
+
+			/////////////////////////////////////////////////////////////
+			// delete data streams from Fedora
+			// testDelete = root.getNode("test_writer/image");
+			// testDelete = testDelete.getNode("image");
+			// testDelete.remove();
+			
+			session.save();
 			/////////////////////////////////////////////////////////////
 
 			// Store content
