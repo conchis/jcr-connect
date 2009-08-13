@@ -16,43 +16,29 @@
  */
 package edu.northwestern.jcr.adapter.fedora.persistence;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-
-import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import java.io.BufferedReader;
+import java.io.StringReader;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.util.Properties;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+
+import java.net.URLEncoder;
 
 import fedora.client.FedoraClient;
-import fedora.client.HttpInputStream;
-import fedora.server.access.FedoraAPIA;
-import fedora.server.types.gen.FieldSearchQuery;
-import fedora.server.types.gen.FieldSearchResult;
-import fedora.server.types.gen.ObjectFields;
-import fedora.server.types.gen.MIMETypedStream;
-import fedora.server.types.gen.DatastreamDef;
 
 import fedora.server.management.FedoraAPIM;
 import fedora.common.Constants;
+import fedora.common.PID;
 
-import org.apache.axis.types.NonNegativeInteger;
-
-import static org.apache.commons.httpclient.HttpStatus.SC_CREATED;
 import static org.apache.commons.httpclient.HttpStatus.SC_OK;
-import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-
 
 /**
  * <code>FedoraConnector</code> accesses Fedora repository
@@ -62,24 +48,22 @@ import org.apache.commons.httpclient.methods.PostMethod;
  *
  * @author Xin Xiang
  */
-class FedoraConnector {
+public abstract class FedoraConnector {
 
 	/** fedora client handle */
-	private FedoraClient fc;
+	FedoraClient fc;
 
 	/** fedora base URL */
-	private String baseURL;
+	String baseURL;
 
 	/** phrase used to search for all objects */
-	private static String searchPhrase;
+	static String searchPhrase;
 
-	private static final String FOXMLPART1 = 
+	static final String FOXMLPART1 = 
 		"<?xml version=\"1.0\" encoding=\"UTF-8\"?><foxml:digitalObject VERSION=\"1.1\" PID=\"";
 
-	private static final String FOXMLPART2 = 
+	static final String FOXMLPART2 = 
 		"\" xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-1.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"><foxml:objectProperties><foxml:property NAME=\"info:fedora/fedora-system:def/model#state\" VALUE=\"Active\"/><foxml:property NAME=\"info:fedora/fedora-system:def/model#ownerId\" VALUE=\"fedoraAdmin\"/></foxml:objectProperties></foxml:digitalObject>";
-
-	private static boolean useREST = true;
 
 	/**
 	 * Creates a new <code>FedoraConnector</code> instance.
@@ -119,10 +103,6 @@ class FedoraConnector {
 			user = props.getProperty("user");
 			pass = props.getProperty("password");
 			searchPhrase = props.getProperty("phrase");
-
-			if (! props.getProperty("rest").equals("y")) {
-				useREST = false;
-			}
 		}
 
 		baseURL = protocol + "://" + host + ":" + port + "/" + context;
@@ -134,630 +114,480 @@ class FedoraConnector {
 		}
 	}
 
-	/**
-	 * Escape special characters in http request strings
-	 * @param s String
-	 */
-	private String escapeString(String s)
-	{
-		return s.replaceAll("/", "%2F");
-	}
-
-	/**
-	 * HTTP DELETE.
-	 * @param url String
-	 * @ret status code
-	 */
-	private int httpDelete(String url)
-	{
-		DeleteMethod deleteMethod;
-
-		try {
-			deleteMethod = new DeleteMethod(url);
-			deleteMethod.setDoAuthentication(true);
-			deleteMethod.getParams().setParameter("Connection", "Keep-Alive");
-			fc.getHttpClient().executeMethod(deleteMethod);
-
-			return deleteMethod.getStatusCode();
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to delete!");
-			
-			return -1;
-		}
-	}
 
 	/**
 	 * Create a dummy Fedora object with default attributes
 	 */
-	public void createObjectREST(String pid)
-	{
-		String url;
-		PostMethod postMethod;
-
-		url = baseURL + "/objects/" + pid;
-		try {
-			System.out.println("ingesting " + pid);
-
-			postMethod = new PostMethod(url);
-			postMethod.setDoAuthentication(true);
-			postMethod.getParams().setParameter("Connection", "Keep-Alive");
-			postMethod.setContentChunked(true);
-			fc.getHttpClient().executeMethod(postMethod);
-
-			if (postMethod.getStatusCode() != SC_CREATED) {
-				System.err.println("status code: " + 
-								   postMethod.getStatusCode());
-				System.err.println("failed to insert digital object!");
-			};
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to insert object!");
-		}
-	}
+	public abstract void createObject(String pid);
 
 	/**
 	 * Deletes a digital object.
-	 * Wrapper of purgeObject in Fedora REST.
+	 * Wrapper of purgeObject in Fedora API-M
 	 */
-	public void deleteObjectREST(String pid)
-	{
-		String url;
-		int statusCode;
-
-		url = baseURL + "/objects/" + pid;
-		statusCode = httpDelete(url);
-		if (statusCode != SC_OK) {
-			System.err.println("status code: " + 
-							   statusCode);
-			// System.err.println("failed to delete digital object!");
-		};
-	}
+	public abstract void deleteObject(String pid);
 
 	/**
-	 * Wrapper of findObjects in REST
 	 * Get a list of objects in Fedora repository
 	 *
 	 */
-	public String [] listObjectsREST()
-	{
-		String response = "";
-		Pattern pattern;
-		Matcher matcher;
-		String line;
-		String pid;
-		List<String> list = new ArrayList<String>();
+	public abstract String [] listObjects(String pattern);
 
-		try {
-			response = fc.getResponseAsString("/objects?query=pid%7E*&maxResults=1024&resultFormat=xml&pid=true",
-											  true, false);
-		} catch (Exception e) {
-			return null;
+	/**
+	 * Test if a given digital object alrady exists in the Fedora repository.
+	 */
+	public abstract boolean existsObject(String pid);
+
+	/**
+	 * Wrappper of listDatastreams in API-A.
+	 */
+	public abstract DataStream [] listDataStreams(String pid);
+
+	/**
+	 * Wrapper of getDatastreamDissemination in API-A.
+	 */
+	public abstract byte[] getDataStream(String pid, String dsID);
+
+	/**
+	 * Test if a given data stream alrady exists in the Fedora repository.
+	 */
+	public abstract boolean existsDataStream(String pid, String dsID);
+
+	/**
+	 * 
+	 */
+	// public abstract void modifyDCDataStream(String pid, byte [] bytes);
+
+	/**
+	 * Adds a data stream.
+	 * Wrapper of addDatastream in Fedora API-M
+	 */
+	public abstract void addDataStream(String pid, String dsID, 
+									   String mimeType, String fileName);
+
+	/**
+	 * Deletes a data stream.
+	 * Wrapper of purgeDatastream in Fedora API-M
+	 */
+	public abstract void deleteDataStream(String pid, String dsID);
+
+	private String postMethod(String url) throws Exception
+	{
+		PostMethod postMethod;
+
+		postMethod = new PostMethod(url);
+		postMethod.setDoAuthentication(true);
+		postMethod.getParams().setParameter("Connection", "Keep-Alive");
+		postMethod.setContentChunked(true);
+		fc.getHttpClient().executeMethod(postMethod);
+		
+		if (postMethod.getStatusCode() != SC_OK) {
+			System.err.println("status code: " + 
+							   postMethod.getStatusCode());
 		}
 
-		pattern = Pattern.compile("<pid>[^<]+</pid>");
-		matcher = pattern.matcher(response);
-		
-		while (matcher.find()) {
-			line = matcher.group();
-			pid = line.substring(5, line.length() - 6);
-			list.add(pid);
+		return postMethod.getResponseBodyAsString();
+	}
+
+	/**
+	 * Get a list of all descendants of a given object in Fedora 
+	 * repository through resource index.
+	 * The result is in CSV format as if it is generated directly
+	 * from resouce index.
+	 */
+	public String [] listDescendantsRI(String pid)
+	{
+		String [] members;
+		Map<String, String> pathMap;
+		Queue<String> queue;
+		List<String> resultList;
+		String nextPID;
+		String parentPath;
+
+		pathMap = new HashMap<String, String>();
+		queue = new LinkedList<String>();
+		resultList = new ArrayList<String>();
+
+		if (pid == null) {
+			members = listObjectsRI();
+		}
+		else {
+			// to be implemented
+			members = listMembers(pid);
+		}
+
+		for (String member : members) {
+			queue.add(member);
+			pathMap.put(member, member);
+			resultList.add(member);
+		}
+
+		while (! queue.isEmpty()) {
+			nextPID = queue.remove();
+			parentPath = pathMap.get(nextPID);
+
+			members = listMembers(nextPID);
+
+			for (String member : members) {
+				queue.add(member);
+				pathMap.put(member, parentPath + "," + member);
+				resultList.add(parentPath + "," + member);
+			}
+		}
+
+		return (String []) resultList.toArray(new String [0]);
+	}
+
+
+	/**
+	 * Get a list of first-level objects in Fedora repository through
+	 * resource index.
+	 */
+	public String [] listObjectsRI()
+	{
+		String response = "";
+		String query;
+		String line;
+		int i;
+		String [] children;
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		List<String> list = new ArrayList<String>();
+		String url;
+
+		children = listMembers(null);
+		i = 0;
+		for (String child : children) {
+			map.put(child, i);
+			i++;
+		}
+
+		query = "select $t from <#ri> where $s <http://purl.org/dc/elements/1.1/identifier>$t";
+
+		try {
+			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
+			response = postMethod(url);
+
+			BufferedReader reader =
+				new BufferedReader(new StringReader(response));
+			// skip header
+			line = reader.readLine();
+
+			list = new ArrayList<String>();
+			while ((line = reader.readLine()) != null) {
+				if (map.get(line) == null) {
+					// not a member of anything
+					list.add(line);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to list objects!");
 		}
 
 		return  (String []) list.toArray(new String[0]);
 	}
 
 	/**
-	 * Wrappper of listDatastreams in REST.
+	 * Get the path consisting of PIDs of the objects along the path.
 	 */
-	public DataStream [] listDataStreamsREST(String pid)
+	public String [] getPath(String [] pids)
 	{
-		DataStream dataStream;
+		Map<String, String> parentMap;
+		String parentPID;
+		String [] result;
 		int i;
-		String response = "";
-		Pattern pattern, attributePattern;
-		Matcher matcher, attributeMatcher;
-		String line;
-		String s = "";
-		String dsid, label, mimeType;
-		List<DataStream> list = new ArrayList<DataStream>();
 
-		try {
-			response = 
-				fc.getResponseAsString(
-									   String.format("/objects/%s/datastreams.xml", pid), true, false);
-		} catch (Exception e) {
+		parentMap = new HashMap<String, String>();
+		result = new String [pids.length];
+		i = 0;
+
+		for (String pid : pids) {
+			result[i] = "";
+					
+			do {
+				parentPID = parentMap.get(pid);
+				if (parentPID == null) {
+					parentPID = getParent(pid);
+					if (parentPID == null) {
+						parentPID = "root";
+					}
+
+					parentMap.put(pid, parentPID);
+				}
+
+				if (!result[i].equals("")) {
+					result[i] = "," + result[i];
+				}
+				result[i] = pid + result[i];
+				pid = parentPID;
+			} while (!parentPID.equals("root"));
+
+			i++;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get the parent of the object
+	 */
+	public String getParent(String pid)
+	{
+		String query;
+		String [] result;
+
+		query = "select $s from <#ri> where $a <http://purl.org/dc/elements/1.1/identifier> $s and $b <info:fedora/fedora-system:def/relations-external#isMemberOfCollection> $a and $b <http://purl.org/dc/elements/1.1/identifier> $t and $t <mulgara:is> '" + pid + "'";
+
+		result = searchObjects(query);
+
+		if (result.length < 1) {
 			return null;
 		}
-
-		pattern = Pattern.compile("<datastream [^>]+/>");
-		matcher = pattern.matcher(response);
-		
-		while (matcher.find()) {
-			// iterate over all the datastream elements
-			line = matcher.group();
-
-			// get dsid, label and mime type respectively
-			attributePattern = Pattern.compile("dsid=\"[^\"]+\"");
-			attributeMatcher = attributePattern.matcher(line);
-			if (attributeMatcher.find()) {
-				s = attributeMatcher.group();
-			}
-
-			dsid = s.substring(6, s.length() - 1);
-
-			attributePattern = Pattern.compile("label=\"[^\"]*\"");
-			attributeMatcher = attributePattern.matcher(line);
-			if (attributeMatcher.find()) {
-				s = attributeMatcher.group();
-			}
-			label = s.substring(7, s.length() - 1);
-
-			attributePattern = Pattern.compile("mimeType=\"[^\"]*\"");
-			attributeMatcher = attributePattern.matcher(line);
-			if (attributeMatcher.find()) {
-				s = attributeMatcher.group();
-			}
-			mimeType = s.substring(10, s.length() - 1);
-
-			if (mimeType == null || mimeType.equals("")) {
-				// set default MIME type
-				mimeType = "application/octet-stream";
-			}
-
-			// add the data stream object
-			dataStream = new DataStream(dsid, label, mimeType);
-			list.add(dataStream);
-
-			System.out.println(dsid + ", " + label + ", " + mimeType);
+		else {
+			return result[0];
 		}
-
-		return list.toArray(new DataStream[0]);
 	}
 
 	/**
-	 * Wrapper of getDatastreamDissemination in REST.
+	 * Lists members of the collection represented by the pid
 	 */
-	byte[] getDataStreamREST(String pid, String dsID)
+	public String [] listMembers(String pid)
 	{
-		HttpInputStream inputStream;
-		ReadableByteChannel channel;
-		ByteBuffer buf;
-		byte [] bytes;
-		int numRead = 0;
-		int length = 0;
-        
-		try {
-			inputStream = fc.get(String.format("/objects/%s/datastreams/%s/content", pid, dsID), true, false);
-		} catch (Exception e) {
-			return null;
-		}
-
-		channel = Channels.newChannel(inputStream);
-		// Create a direct ByteBuffer
-        buf = ByteBuffer.allocateDirect(10 * 1024 * 1024);
-
-		while (numRead >= 0) {
-            // Read bytes from the channel
-			try {
-				numRead = channel.read(buf);
-			} catch (Exception e) {
-				return null;
-			}
-
-			if (numRead > 0) {
-				length += numRead;
-			}
-        }	
-
-		bytes = new byte[length];
-		// reset the position of the buffer to zero
-		buf.rewind();
-		buf.get(bytes);
-
-		return bytes;
-	}
-
-	/**
-	 * Test if a given digital object alrady exists in the Fedora repository.
-	 */
-	public boolean existsObjectREST(String pid)
-	{
+		String predicate;
+		List<String> list = null;
+		String object;
+		String query;
+		String url;
 		String response = "";
-		Pattern pattern;
-		Matcher matcher;
-
-		try {
-			response = fc.getResponseAsString(String.format("/objects?query=pid%%7E%s&resultFormat=xml&pid=true", pid),
-											  true, false);
-		} catch (Exception e) {
-			return false;
-		}
-
-		pattern = Pattern.compile("<pid>[^<]+</pid>");
-		matcher = pattern.matcher(response);
-		
-		return matcher.find();
-	}
-
-
-	/**
-	 * Test if a given data stream alrady exists in the Fedora repository.
-	 */
-	public boolean existsDataStreamREST(String pid, String dsID)
-	{
-		String response = "";
-		Pattern pattern, attributePattern;
-		Matcher matcher, attributeMatcher;
 		String line;
-		String s = "";
-		String id;
 
-		try {
-			response = 
-				fc.getResponseAsString(
-									   String.format("/objects/%s/datastreams.xml", pid), true, false);
-		} catch (Exception e) {
-			return false;
+		if (pid != null) {
+			// member of pid
+			query = "select $s from <#ri> where $s <info:fedora/fedora-system:def/relations-external#isMemberOfCollection> <" + PID.toURI(pid) + ">;";
+		}
+		else {
+			// member of anything
+			query = "select $s from <#ri> where $s <info:fedora/fedora-system:def/relations-external#isMemberOfCollection> $t;";
 		}
 
-		pattern = Pattern.compile("<datastream [^>]+/>");
-		matcher = pattern.matcher(response);
-		
-		while (matcher.find()) {
-			// iterate over all the datastream elements
-			line = matcher.group();
+		try {
+			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
 
-			// get dsid, label and mime type respectively
-			attributePattern = Pattern.compile("dsid=\"[^\"]+\"");
-			attributeMatcher = attributePattern.matcher(line);
-			if (attributeMatcher.find()) {
-				s = attributeMatcher.group();
+			response = postMethod(url);
+			BufferedReader reader =
+				new BufferedReader(new StringReader(response));
+			// skip header
+			line = reader.readLine();
+
+			list = new ArrayList<String>();
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith(Constants.FEDORA.uri)) {
+					line = line.substring(Constants.FEDORA.uri.length());
+					list.add(line);
+					System.out.println(line);
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to add data stream!");
+		}
 
-			id = s.substring(6, s.length() - 1);
+		return list.toArray(new String [0]);
+	}
 
-			if (id.equals(dsID)) {
+	/**
+	 * add members of the collection represented by the pid
+	 */
+	public void addMember(String pid, String cpid)
+	{
+		String predicate;
+
+		try {
+			predicate = "info:fedora/fedora-system:def/relations-external#isMemberOfCollection";
+			if (!fc.getAPIM().addRelationship(cpid, predicate, PID.toURI(pid),
+											   false, null)) {
+				System.out.println("error adding relationship");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to add member!");
+		}
+	}
+
+	/**
+	 * Add a relationship.
+	 * Use API-M since there is no other option.
+	 */
+	public void addProperty(String pid, String uri, String literal)
+	{
+		try {
+			if (!fc.getAPIM().addRelationship(pid, uri, literal,
+											  true, 
+											  // Constants.RDF_XSD.STRING.uri  
+											  null)) {
+				System.out.println("error adding relationship");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to add relationship!");
+		}
+	}
+
+	/**
+	 * Get the value of a property.
+	 * Use resource index search as oppososed to API-M.
+	 */
+	public String getProperty(String pid, String uri)
+	{
+		String query;
+		String url;
+		String response = "";
+		String line = "";
+
+		query = "select $t from <#ri> where <" + PID.toURI(pid) + 
+			"> <" + uri + "> $t";
+
+		try {
+			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
+
+			response = postMethod(url);
+			BufferedReader reader =
+				new BufferedReader(new StringReader(response));
+			// skip header
+			reader.readLine();
+
+			// one line only
+			line = reader.readLine();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to add data stream!");
+		}
+
+		return line;
+	}
+
+	/**
+	 * Delete a relationship.
+	 * Use API-M since there is no other option.
+	 */
+	public void deleteProperty(String pid, String uri)
+	{
+		try {
+			if (!fc.getAPIM().purgeRelationship(pid, uri, 
+												// cannot be null
+												// error in API-M doc
+												getProperty(pid, uri),
+												true, null)) {
+				System.out.println("error deleting relationship");
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			System.err.println("failed to delete relationship!");
+		}
+	}
+
+	/**
+	 * List the name (not value) of the properties.
+	 */
+	public String [] listProperties(String pid)
+	{
+		List<String> list = null;
+		String query;
+		String url;
+		String response = "";
+		String line;
+
+		query = "select $s from <#ri> where <" + PID.toURI(pid) + "> $s $t";
+
+		try {
+			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
+
+			response = postMethod(url);
+			BufferedReader reader =
+				new BufferedReader(new StringReader(response));
+			// skip header
+			line = reader.readLine();
+
+			list = new ArrayList<String>();
+			while ((line = reader.readLine()) != null) {
+				if (line.startsWith("info:fedora/") ||
+					line.startsWith("http://purl.org/dc/elements/1.1/")) {
+					// ignore Fedora and DC predicates
+					continue;
+				}
+
+				list.add(line);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to add data stream!");
+		}
+
+		return list.toArray(new String [0]);
+	}
+
+	/**
+	 * Test if the property exists.
+	 */
+	public boolean existsProperty(String pid, String predicate)
+	{
+		String query;
+		String url;
+		String response = "";
+		String line;
+
+		query = "select $s from <#ri> where <" + PID.toURI(pid) + "> <" +
+			predicate + "> $s";
+
+		try {
+			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
+
+			response = postMethod(url);
+			BufferedReader reader =
+				new BufferedReader(new StringReader(response));
+			// skip header
+			line = reader.readLine();
+
+			if (reader.readLine() != null) {
 				return true;
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to add data stream!");
 		}
 
 		return false;
 	}
 
 	/**
-	 * Adds a data stream.
-	 * Wrapper of addDatastream in Fedora REST
+	 * Run the iTQL expression against the resource index and
+	 * return objects found.
 	 */
-	public void addDataStreamREST(String pid, String dsID, 
-							  String mimeType, String fileName)
+	public String [] searchObjects(String query)
 	{
+		List<String> list = null;
 		String url;
-		PostMethod postMethod;
+		String response = "";
+		String line;
 
 		try {
-			String dsLocation = fc.uploadFile(new File(fileName));
-			System.out.println("filed uploaded at " + dsLocation);
+			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
 
-			if (mimeType == null) {
-				// set default MIME type
-				mimeType = "application/octet-stream";
-			}
+			response = postMethod(url);
+			BufferedReader reader =
+				new BufferedReader(new StringReader(response));
+			// skip header
+			line = reader.readLine();
 
-			url = baseURL + "/objects/" + pid + "/datastreams/" + dsID +
-				"?controlGroup=M&dsLabel=" + dsID + 
-				"&mimeType=" + escapeString(mimeType) + 
-				"&dsLocation=" + escapeString(dsLocation);
-
-			postMethod = new PostMethod(url);
-			postMethod.setDoAuthentication(true);
-			postMethod.getParams().setParameter("Connection", "Keep-Alive");
-			postMethod.setContentChunked(true);
-			fc.getHttpClient().executeMethod(postMethod);
-
-			if (postMethod.getStatusCode() != SC_CREATED) {
-				System.err.println("status code: " + 
-								   postMethod.getStatusCode());
-				System.err.println("failed to add data stream!");
+			list = new ArrayList<String>();
+			while ((line = reader.readLine()) != null) {
+				list.add(line);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("failed to add data stream!");
-		}
-	}
-
-	/**
-	 * Deletes a data stream.
-	 * Wrapper of purgeDatastream in Fedora REST
-	 */
-	public void deleteDataStreamREST(String pid, String dsID)
-	{
-		String url;
-		int statusCode;
-
-		url = baseURL + "/objects/" + pid + "/datastreams/" + dsID;
-		statusCode = httpDelete(url);
-		if (statusCode != SC_OK) {
-			System.err.println("status code: " + 
-							   statusCode);
-			// System.err.println("failed to delete digital object!");
-		};
-	}
-
-	/**
-	 * Create a dummy Fedora object with default attributes
-	 */
-	public void createObject(String pid)
-	{
-		String foxml;
-
-		if (useREST) {
-			createObjectREST(pid);
-
-			return;
+			System.err.println("failed to search resource index!");
 		}
 
-		foxml = FOXMLPART1 + pid + FOXMLPART2;
-
-		try {
-			System.out.println("ingesting " + pid);
-
-			// make the SOAP call on API-M using the connection stub
-			pid = fc.getAPIM().ingest(foxml.getBytes(), 
-									  Constants.FOXML1_1.uri, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to insert object!");
-		}
-	}
-
-	/**
-	 * Deletes a digital object.
-	 * Wrapper of purgeObject in Fedora API-M
-	 */
-	public void deleteObject(String pid)
-	{
-		if (useREST) {
-			deleteObjectREST(pid);
-			
-			return;
-		}
-
-		try {
-			fc.getAPIM().purgeObject(pid, null, false);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to delete digital object!");
-		}
-	}
-
-	/**
-	 * Wrapper of findObjects in Fedora API-A.
-	 * Get a list of objects in Fedora repository
-	 *
-	 */
-	public String [] listObjects()
-	{
-		String [] resultFields = new String [] {"pid"};
-		FieldSearchQuery query = new FieldSearchQuery();
-		List<String> list = new ArrayList<String>();
-		String pid;
-
-		if (useREST) {
-			return listObjectsREST();
-		}
-
-		query.setTerms(searchPhrase);
-		
-		try {
-			FieldSearchResult result =
-				fc.getAPIA().findObjects(resultFields, 
-										 new NonNegativeInteger(""
-																+ 128),
-										 query);
-			int matchNum = 0;
-			while (result != null) {
-				for (int i = 0; i < result.getResultList().length; i++) {
-					ObjectFields o = result.getResultList()[i];
-					pid = o.getPid();
-					matchNum++;
-					// System.out.println("#" + matchNum);
-					// System.out.println(pid);
-
-					list.add(pid);
-				}
-
-				result = null;
-			}
-		} catch (Exception e) {
-			System.err.println("ERROR: " + e.getClass().getName()
-							   + 
-							   (e.getMessage() == null ? "" : 
-								": " + e.getMessage()));
-		}
-
-		return (String []) list.toArray(new String[0]);
-	}
-
-	/**
-	 * Test if a given digital object alrady exists in the Fedora repository.
-	 */
-	public boolean existsObject(String pid)
-	{
-		if (useREST) {
-			return existsObjectREST(pid);
-		}
-		
-		// to be implemented
-
-		return true;
-	}
-
-	/**
-	 * Wrappper of listDatastreams in API-A.
-	 */
-	public DataStream [] listDataStreams(String pid)
-	{
-		DatastreamDef [] dsDef = null;
-		DataStream [] dsList;
-		String mimeType;
-		int i;
-
-		if (useREST) {
-			return listDataStreamsREST(pid);
-		}
-
-		try {
-			dsDef = fc.getAPIA().listDatastreams(pid, null);
-		} catch (Exception e) {
-			System.err.println("pid: " + pid);
-			System.err.println("ERROR: " + e.getClass().getName()
-							   + 
-							   (e.getMessage() == null ? "" : 
-								": " + e.getMessage()));
-			return null;
-		}
-
-		dsList = new DataStream[dsDef.length];
-
-		for (i = 0; i < dsDef.length; ++i) {
-			mimeType = dsDef[i].getMIMEType();
-			if (mimeType == null || mimeType.equals("")) {
-				// set default MIME type
-				mimeType = "application/octet-stream";
-			}
-
-			dsList[i] = new DataStream(dsDef[i].getID(),
-									   dsDef[i].getLabel(),
-									   mimeType);
-		}
-
-		return dsList;
-	}
-
-
-	/**
-	 * Wrapper of getDatastreamDissemination in API-A.
-	 */
-	byte[] getDataStream(String pid, String dsID)
-	{
-		MIMETypedStream ds = null;
-
-		if (useREST) {
-			return getDataStreamREST(pid, dsID);
-		}
-
-		try {
-			ds = fc.getAPIA().getDatastreamDissemination(pid, dsID, null);
-		} catch (Exception e) {
-			
-		}
-
-		return ds.getStream();
-	}
-
-	/**
-	 * Test if a given data stream alrady exists in the Fedora repository.
-	 */
-	public boolean existsDataStream(String pid, String dsID)
-	{
-		if (useREST) {
-			return existsDataStreamREST(pid, dsID);
-		}
-
-		// to be implemented
-
-		return true;
-	}
-
-	/**
-	 * 
-	 */
-	public void modifyDCDataStream(String pid, byte [] bytes)
-	{
-		try {
-			// make the SOAP call on API-M using the connection stub
-			fc.getAPIM().modifyDatastreamByValue(pid,
-												 "DC",
-												 null,
-												 null,
-												 null,
-												 null,
-												 bytes,
-												 null,
-												 null,
-												 null,
-												 true);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to update DC stream!");
-		}
-	}
-
-	/**
-	 * Adds a data stream.
-	 * Wrapper of addDatastream in Fedora API-M
-	 */
-	public void addDataStream(String pid, String dsID, 
-							  String mimeType, String fileName)
-	{
-		if (useREST) {
-			addDataStreamREST(pid, dsID, mimeType, fileName);
-			
-			return;
-		}
-
-		try {
-			String dsLocation = fc.uploadFile(new File(fileName));
-			System.out.println("filed uploaded at " + dsLocation);
-
-			if (mimeType == null) {
-				// set default MIME type
-				mimeType = "application/octet-stream";
-			}
-
-			fc.getAPIM().addDatastream(pid,
-									   dsID,
-									   null,
-									   // set label to id by default
-									   dsID,
-									   false,
-									   mimeType, // "image/jpeg",
-									   null,
-									   dsLocation,
-									   "M",
-									   "A",
-									   null,
-									   null,
-									   null);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to add data stream!");
-		}
-	}
-
-	/**
-	 * Deletes a data stream.
-	 * Wrapper of purgeDatastream in Fedora API-M
-	 */
-	public void deleteDataStream(String pid, String dsID)
-	{
-		if (useREST) {
-			deleteDataStreamREST(pid, dsID);
-
-			return;
-		}
-
-		try {
-			fc.getAPIM().purgeDatastream(pid,
-									   dsID,
-									   null,
-									   null,
-									   null,
-									   false);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to delete data stream!");
-		}
+		return list.toArray(new String [0]);
 	}
 }

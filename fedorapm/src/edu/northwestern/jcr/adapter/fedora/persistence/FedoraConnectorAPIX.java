@@ -84,25 +84,21 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	 * Get a list of first-level objects in Fedora repository
 	 *
 	 */
-	public String [] listObjects()
+	public String [] listObjects(String pattern)
 	{
 		String [] resultFields = new String [] {"pid"};
 		FieldSearchQuery query = new FieldSearchQuery();
 		List<String> list = new ArrayList<String>();
 		String pid;
-		String [] children;
-		Map<String, Integer> map = new HashMap<String, Integer>();
 		int i;
 
-		children = listMembers(null);
-		i = 0;
-		for (String child : children) {
-			map.put(child, i);
-			i++;
+		if (pattern != null) {
+			query.setTerms(pattern);
+		}
+		else {
+			query.setTerms(searchPhrase);
 		}
 
-		query.setTerms(searchPhrase);
-		
 		try {
 			FieldSearchResult result =
 				fc.getAPIA().findObjects(resultFields, 
@@ -116,10 +112,7 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 					pid = o.getPid();
 					matchNum++;
 
-					if (map.get(pid) == null) {
-						// not a member of anything
-						list.add(pid);
-					}
+					list.add(pid);
 				}
 
 				if (result.getListSession() != null &&
@@ -192,7 +185,7 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	/**
 	 * Wrapper of getDatastreamDissemination in API-A.
 	 */
-	byte[] getDataStream(String pid, String dsID)
+	public byte[] getDataStream(String pid, String dsID)
 	{
 		MIMETypedStream ds = null;
 

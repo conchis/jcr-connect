@@ -47,6 +47,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
  * @author Xin Xiang
  */
 public class FedoraConnectorREST extends FedoraConnector {
+
 	/**
 	 * HTTP DELETE.
 	 * @param url String
@@ -76,36 +77,56 @@ public class FedoraConnectorREST extends FedoraConnector {
 	}
 
 	/**
+	 * HTTP POST.
+	 * @param url String
+	 * @ret status code
+	 */
+	private int httpPost(String url)
+	{
+		PostMethod postMethod = null;
+
+		try {
+			postMethod = new PostMethod(url);
+			postMethod.setDoAuthentication(true);
+			postMethod.getParams().setParameter("Connection", "Keep-Alive");
+			postMethod.setContentChunked(true);
+			fc.getHttpClient().executeMethod(postMethod);
+		
+			return postMethod.getStatusCode();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to post!");
+			
+			return -1;
+		} finally {
+			if (postMethod != null) {
+				postMethod.releaseConnection();
+			}
+		}
+	}
+
+	/**
 	 * Create a dummy Fedora object with default attributes
 	 */
 	public void createObject(String pid)
 	{
 		String url;
 		PostMethod postMethod = null;
+		int statusCode;
+
+		try {
+			pid = URLEncoder.encode(pid, "UTF-8");
+		} catch (Exception e) {
+
+		}
 
 		url = baseURL + "/objects/" + pid;
-		try {
-			System.out.println("ingesting " + pid);
-
-			postMethod = new PostMethod(url);
-			postMethod.setDoAuthentication(true);
-			postMethod.getParams().setParameter("Connection", "Keep-Alive");
-			postMethod.setContentChunked(true);
-			fc.getHttpClient().executeMethod(postMethod);
-
-			if (postMethod.getStatusCode() != SC_CREATED) {
-				System.err.println("status code: " + 
-								   postMethod.getStatusCode());
-				System.err.println("failed to insert digital object!");
-			};
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.err.println("failed to insert object!");
-		} finally {
-			if (postMethod != null) {
-				postMethod.releaseConnection();
-			}
-		}
+		System.out.println("ingesting " + pid);
+		statusCode = httpPost(url);
+		if (statusCode != SC_OK && statusCode != SC_CREATED) {
+			System.err.println("status code: " + 
+							   statusCode);
+		};
 	}
 
 	/**
@@ -116,6 +137,12 @@ public class FedoraConnectorREST extends FedoraConnector {
 	{
 		String url;
 		int statusCode;
+
+		try {
+			pid = URLEncoder.encode(pid, "UTF-8");
+		} catch (Exception e) {
+
+		}
 
 		url = baseURL + "/objects/" + pid;
 		statusCode = httpDelete(url);
@@ -128,10 +155,10 @@ public class FedoraConnectorREST extends FedoraConnector {
 
 	/**
 	 * Wrapper of findObjects in REST
-	 * Get a list of first-level objects in Fedora repository
+	 * Get a list of objects in Fedora repository
 	 *
 	 */
-	public String [] listObjects()
+	public String [] listObjects(String query)
 	{
 		String response = "";
 		String allResponses;
@@ -139,21 +166,12 @@ public class FedoraConnectorREST extends FedoraConnector {
 		Matcher matcher;
 		String line;
 		String pid;
-		int i;
-		String [] children;
-		Map<String, Integer> map = new HashMap<String, Integer>();
 		List<String> list = new ArrayList<String>();
         String sessionToken;
 
-		children = listMembers(null);
-		i = 0;
-		for (String child : children) {
-			map.put(child, i);
-			i++;
-		}
-
 		try {
-			response = fc.getResponseAsString("/objects?query=pid%7E*&maxResults=1024&resultFormat=xml&pid=true",
+			response = fc.getResponseAsString("/objects?query=pid%7E" + 
+											  query + "&maxResults=1024&resultFormat=xml&pid=true",
 											  true, false);
 		} catch (Exception e) {
 			return null;
@@ -165,7 +183,8 @@ public class FedoraConnectorREST extends FedoraConnector {
 											  response.indexOf("</token>"));
 
 			try {
-				response = fc.getResponseAsString("/objects?query=pid%7E*&maxResults=1024&resultFormat=xml&pid=true&sessionToken=" + sessionToken, true, false);
+				response = fc.getResponseAsString("/objects?query=pid%7E" +
+												  query + "&maxResults=1024&resultFormat=xml&pid=true&sessionToken=" + sessionToken, true, false);
 			} catch (Exception e) {
 				break;
 			}
@@ -179,10 +198,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		while (matcher.find()) {
 			line = matcher.group();
 			pid = line.substring(5, line.length() - 6);
-			if (map.get(pid) == null) {
-				// not a member of anything
-				list.add(pid);
-			}
+			list.add(pid);
 		}
 
 		return  (String []) list.toArray(new String[0]);
@@ -206,7 +222,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		try {
 			response = 
 				fc.getResponseAsString(
-									   String.format("/objects/%s/datastreams.xml", pid), true, false);
+									   String.format("/objects/%s/datastreams.xml", URLEncoder.encode(pid, "UTF-8")), true, false);
 		} catch (Exception e) {
 			return null;
 		}
@@ -259,7 +275,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 	/**
 	 * Wrapper of getDatastreamDissemination in REST.
 	 */
-	byte[] getDataStream(String pid, String dsID)
+	public byte[] getDataStream(String pid, String dsID)
 	{
 		HttpInputStream inputStream;
 		ReadableByteChannel channel;
@@ -269,7 +285,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		int length = 0;
         
 		try {
-			inputStream = fc.get(String.format("/objects/%s/datastreams/%s/content", pid, dsID), true, false);
+			inputStream = fc.get(String.format("/objects/%s/datastreams/%s/content", URLEncoder.encode(pid, "UTF-8"), dsID), true, false);
 		} catch (Exception e) {
 			return null;
 		}
@@ -309,7 +325,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		Matcher matcher;
 
 		try {
-			response = fc.getResponseAsString(String.format("/objects?query=pid%%7E%s&resultFormat=xml&pid=true", pid),
+			response = fc.getResponseAsString(String.format("/objects?query=pid%%7E%s&resultFormat=xml&pid=true", URLEncoder.encode(pid, "UTF-8")),
 											  true, false);
 		} catch (Exception e) {
 			return false;
@@ -339,7 +355,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		try {
 			response = 
 				fc.getResponseAsString(
-									   String.format("/objects/%s/datastreams.xml", pid), true, false);
+									   String.format("/objects/%s/datastreams.xml", URLEncoder.encode(pid, "UTF-8")), true, false);
 		} catch (Exception e) {
 			return false;
 		}
@@ -376,7 +392,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 							  String mimeType, String fileName)
 	{
 		String url;
-		PostMethod postMethod = null;
+		int statusCode;
 
 		try {
 			String dsLocation = fc.uploadFile(new File(fileName));
@@ -387,29 +403,21 @@ public class FedoraConnectorREST extends FedoraConnector {
 				mimeType = "application/octet-stream";
 			}
 
-			url = baseURL + "/objects/" + pid + "/datastreams/" + dsID +
+			url = baseURL + "/objects/" + URLEncoder.encode(pid, "UTF-8") + 
+				"/datastreams/" + dsID +
 				"?controlGroup=M&dsLabel=" + dsID + 
 				"&mimeType=" + URLEncoder.encode(mimeType, "UTF-8") + 
 				"&dsLocation=" + URLEncoder.encode(dsLocation, "UTF-8");
 
-			postMethod = new PostMethod(url);
-			postMethod.setDoAuthentication(true);
-			postMethod.getParams().setParameter("Connection", "Keep-Alive");
-			postMethod.setContentChunked(true);
-			fc.getHttpClient().executeMethod(postMethod);
+			statusCode = httpPost(url);
 
-			if (postMethod.getStatusCode() != SC_CREATED) {
-				System.err.println("status code: " + 
-								   postMethod.getStatusCode());
+			if (statusCode != SC_CREATED) {
+				System.err.println("status code: " + statusCode);
 				System.err.println("failed to add data stream!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("failed to add data stream!");
-		} finally {
-			if (postMethod != null) {
-				postMethod.releaseConnection();
-			}
 		}
 	}
 
@@ -422,7 +430,13 @@ public class FedoraConnectorREST extends FedoraConnector {
 		String url;
 		int statusCode;
 
-		url = baseURL + "/objects/" + pid + "/datastreams/" + dsID;
+		try {
+			pid = URLEncoder.encode(pid, "UTF-8");
+		} catch (Exception e) {
+
+		}
+
+		url = baseURL + "/objects/" + pid +	"/datastreams/" + dsID;
 		statusCode = httpDelete(url);
 		if (statusCode != SC_OK) {
 			System.err.println("status code: " + 
