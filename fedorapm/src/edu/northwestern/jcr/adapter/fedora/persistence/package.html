@@ -1,0 +1,36 @@
+<body>
+
+<p>Implements the persistence interface for Fedora repositories in order
+to leverage existing Apache Jackrabbit code for the JCR adapter.
+
+<p>In current implementation the JCR adapter for Fedora is a Jackrabbit 
+persistence manager that implements the 
+<a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/persistence/PersistenceManager.html">org.apache.jackrabbit.core.persistence.PersistenceManager</a> interface. 
+It translates all node/property storing and loading requests to API calls 
+(REST or API-A/API-M) made to the underlying Fedora repository.</p>
+
+There are pros and cons of this implementation:
+<p>Pros<br>
+This implementation allowed a rapid development of the JCR connector for 
+Fedora, reusing the majority of existing Jackrabbit code. If correctly 
+implemented, it should work with any other software that currently 
+connects to Jackrabbit, for example, Apache Sling.</p>
+
+<p>Cons<br>
+A persistence manager in Jackrabbit is designed to transmit data between 
+memory space and persistent storage (disk file, database, etc.) and is not 
+supposed to be "smart" in the sense of interpreting data. The Fedora 
+persistence manager, however, will need to interpret objects hierarchy 
+in a Fedora repository and artificially create data structure 
+(parent-child relationships in the JCR tree, fictional root node, etc.) 
+in order to appear like a normal persistence manager. This might lead to 
+a difficult implementation.</p>
+
+<p> For a detailed document on persistence manager configuration
+in Jackrabbit, please refer to <a href="http://wiki.apache.org/jackrabbit/PersistenceManagerFAQ">Persistence Manager (PM) FAQ on the Jackrabbit Wiki</a>.
+
+<p> Also defined in this package is the Fedora connector classes
+that wrap API-A/API-M or REST API calls to the underlying repository
+that perform different reading and writing tasks.
+
+</body>

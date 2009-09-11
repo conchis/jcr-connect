@@ -1,18 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2009 Northwestern University
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Educational Community License, Version 2.0 
+ * (the "License"); you may not use this file except in compliance with 
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.osedu.org/licenses/ECL-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 package edu.northwestern.jcr.adapter.fedora.persistence;
 
@@ -63,17 +62,69 @@ import java.io.FileInputStream;
 import java.io.ByteArrayInputStream;
 
 /**
- * <code>FedoraPersistenceManager</code> is a Fedora-based
- * <code>PersistenceManager</code> that persists <code>ItemState</code>
- * and <code>NodeReferences</code> objects using Fedora API-A and API-M.
+ * <p><code>FedoraPersistenceManager</code> is a Fedora-based
+ * persistence manager that persists <a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/state/ItemState.html">ItemState</a>
+ * and <a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/state/NodeReferences.html">NodeReferences</a> objects using Fedora REST API or
+ * API-A/API-M.</p>
+ *
+ * <p>The persistence manager implements the 
+ * <a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/persistence/PersistenceManager.html">org.apache.jackrabbit.core.persistence.PersistenceManager</a> interface. 
+ * It translates all node/property storing and loading requests to API calls 
+ * (REST or API-A/API-M) made to the underlying Fedora repository.</p>
+ * 
+ * <p>In the default workspace configuration file 
+ * <code>jackrabbit/workspaces/default/workspace.xml</code> this Fedora 
+ * persistence manager
+ * is set as the persistence manager used by the Jackrabbit repository
+ * (in place of the default <code>ObjectPersistenceManager</code>).
+ *
+ * <p> The backbone of this persistence manager consists of the following
+ * methods defined in the Jackrabbit persistence manager interface:
+ * <ul>
+ * <li>load()<br>
+ * Loads persisted node/property data into memory.
+ * <li>store()<br>
+ * Persists node/property data to the underlying repository.
+ * <li>exists()<br>
+ * Tests if the node/property exists in the underlying repository.
+ * <li>destroy()<br>
+ * Permanently deletes the node/property from the underlying repository.
+ * </ul>
+ * </p>
+ *
+ * <p> For a detailed document on persistence manager configuration
+ * in Jackrabbit, please refer to <a href="http://wiki.apache.org/jackrabbit/PersistenceManagerFAQ">Persistence Manager (PM) FAQ on the Jackrabbit Wiki</a>.
+ *
+ * <p>In a Fedora repository PIDs are unique identifiers of objects while 
+ * in JCR multiple nodes can have the same name. To map the JCR paths of 
+ * different nodes to different PIDs, the following format is used:
+ *
+ * <p><code>slingX:Y%57JCR_Name</code>
+ *
+ * <p>where X represents the level of the node in the JCR tree and Y is 
+ * the hash code for the full JCR path of the node.
+ *
+ * <p>To map the PID of an existing Fedora object to the name of a JCR 
+ * node some rules are applied:
+ * <ul>
+ * <li>Colon (:) is replaced by underscore (_) so as not to be confused 
+ * with the namespace delimiter.
+ * <li>Underscore (_) is replaced by space ( ) and two underscores (__) in 
+ * PID represent a single underscore (_) in JCR path.
+ * </ul>
+ * For example, the node with path "/a" will be mapped to a Fedora object 
+ * with PID "sling1:1554%57a", while an existing Fedora object with PID 
+ * "test:example" will be named "test_example" from the JCR perspective. 
  *
  * @author Xin Xiang
  */
 public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
+	/** log4j logger */
 	private static Logger log = 
 		LoggerFactory.getLogger(FedoraPersistenceManager.class);
 
+	/** initialization flag */
 	private boolean initialized;
 
 	/** map UUID of the digital object node to JCR path */
@@ -156,7 +207,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 	// ---------------------------------< PersistenceManager >
 	/**
-	 * {@inheritDoc}
+	 * Initializes the persistence manager. Not used.
 	 */
 	public void init(PMContext context) throws Exception {
 		if (initialized) {
@@ -169,7 +220,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Closes the persistence manager. Not used.
 	 */
 	public synchronized void close() throws Exception {
 		if (!initialized) {
@@ -180,7 +231,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Replace ":" with "_" in Fedora pid
+	 * Converts a Fedora pid to relative JCR path.
+	 *
+	 * @param pid pid in Fedora
+	 * @return relative path in JCR
 	 */
 	public static String escapePID(String pid)
 	{
@@ -222,9 +276,12 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Restore Fedora pid
+	 * Restores Fedora pid from JCR path for native Fedora objects.
+	 * 
+	 * @param id relative JCR path
+	 * @return Fedora PID
 	 */
-	private String unescapePID(String id)
+	public static String unescapePID(String id)
 	{
 		String [] parts = id.split("__");
 		String pid = "";
@@ -252,8 +309,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 
 	/** 
-	 * Convert JCR path name to Fedora pid for sling objects
-	 * return xxxxx in sling:xxxxx
+	 * Converts JCR path name to Fedora pid for sling objects (sling prefix
+	 * is not included).
+	 *
+	 * @param id relative JCR path
+	 * @return the part after : of the Fedora pid
 	 */
 	public static String unescapePIDSling(String id)
 	{
@@ -265,6 +325,12 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		return pid;
 	}
 
+	/**
+	 * Returns the Fedora pid of a JCR node.
+	 *
+	 * @param nodeID String UUID of the JCR node
+	 * @return pid of the corresponding Fedora object
+	 */
 	private String getPID(String nodeID)
 	{
 		String pid;
@@ -275,13 +341,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			return null;
 		}
 
-		System.out.println("escaped pid: " + pid);
+		log.debug("escaped pid: " + pid);
 
 		// recover Fedora PID from escaped relative path
-		// if (slingNodeList.contains(nodeID) || ! pid.contains("_")) {
-			// must be a sling folder if the name does not contain underscore
 		if (! fedoraNodeList.contains(nodeID)) {
-			// pid = uuidMap.get(nodeID).replace("/", "%57");
 			// attach the hash code of the full path to distinguish
 			// nodes of the same name at the same level
 			pid = uuidMap.get(nodeID).hashCode() + "%57" + pid;
@@ -299,7 +362,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Recover JCR path from Fedora data stream ID
+	 * Converts Fedora data stream ID to relative JCR path.
+	 *
+	 * @param dsID id of the data stream
+	 * @return relative JCR path of the corresponding node
 	 */
 	private String escapeDSID(String dsID)
 	{
@@ -322,11 +388,18 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		// test_.jpg
 	
 		// remove "DS" prefix
-		return id.substring(2);
+		if (id.startsWith("DS")) {
+			id = id.substring(2);
+		}
+
+		return id;
 	}
 
 	/**
-	 * Replace "." in JCR path with "_" to form a valid Fedora data stream ID
+	 * Converts relative JCR path to Fedora data stream ID.
+	 *
+	 * @param dsID relative JCR path
+	 * @return id of the corresponding data stream
 	 */
 	private String unescapeDSID(String dsID)
 	{
@@ -340,7 +413,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Associate the relative path of a node with its uuid
+	 * Associates the relative path of a node with its uuid.
+	 *
+	 * @param id string UUID of the node
+	 * @param relativePath relative JCR path of the node
+	 * @param parentID string UUID of the parent node
 	 */
 	private void putJCRPath(String id, String relativePath, String parentID)
 	{
@@ -367,7 +444,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Get the relative path of a node given its uuid
+	 * Gets the relative JCR path of a node given its uuid.
+	 *
+	 * @param uuid string UUID of the node
+	 * @return relative JCR path of the node
 	 */
 	private String getJCRPath(String uuid)
 	{
@@ -379,8 +459,8 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			return null;
 		}
 
-		System.out.println("uuid: " + uuid);
-		System.out.println("full path: " + fullPath);
+		log.debug("uuid: " + uuid);
+		log.debug("full path: " + fullPath);
 
 		// return empty string for root node
 		return fullPath.substring(fullPath.lastIndexOf('/') + 1);
@@ -406,6 +486,8 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 	/**
 	 * Creates a map from uuid of its children to relative path.
+	 *
+	 * @param uuid string UUID of the node
 	 */
 	private void getChildrenMap(String uuid)
 	{
@@ -430,7 +512,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Get the UUID of the child given its name
+	 * Gets the UUID of the child node given its name.
+	 *
+	 * @param name name of the child node
+	 * @return string UUID of the child node
 	 */
 	private String getChildUUID(String name)
 	{
@@ -438,7 +523,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Clean the HashMap.
+	 * Cleans the map from uuid of children to relative path.
 	 */
 	private void cleanChildrenMap()
 	{
@@ -446,7 +531,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Get the level of a node in JCR hieararchy given its uuid
+	 * Gets the level of a node in JCR hieararchy given its uuid.
+	 *
+	 * @param uuid string UUID of the node
+	 * @return level of the node in the JCR tree
 	 */
 	private int getJCRLevel(String uuid)
 	{
@@ -458,7 +546,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Get parent node ID of a digital object node
+	 * Gets parent node ID of a digital object node
+	 *
+	 * @param id string UUID of the node
+	 * @return string UUID of the parent node
 	 */
 	private String getParentID(String id)
 	{
@@ -466,7 +557,12 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Test if the digital object represents a directory created in Sling
+	 * Tests if the digital object represents an object created in Sling
+	 * through the JCR adapter (not a native Fedora object), or if the
+	 * pid starts with "sling\\d+:".
+	 *
+	 * @param pid pid of the object
+	 * @return whether it is an object created through the JCR adapter
 	 */
 	private static boolean isSlingNode(String pid)
 	{
@@ -480,8 +576,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Translate property URI to internal property name, for example,
-	 * {http://www.jcp.org/jcr/1.0}data
+	 * Translates property URI used in Fedora to internal JCR property name, 
+	 * for example, {http://www.jcp.org/jcr/1.0}data.
+	 *
+	 * @param uri URI of the property
+	 * @return JCR property name
 	 */
 	private String getPropertyName(String uri)
 	{
@@ -500,8 +599,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Translate internal property name to property URI, for example,
+	 * Translates internal JCR property name to property URI, for example,
 	 * http://www.jcp.org/jcr/1.0/data
+	 *
+	 * @param name JCR property name
+	 * @return URI of the property
 	 */
 	private String getPropertyURI(String name)
 	{
@@ -522,10 +624,13 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Translate internal property type 
-	 * {http://www.jcp.org/jcr/nt/1.0}unstructured
-	 * to JCR property type
-	 * nt:unstructured
+	 * Translates internal property type 
+	 * (for example {http://www.jcp.org/jcr/nt/1.0}unstructured)
+	 * to JCR property type (for example
+	 * nt:unstructured)
+	 *
+	 * @param name internal property type
+	 * @return JCR property type
 	 */
 	private String getPropertyType(String name)
 	{
@@ -540,7 +645,9 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Set the node state of nodes representing Fedora digital object.
+	 * Sets the node state of a node representing a Fedora digital object.
+	 *
+	 * @param state the <code>NodeState</code> object to be persisted
 	 */
 	private void setDONodeState(NodeState state)
 	{
@@ -567,12 +674,12 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		state.setModCount((short) 0);			
 		state.addPropertyName(NameFactoryImpl.getInstance().create("{http://www.jcp.org/jcr/1.0}primaryType"));
 
-		System.out.println("list datastreams of " + pid);
+		log.debug("list datastreams of " + pid);
 		dsList = fc.listDataStreams(pid);
 
 		if (dsList == null) {
 			// policy???
-			System.out.println("no datastream!");
+			log.debug("no datastream!");
 			return;
 		}
 
@@ -615,8 +722,8 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			state.addChildNodeEntry(name, new NodeId(uuid));
 		}
 
-		System.out.println("list members of " + pid);
-		memberList = fc.listMembers(pid);
+		log.debug("list members of " + pid);
+		memberList = fc.listMembers(pid, null);
 
 		if (getJCRPath(nodeID) != null) {
 			// create children map
@@ -636,10 +743,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 					String [] parts = propertyValue.split("%57");
 					// type, number of values, definitionID, modCount
 					propertyValue = parts[4];
-					// int index = propertyValue.indexOf("%57");
-					// if (index >= 0) {
-					// 	propertyValue = propertyValue.substring(index + 3);
-					// }
 							
 					uuid = new UUID(propertyValue);
 				}
@@ -663,7 +766,13 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				escapedPID = escapePID(memberPID);
 				putJCRPath(uuid.toString(), escapedPID, nodeID);
 
-				System.out.println("adding child node: " + escapedPID);
+				log.debug("adding child node: " + escapedPID);
+
+				if (escapedPID.equals("xmltext")) {
+					// needs a better way to handle
+					// the jcr name space for pid
+					namespaceURI = "http://www.jcp.org/jcr/1.0";
+				}
 
 				// name
 				name = NameFactoryImpl.getInstance().create("{" + namespaceURI +
@@ -675,7 +784,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			cleanChildrenMap();
 		}
 
-		System.out.println("list properties of " + pid);
+		log.debug("list properties of " + pid);
 		propertyList = fc.listProperties(pid);
 
 		if (propertyList == null) {
@@ -689,8 +798,8 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			}
 			if (propertyURI.equals("http://sling.apache.org/jcr/sling/1.0/MixinTypes")) {
 				// reserved for mixin types
-				
-				String s = fc.getProperty(pid, 
+				String s = 
+					fc.getProperty(pid, 
 								   "http://sling.apache.org/jcr/sling/1.0/MixinTypes");
 				String [] parts = s.split("%57");
 				int numTypes= Integer.parseInt(parts[0].replaceAll("\"", ""));
@@ -709,7 +818,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Set the node state of nodes representing Fedora data streams.
+	 * Sets the node state of a node representing a Fedora data stream.
+	 *
+	 * @param state the <code>NodeState</code> object to be persisted
+	 * @param parentID string UUID of the parent node
 	 */
 	private void setDSNodeState(NodeState state, String parentID)
 	{
@@ -754,8 +866,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * Set the node state of jcr:content nodes representing content of
-	 * Fedora data streams.
+	 * Sets the node state of a jcr:content node representing content of
+	 * a Fedora data stream.
+	 *
+	 * @param state the <code>NodeState</code> object to be persisted
+	 * @param parentID string UUID of the parent node
 	 */
 	private void setContentNodeState(NodeState state, String parentID)
 	{
@@ -773,7 +888,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Loads the specified node into a <code>NodeState</code> object.
+	 *
+	 * @param id the <code>NodeId</code> object representing the node
+	 * @return the <code>NodeState</code> object
 	 */
 	public synchronized NodeState load(NodeId id)
 			throws NoSuchItemStateException, ItemStateException {
@@ -786,7 +904,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		}
 
 		NodeState state = createNew(id);
-		System.out.println("loading node: " + state.getNodeId());
+		log.info("loading node: " + state.getNodeId());
 		String nodeID = state.getNodeId().toString();
 
 
@@ -843,7 +961,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			state.addChildNodeEntry(name, new NodeId(new UUID("deadbeef-cafe-babe-cafe-babecafebabe")));
 
 			// get the list of all first-level objects
-			pidList = fc.listObjectsRI();
+			pidList = fc.listObjectsRI(null);
 
 			if (getJCRPath(nodeID) != null) {
 				// create children map
@@ -864,10 +982,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 					String [] parts = propertyValue.split("%57");
 					// type, number of values, definitionID, modCount
 					propertyValue = parts[4];
-					// int index = propertyValue.indexOf("%57");
-					// if (index >= 0) {
-					// 	propertyValue = propertyValue.substring(index + 3);
-					// }
 
 					uuid = new UUID(propertyValue);
 				}
@@ -878,12 +992,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				else {
 					uuid = UUID.randomUUID();
 				}
-
-				// add to sling node list
-				// if (isSlingNode(pid) &&
-				// 	! slingNodeList.contains(uuid.toString())) {
-				// 	slingNodeList.add(uuid.toString());
-				// }
 
 				String namespaceURI = "";
 
@@ -911,7 +1019,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			String path = getJCRPath(nodeID);
 			
 			if (path != null) {
-				System.out.println("JCR path: " + path);
+				log.debug("JCR path: " + path);
 				// a digital object node
 				setDONodeState(state);
 			}
@@ -938,13 +1046,16 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			}
 		}
 		
-		System.out.println("node loaded");
+		log.info("node loaded");
 		
 		return state;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Loads the specified property into a <code>PropertyState</code> object.
+	 *
+	 * @param id the <code>PropertyId</code> object representing the property
+	 * @return the <code>PropertyState</code> object
 	 */
 	public synchronized PropertyState load(PropertyId id)
 			throws NoSuchItemStateException, ItemStateException 
@@ -965,7 +1076,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			throw new IllegalStateException("not initialized");
 		}
 
-		System.out.println("loading property: " + id.toString());
+		log.debug("loading property: " + id.toString());
 
 		state = createNew(id);
 
@@ -1010,7 +1121,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			values[0] = InternalValue.valueOf("rep:root", 1);
 			state.setValues(values);
 
-			System.out.println("property loaded");
+			log.debug("property loaded");
 			
 			return state;
 		}
@@ -1066,7 +1177,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 			state.setValues(values);
 
-			System.out.println("property loaded");
+			log.debug("property loaded");
 			
 			return state;
 		}
@@ -1084,11 +1195,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		dataStream = DataStream.getDSFromUUID(dsNodeID);
 
 		if (dataStream == null) {
-			System.out.println("");
-			System.out.println("property: " + propertyName);
-			System.out.println("DO node: " + nodeID);
-			System.out.println("DS node: " + dsNodeID);
-			System.out.println("");
+			log.debug("");
+			log.debug("property: " + propertyName);
+			log.debug("DO node: " + nodeID);
+			log.debug("DS node: " + dsNodeID);
+			log.debug("");
 
 		}		
 
@@ -1153,13 +1264,18 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 		state.setValues(values);
 
-		System.out.println("property loaded");
+		log.debug("property loaded");
 
 		return state;
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Loads the specified node reference into a <code>NodeReferences</code> 
+	 * object.
+	 *
+	 * @param id the <code>NodeReferencesId</code> object representing the 
+	 * node reference
+	 * @return the <code>NodeReferences</code> object
 	 */
 	public synchronized NodeReferences load(NodeReferencesId id)
 			throws NoSuchItemStateException, ItemStateException {
@@ -1196,13 +1312,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		return refs;
 	}
 
-	// private BufferedWriter getWriter(String nodeID)
-	// {
-	// 	return null;
-	// }
-
 	/**
-	 * {@inheritDoc}
+	 * Persists the <code>NodeState</code> object.
+	 *
+	 * @param state the <code>NodeState</code> object
 	 */
 	protected void store(NodeState state) throws ItemStateException {
 		if (!initialized) {
@@ -1225,17 +1338,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
 				String uuid = entry.getId().toString();
 				String escapedPID = entry.getName().toString();
-				// if (slingNodeList.contains(uuid) ||
-				// 	// must be a sling folder if the name contains space
-				// 	escapedPID.contains(" ")) {
-				// if (! fedoraNodeList.contains(uuid)) {
-				// 	pid = unescapePIDSling(escapedPID);
-				// }
-				// else {
-				// 	pid = unescapePID(escapedPID);
-				// }
 
-				// putJCRPath(uuid, pid.substring(pid.indexOf("}") + 1), null);
 				putJCRPath(uuid, escapedPID.substring(escapedPID.indexOf("}") 
 													  + 1), null);
 
@@ -1247,12 +1350,12 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				}
 			}
 
-			System.out.println("storing root node");
+			log.debug("storing root node");
 
 			return;
 		}
 
-		System.out.println("storing node type " + nodeType + 
+		log.debug("storing node type " + nodeType + 
 						   " (" + nodeID + ")");
 
 		// non-root and non-system
@@ -1268,13 +1371,13 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			// update data stream map
 			// child nodes (list of name/uuid pairs)
 			Collection c = state.getChildNodeEntries();
-			System.out.println("Child nodes: " + c.size()); // count
+			log.debug("Child nodes: " + c.size()); // count
 			for (Iterator iter = c.iterator(); iter.hasNext();) {
 				ChildNodeEntry entry = (ChildNodeEntry) iter.next();
 				String uuid = entry.getId().toString();
 				String dsID = entry.getName().toString();
 
-				System.out.println("child " + dsID);
+				log.debug("child " + dsID);
 				if (getJCRPath(uuid) == null) {
 					if (dsMap.get(uuid) != null) {
 						// data stream node
@@ -1292,7 +1395,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 			pid = getPID(nodeID);
 
-			System.out.println("pid: " + pid);
+			log.debug("pid: " + pid);
 
 			if (pid == null) {
 				// not in map yet, add to the pending node list
@@ -1336,7 +1439,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 						fc.createObject(cpid);
 					}
 
-					System.out.println("add relationship " + pid + ", " + cpid);
+					log.debug("add relationship " + pid + ", " + cpid);
 					fc.addMember(pid, cpid);
 				}
 			}
@@ -1383,7 +1486,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				}
 			}
 
-			System.out.println("nt:file node: " + nodeID);
+			log.debug("nt:file node: " + nodeID);
 
 			if (dsMap.get(nodeID) == null) {
 				// not hooked up with its parent yet
@@ -1435,29 +1538,24 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			for (Iterator<PropertyState> it = pendingProperties.iterator();
 				 it.hasNext();) {
 				PropertyState st = it.next();
-				System.out.println("flushing: " + st.getId().toString());
-				System.out.println("DS node ID: " + contentMap.get(nodeID));
-				System.out.println("DO node ID: " + dsMap.get(contentMap.get(nodeID)));
+				log.debug("flushing: " + st.getId().toString());
+				log.debug("DS node ID: " + contentMap.get(nodeID));
+				log.debug("DO node ID: " + dsMap.get(contentMap.get(nodeID)));
 				if (st.getParentId().toString().equals(nodeID)) {
-					System.out.println("Storing pending property: " + 
+					log.debug("Storing pending property: " + 
 									   st.getId().toString());
 					store(st);
 					
-					// try {
 					it.remove();
-					// } catch (Exception e) {
-					// 	System.err.println("\n");
-					// 	System.err.println("Exception thrown while storing " +
-					// 					   st.getId().toString());
-					// 	System.err.println("\n");
-					// }
 				}
 			}
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Persists the <code>PropertyState</code> object.
+	 *
+	 * @param state the <code>PropertyState</code> object
 	 */
 	protected void store(PropertyState state) throws ItemStateException {
 		if (!initialized) {
@@ -1478,15 +1576,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		// pid = uuidMap.get(nodeID);
 		propertyName = id.toString().substring(index + 1);
 
-		// if (propertyName.equals("{http://www.jcp.org/jcr/1.0}mixinTypes")
-		// 	// propertyName.equals("{http://www.jcp.org/jcr/1.0}lockOwner") ||
-		// 	// propertyName.equals("{http://www.jcp.org/jcr/1.0}lockIsDeep")
-		// 	) {
-		// 	// ignore mixinTypes
-		// 	return;
-		// }
-
-		System.out.println("storing property: " + propertyName);
+		log.debug("storing property: " + propertyName);
 
 		if (values.length < 1) {
 			return;
@@ -1500,7 +1590,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		if (getJCRPath(nodeID) != null) {
 			// digital object node
 			pid = getPID(nodeID);
-			System.out.println("pid: " + pid);
+			log.debug("pid: " + pid);
 			propertyURI = getPropertyURI(propertyName);
 			if (fc.existsProperty(pid, propertyURI)) {
 				fc.deleteProperty(pid, propertyURI);
@@ -1528,15 +1618,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			return;
 		}
 
-		// if (!propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding") &&
-		// 	!propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType") &&
-		// 	!propertyName.equals("{http://www.jcp.org/jcr/1.0}data") &&
-		// 	!propertyName.equals("{http://www.jcp.org/jcr/1.0}lastModified")) {
-		// 	// ignore other properties
-		// 	System.out.println("ignoring property: " + propertyName);
-		// 	return;
-		// }
-
 		if (dsMap.get(nodeID) != null) {
 			// nt:file (data stream) node
 			return;
@@ -1545,27 +1626,17 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		// jcr:content node
 		pid = getPID(dsMap.get(contentMap.get(nodeID)));
 
-		System.out.println("pid: " + pid);
+		log.debug("pid: " + pid);
 
 		// non-root and non-system
 		if (pid == null) {
 			// not in map yet
-			System.out.println("should not happen");
+			log.debug("should not happen");
 			pendingProperties.add(state);
 			
 			return;
 		}
 
-		// if (pid.indexOf(":") < 0) {
-		// 	pid = "sling:" + pid;
-		// }
-
-		// if (propertyName.equals("{}DC")) {
-		// 	System.out.println("updating DC stream in " + pid);
-		// 
-		// 	fc.modifyDCDataStream(pid, values[0].toString().getBytes());
-		// }
-		// else 
 		if (propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding")) {
 
 		}
@@ -1592,21 +1663,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 				if (dsID.startsWith("._")) {
 					// ignore
-					System.out.println("ignore data stream " + dsID);
+					log.debug("ignore data stream " + dsID);
 					return;
 				}
 
-				if (pid.equals("sling2:-1265638226%57canberra")) {
-					System.out.println("/////////////////////////////////////");
-					System.out.println("/////////////////////////////////////");
-					System.out.println("DS ID: " + dsID);
-					System.out.println("node ID: " + nodeID);
-					System.out.println("DS node ID: " + contentMap.get(nodeID));
-					System.out.println("/////////////////////////////////////");
-					System.out.println("/////////////////////////////////////");
-				}
-
-				System.out.println("adding data stream " + dsID);
+				log.debug("adding data stream " + dsID);
 
 				dsID = unescapeDSID(dsID);
 				mimeType = 
@@ -1615,11 +1676,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 				if (fc.existsDataStream(pid, dsID)) {
 					// do not overwrite existing data stream
 					// return;
-					System.out.println("deleting data stream: " + dsID);
+					log.debug("deleting data stream: " + dsID);
 					fc.deleteDataStream(pid, dsID);
 				}
 
-				// fc.addDataStream(pid, propertyName, 
 				fc.addDataStream(pid, 
 								 dsID,
 								 mimeType,
@@ -1636,7 +1696,9 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Persists the <code>NodeReferences</code> object.
+	 *
+	 * @param refs the <code>NodeReferences</code> object
 	 */
 	protected void store(NodeReferences refs) throws ItemStateException {
 		String pid, nodeID;
@@ -1647,10 +1709,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		if (!initialized) {
 			throw new IllegalStateException("not initialized");
 		}
-
-		System.out.println("//////////////////////////////");
-		System.out.println(refs.getId());
-		System.out.println("//////////////////////////////");
 
 		// target node ID
 		nodeID = refs.getId().toString();
@@ -1677,7 +1735,9 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Destroys a node.
+	 *
+	 * @param state the <code>NodeState</code> object
 	 */
 	protected void destroy(NodeState state) throws ItemStateException {
 		String pid;
@@ -1689,7 +1749,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		}
 
 		// to be implemented
-		System.out.println("destroying node: " + nodeID);
+		log.debug("destroying node: " + nodeID);
 
 		// non-root and non-system
 		if (nodeType.equals("{http://www.jcp.org/jcr/nt/1.0}unstructured") ||
@@ -1712,7 +1772,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 			// delete from Fedora repository if it exists
 			if (fc.existsObject(pid)) {
-				System.out.println("deleting digital object: " + pid);
+				log.debug("deleting digital object: " + pid);
 				fc.deleteObject(pid);
 			}
 		}
@@ -1726,7 +1786,9 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Destroys a property.
+	 *
+	 * @param state the <code>PropertyState</code> object
 	 */
 	protected void destroy(PropertyState state) throws ItemStateException {
 		if (!initialized) {
@@ -1745,24 +1807,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		// pid = uuidMap.get(nodeID);
 		propertyName = id.toString().substring(index + 1);
 
-		// if (!propertyName.equals("{http://www.jcp.org/jcr/1.0}encoding") &&
-		// 	!propertyName.equals("{http://www.jcp.org/jcr/1.0}mimeType") &&
-		// 	!propertyName.equals("{http://www.jcp.org/jcr/1.0}data") &&
-		// 	!propertyName.equals("{http://www.jcp.org/jcr/1.0}lastModified")) {
-		// 	// ignore other properties
-		// 	System.out.println("ignoring property: " + propertyName);
-		// 	return;
-		// }
-
-		// if (propertyName.equals("{http://www.jcp.org/jcr/1.0}mixinTypes")
-		// 	// propertyName.equals("{http://www.jcp.org/jcr/1.0}lockOwner") ||
-		// 	// propertyName.equals("{http://www.jcp.org/jcr/1.0}lockIsDeep")
-		// 	) {
-		// 	// ignore mixinTypes
-		// 	return;
-		// }
-
-		System.out.println("destroying property: " + propertyName);
+		log.debug("destroying property: " + propertyName);
 
 		if (getJCRPath(nodeID) != null) {
 			// digital object node
@@ -1785,14 +1830,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			// not in map yet
 			// should not happen
 			// pendingProperties.add(state);
-			System.out.println("null pid!!!");
+			log.debug("null pid!!!");
 			
 			return;
 		}
-
-		// if (pid.indexOf(":") < 0) {
-		// 	pid = "sling:" + pid;
-		// }
 
 		if (propertyName.equals("{http://www.jcp.org/jcr/1.0}data")) {
 			dsID = DataStream.getDSFromUUID(contentMap.get(nodeID)).id;
@@ -1800,7 +1841,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 			if (dsID.startsWith("._")) {
 				// ignore
-				System.out.println("ignore data stream " + dsID);
+				log.debug("ignore data stream " + dsID);
 				return;
 			}
 
@@ -1814,17 +1855,19 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 			try {
 				if (fc.existsDataStream(pid, dsID)) {
-					System.out.println("deleting data stream: " + dsID);
+					log.debug("deleting data stream: " + dsID);
 					fc.deleteDataStream(pid, dsID);
 				}
 			} catch (Exception e) {
-
+				log.error("error deleting data stream " + dsID, e);
 			}
 		}
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Destroys a node reference.
+	 *
+	 * @param refs the <code>NodeReferences</code> object
 	 */
 	protected void destroy(NodeReferences refs) throws ItemStateException {
 		if (!initialized) {
@@ -1835,7 +1878,10 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Tests if a property exists.
+	 *
+	 * @param id the <code>PropertyId</code> object that represents the property
+	 * @return whether the property exists
 	 */
 	public synchronized boolean exists(PropertyId id) throws ItemStateException
 	{
@@ -1847,7 +1893,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			throw new IllegalStateException("not initialized");
 		}
 
-		System.out.println("check property existence: " + id.toString());
+		log.debug("check property existence: " + id.toString());
 
 		index = id.toString().indexOf("/");
 		nodeID = id.toString().substring(0, index);
@@ -1858,14 +1904,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			// reserved for references
 			return false;
 		}
-
-		// if (propertyName.equals("{http://www.jcp.org/jcr/1.0}mixinTypes")
-		// 	// propertyName.equals("{http://www.jcp.org/jcr/1.0}lockOwner") ||
-		// 	// propertyName.equals("{http://www.jcp.org/jcr/1.0}lockIsDeep")
-		// 	) {
-		// 	// ignore mixinTypes
-		// 	return false;
-		// }
 
 		if (contentMap.get(nodeID) != null) {
 			// jcr:content node
@@ -1905,14 +1943,17 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Tests if a node exists.
+	 *
+	 * @param id the <code>NodeId</code> object that represents the node
+	 * @return whether the nodes exists
 	 */
 	public synchronized boolean exists(NodeId id) throws ItemStateException {
 		if (!initialized) {
 			throw new IllegalStateException("not initialized");
 		}
 
-		System.out.println("check node existence: " + id.toString());
+		log.info("check node existence: " + id.toString());
 
 		if (id.toString().equals(JR_ROOT_ID) ||
 			id.toString().equals(JR_SYSTEM_ID) ) {
@@ -1934,7 +1975,11 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Tests if a node reference exists.
+	 *
+	 * @param id the <code>NodeReferencesId</code> object that represents the 
+	 * node reference
+	 * @return whether the node reference exists
 	 */
 	public synchronized boolean exists(NodeReferencesId id)
 			throws ItemStateException {
@@ -1944,8 +1989,6 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 		if (!initialized) {
 			throw new IllegalStateException("not initialized");
 		}
-
-		// to be implemented
 
 		// target node ID
 		nodeID = id.toString();

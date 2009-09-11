@@ -1,0 +1,22 @@
+<body>
+
+<p>Implements a <a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/query/AbstractQueryHandler.html">Jackrabbit query handler</a> using
+Fedora and other query handling classes.</p>
+
+<p>Both the XPath and SQL queries are translated by the Jackrabbit core 
+to the Abstract Query Tree (AQT), the common query description format 
+that allows Jackrabbit to implement a query engine which is (to a 
+certain extent) independent of the query syntax used (XPath or SQL). 
+The <a href="http://jackrabbit.apache.org/search-implementation.html">
+"Search Implementation" section of the Jackrabbit website</a> details the 
+implementation of searches in Jackrabbit along with the default search 
+index being used.</p>
+
+<p>The search index in Jackrabbit is pluggable and has a default 
+implementation based on Apache Lucene. The default implementation is 
+independent of the persistence manager being used. To connect to an 
+existing Fedora repository, a new search index manager is written to
+interpret the AQT and generate SPARQL statements that can be executed 
+against the Mulgara-backed resource index of the Fedora repository.</p>
+
+</body>

@@ -1,18 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2009 Northwestern University
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Educational Community License, Version 2.0 
+ * (the "License"); you may not use this file except in compliance with 
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.osedu.org/licenses/ECL-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 package edu.northwestern.jcr.adapter.fedora.persistence;
 
@@ -40,18 +39,28 @@ import static org.apache.commons.httpclient.HttpStatus.SC_NO_CONTENT;
 import org.apache.commons.httpclient.methods.DeleteMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * <code>FedoraConnector</code> accesses Fedora repository
- * using Fedora REST.
- *
+ * <code>FedoraConnectorREST</code> accesses Fedora repository
+ * and implements the abstract methods defined in {@link FedoraConnector}
+ * using Fedora REST API. For a detailed explanation of Fedora REST API please 
+ * refer to <a href="http://www.fedora-commons.org/documentation/3.2/REST%20API.html">Fedora Repository 3.2 Documentation: REST API</a>
+ * 
  * @author Xin Xiang
  */
 public class FedoraConnectorREST extends FedoraConnector {
 
+	/** log4j logger. */
+	private static Logger log = 
+		LoggerFactory.getLogger(FedoraConnectorREST.class);
+	
 	/**
-	 * HTTP DELETE.
-	 * @param url String
-	 * @ret status code
+	 * Sends an HTTP DELETE request and returns the status code.
+	 *
+	 * @param url URL of the resource
+	 * @return status code
 	 */
 	private int httpDelete(String url)
 	{
@@ -66,7 +75,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 			return deleteMethod.getStatusCode();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("failed to delete!");
+			log.warn("failed to delete!");
 			
 			return -1;
 		} finally {
@@ -77,9 +86,10 @@ public class FedoraConnectorREST extends FedoraConnector {
 	}
 
 	/**
-	 * HTTP POST.
-	 * @param url String
-	 * @ret status code
+	 * Sends an HTTP POST request and returns the status code.
+	 *
+	 * @param url URL of the service
+	 * @return status code
 	 */
 	private int httpPost(String url)
 	{
@@ -95,7 +105,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 			return postMethod.getStatusCode();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("failed to post!");
+			log.warn("failed to post!");
 			
 			return -1;
 		} finally {
@@ -106,7 +116,8 @@ public class FedoraConnectorREST extends FedoraConnector {
 	}
 
 	/**
-	 * Create a dummy Fedora object with default attributes
+	 * Creates a dummy Fedora object with default attributes.
+	 * @param pid pid the new object
 	 */
 	public void createObject(String pid)
 	{
@@ -121,17 +132,18 @@ public class FedoraConnectorREST extends FedoraConnector {
 		}
 
 		url = baseURL + "/objects/" + pid;
-		System.out.println("ingesting " + pid);
+		log.debug("ingesting " + pid);
 		statusCode = httpPost(url);
 		if (statusCode != SC_OK && statusCode != SC_CREATED) {
-			System.err.println("status code: " + 
-							   statusCode);
+			log.warn("status code: " + statusCode);
 		};
 	}
 
 	/**
 	 * Deletes a digital object.
 	 * Wrapper of purgeObject in Fedora REST.
+	 *
+	 * @param pid pid of the object to be deleted
 	 */
 	public void deleteObject(String pid)
 	{
@@ -147,9 +159,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		url = baseURL + "/objects/" + pid;
 		statusCode = httpDelete(url);
 		if (statusCode != SC_OK && statusCode != SC_NO_CONTENT) {
-			System.err.println("status code: " + 
-							   statusCode);
-			// System.err.println("failed to delete digital object!");
+			log.warn("status code: " + statusCode);
 		};
 	}
 
@@ -157,6 +167,8 @@ public class FedoraConnectorREST extends FedoraConnector {
 	 * Wrapper of findObjects in REST
 	 * Get a list of objects in Fedora repository
 	 *
+	 * @param query the pattern of pid
+	 * @return a list of pid that satisfy tha pattern
 	 */
 	public String [] listObjects(String query)
 	{
@@ -206,6 +218,9 @@ public class FedoraConnectorREST extends FedoraConnector {
 
 	/**
 	 * Wrappper of listDatastreams in REST.
+	 *
+	 * @param pid pid of the object
+	 * @return list of the <code>DataStream</code> objects
 	 */
 	public DataStream [] listDataStreams(String pid)
 	{
@@ -266,7 +281,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 			dataStream = new DataStream(dsid, label, mimeType);
 			list.add(dataStream);
 
-			System.out.println(dsid + ", " + label + ", " + mimeType);
+			log.debug(dsid + ", " + label + ", " + mimeType);
 		}
 
 		return list.toArray(new DataStream[0]);
@@ -274,6 +289,10 @@ public class FedoraConnectorREST extends FedoraConnector {
 
 	/**
 	 * Wrapper of getDatastreamDissemination in REST.
+	 *
+	 * @param pid pid of the object
+	 * @param dsID id of the datastream
+	 * @return byte content of the data stream
 	 */
 	public byte[] getDataStream(String pid, String dsID)
 	{
@@ -316,7 +335,10 @@ public class FedoraConnectorREST extends FedoraConnector {
 	}
 
 	/**
-	 * Test if a given digital object alrady exists in the Fedora repository.
+	 * Tests if a given digital object already exists in the Fedora repository.
+	 *
+	 * @param pid pid of the object to be tested
+	 * @return whether the object exists
 	 */
 	public boolean existsObject(String pid)
 	{
@@ -341,7 +363,11 @@ public class FedoraConnectorREST extends FedoraConnector {
 
 
 	/**
-	 * Test if a given data stream alrady exists in the Fedora repository.
+	 * Tests if a given data stream already exists in the Fedora repository.
+	 *
+	 * @param pid pid of the object
+	 * @param dsID id of the datastream
+	 * @return whether the data stream exists
 	 */
 	public boolean existsDataStream(String pid, String dsID)
 	{
@@ -386,7 +412,12 @@ public class FedoraConnectorREST extends FedoraConnector {
 
 	/**
 	 * Adds a data stream.
-	 * Wrapper of addDatastream in Fedora REST
+	 * Wrapper of addDatastream in Fedora REST.
+	 *
+	 * @param pid pid of the object
+	 * @param dsID id of the data stream
+	 * @param mimeType MIME type of the data stream content
+	 * @param fileName name of the file storing the data stream content
 	 */
 	public void addDataStream(String pid, String dsID, 
 							  String mimeType, String fileName)
@@ -396,7 +427,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 
 		try {
 			String dsLocation = fc.uploadFile(new File(fileName));
-			System.out.println("filed uploaded at " + dsLocation);
+			log.debug("filed uploaded at " + dsLocation);
 
 			if (mimeType == null) {
 				// set default MIME type
@@ -412,18 +443,21 @@ public class FedoraConnectorREST extends FedoraConnector {
 			statusCode = httpPost(url);
 
 			if (statusCode != SC_CREATED) {
-				System.err.println("status code: " + statusCode);
-				System.err.println("failed to add data stream!");
+				log.warn("status code: " + statusCode);
+				log.warn("failed to add data stream!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("failed to add data stream!");
+			log.error("failed to add data stream!", e);
 		}
 	}
 
 	/**
 	 * Deletes a data stream.
 	 * Wrapper of purgeDatastream in Fedora REST
+	 * 
+	 * @param pid pid of the object
+	 * @param dsID id of the data stream
 	 */
 	public void deleteDataStream(String pid, String dsID)
 	{
@@ -439,9 +473,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 		url = baseURL + "/objects/" + pid +	"/datastreams/" + dsID;
 		statusCode = httpDelete(url);
 		if (statusCode != SC_OK) {
-			System.err.println("status code: " + 
-							   statusCode);
-			// System.err.println("failed to delete digital object!");
+			log.warn("status code: " + statusCode);
 		};
 	}
 }

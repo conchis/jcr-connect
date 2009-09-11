@@ -1,18 +1,17 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Copyright 2009 Northwestern University
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Licensed under the Educational Community License, Version 2.0 
+ * (the "License"); you may not use this file except in compliance with 
+ * the License. You may obtain a copy of the License at
+ * 
+ * http://www.osedu.org/licenses/ECL-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an "AS IS"
+ * BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
  */
 package edu.northwestern.jcr.adapter.fedora.persistence;
 
@@ -36,16 +35,18 @@ import fedora.common.Constants;
 import org.apache.axis.types.NonNegativeInteger;
 
 /**
- * <code>FedoraConnector</code> accesses Fedora repository
- * using Fedora API-A,API-M.
- *
- * It is not called FedoraClient to distinguish with the class in Fedora API.
+ * <code>FedoraConnectorAPIX</code> accesses Fedora repository
+ * and implements the abstract methods defined in 
+ * {@link FedoraConnector} using API-A and API-M. For a detailed
+ * explanation of Fedora API-A and API-M please refer to
+ * <a href="http://www.fedora-commons.org/documentation/3.2/API-A.html">Fedora Repository 3.2 Documentation: API-A</a> and <a href="http://www.fedora-commons.org/documentation/3.2/API-M.html">Fedora Repository 3.2 Documentation: API-M</a>.
  *
  * @author Xin Xiang
  */
 public class FedoraConnectorAPIX extends FedoraConnector {
 	/**
-	 * Create a dummy Fedora object with default attributes
+	 * Creates a dummy Fedora object with default attributes.
+	 * @param pid pid the new object
 	 */
 	public void createObject(String pid)
 	{
@@ -67,7 +68,9 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 
 	/**
 	 * Deletes a digital object.
-	 * Wrapper of purgeObject in Fedora API-M
+	 * Wrapper of purgeObject in Fedora API-M.
+	 *
+	 * @param pid pid of the object to be deleted
 	 */
 	public void deleteObject(String pid)
 	{
@@ -81,8 +84,10 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 
 	/**
 	 * Wrapper of findObjects in Fedora API-A.
-	 * Get a list of first-level objects in Fedora repository
+	 * Gets a list of first-level objects in Fedora repository
 	 *
+	 * @param pattern the pattern of pid
+	 * @return a list of pid that satisfy tha pattern
 	 */
 	public String [] listObjects(String pattern)
 	{
@@ -134,7 +139,10 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	}
 
 	/**
-	 * Test if a given digital object alrady exists in the Fedora repository.
+	 * Tests if a given digital object already exists in the Fedora 
+	 * repository.
+	 * @param pid pid of the object to be tested
+	 * @return whether the object exists
 	 */
 	public boolean existsObject(String pid)
 	{
@@ -145,6 +153,9 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 
 	/**
 	 * Wrappper of listDatastreams in API-A.
+	 *
+	 * @param pid pid of the object
+	 * @return list of the <code>DataStream</code> objects
 	 */
 	public DataStream [] listDataStreams(String pid)
 	{
@@ -184,6 +195,10 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 
 	/**
 	 * Wrapper of getDatastreamDissemination in API-A.
+	 *
+	 * @param pid pid of the object
+	 * @param dsID id of the datastream
+	 * @return byte content of the data stream
 	 */
 	public byte[] getDataStream(String pid, String dsID)
 	{
@@ -199,7 +214,11 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	}
 
 	/**
-	 * Test if a given data stream alrady exists in the Fedora repository.
+	 * Tests if a given data stream already exists in the Fedora repository.
+	 *
+	 * @param pid pid of the object
+	 * @param dsID id of the datastream
+	 * @return whether the data stream exists
 	 */
 	public boolean existsDataStream(String pid, String dsID)
 	{
@@ -209,7 +228,10 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	}
 
 	/**
-	 * 
+	 * Modfies the default Dublin Core data stream.
+	 *
+	 * @param pid pid of the object
+	 * @param bytes byte content of the new data stream
 	 */
 	public void modifyDCDataStream(String pid, byte [] bytes)
 	{
@@ -235,6 +257,11 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	/**
 	 * Adds a data stream.
 	 * Wrapper of addDatastream in Fedora API-M
+	 *
+	 * @param pid pid of the object
+	 * @param dsID id of the data stream
+	 * @param mimeType MIME type of the data stream content
+	 * @param fileName name of the file storing the data stream content
 	 */
 	public void addDataStream(String pid, String dsID, 
 							  String mimeType, String fileName)
@@ -271,6 +298,9 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	/**
 	 * Deletes a data stream.
 	 * Wrapper of purgeDatastream in Fedora API-M
+	 * 
+	 * @param pid pid of the object
+	 * @param dsID id of the data stream
 	 */
 	public void deleteDataStream(String pid, String dsID)
 	{

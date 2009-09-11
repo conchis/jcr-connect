@@ -96,11 +96,17 @@ import edu.northwestern.jcr.adapter.fedora.query.ScoreNode;
  * interpret the AQT and generate SPARQL statements that can be executed 
  * against the Mulgara-backed resource index of the Fedora repository.</p>
  *
+ * <p>In the default workspace configuration file 
+ * <code>jackrabbit/workspaces/default/workspace.xml</code> this Fedora 
+ * search index
+ * is set as the search index used by the Jackrabbit repository
+ * (in place of the default Lucene search index).
+ *
  * <p>The default Jackrabbit search index actually maintains the index 
- * using Lucene as well as running the parsed queries against the Lucene 
- * index. This search index, on the other hand, only manages the queries
- * since the "index" for Fedora objects is maintained by Fedora through
- * the Mulgara-backed resource index.
+ * using Apache Lucene as well as running the parsed queries against the 
+ * Lucene index. This search index, on the other hand, only handles 
+ * queries since the "index" for Fedora objects is maintained by Fedora 
+ * through the Mulgara-backed resource index.
  *
  * <p>ORDER BY clause is handled here by the {@link #sort} method. Other
  * than that this class is little more than a wrapper of query handling
@@ -672,7 +678,15 @@ public class SearchIndex extends AbstractQueryHandler {
 			}
 
 			for (j = 0; j < parts.length; ++j) {
-				s += "\t{}" + FedoraPersistenceManager.escapePID(parts[j]);
+				String escapedPID = 
+					FedoraPersistenceManager.escapePID(parts[j]);
+				if (escapedPID.equals("xmltext")) {
+					// needs a better way to handle the jcr namespace
+					s += "\t{http://www.jcp.org/jcr/1.0}xmltext";
+				}
+				else {
+					s += "\t{}" + escapedPID;
+				}
 			}
 
 			log.info(s);

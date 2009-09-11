@@ -66,13 +66,14 @@ import org.apache.jackrabbit.core.query.lucene.*;
 import edu.northwestern.jcr.adapter.fedora.query.FedoraQuery;
 
 /**
- * Implements a query builder that takes an abstract query tree and creates
- * a {@link FedoraQuery} object that can be executed on the resource index.
+ * Implements a query builder that takes an AQT (abstract query tree) and 
+ * creates a {@link FedoraQuery} object that can be executed against the 
+ * resource index.
  *
  * <p>The SPARQL expressions are generated and executed on a step by step
  * basis. Once the translation is finished the {@link FedoraQuery} object
  * returned by {@link #createFedoraQuery} will contain the list of pid along 
- * with full path as a result of the query.
+ * with full paths as a result of the query.
  */
 public class FedoraQueryBuilder implements QueryNodeVisitor {
 
