@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testroot jcr:primaryType="nt:unstructured" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0" xmlns:rep="internal" xmlns:test="http://www.apache.org/jackrabbit/test" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2004/10/xpath-functions" xmlns:sv="http://www.jcp.org/jcr/sv/1.0" xmlns="" />
