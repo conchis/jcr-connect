@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 
 import java.net.URLEncoder;
 
+import javax.jcr.RepositoryException;
+
 import fedora.client.HttpInputStream;
 
 import static org.apache.commons.httpclient.HttpStatus.SC_CREATED;
@@ -91,7 +93,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 	 * @param url URL of the service
 	 * @return status code
 	 */
-	private int httpPost(String url)
+	private int httpPost(String url) throws Exception
 	{
 		PostMethod postMethod = null;
 
@@ -104,10 +106,14 @@ public class FedoraConnectorREST extends FedoraConnector {
 		
 			return postMethod.getStatusCode();
 		} catch (Exception e) {
-			e.printStackTrace();
-			log.warn("failed to post!");
-			
-			return -1;
+			// e.printStackTrace();
+			// log.warn("failed to post!");
+			// 
+			// return -1;
+
+			String msg = "error connecting to the Fedora server";
+            log.error(msg);
+            throw new RepositoryException(msg, null);
 		} finally {
 			if (postMethod != null) {
 				postMethod.releaseConnection();
@@ -119,7 +125,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 	 * Creates a dummy Fedora object with default attributes.
 	 * @param pid pid the new object
 	 */
-	public void createObject(String pid)
+	public void createObject(String pid) throws Exception
 	{
 		String url;
 		PostMethod postMethod = null;
@@ -170,7 +176,7 @@ public class FedoraConnectorREST extends FedoraConnector {
 	 * @param query the pattern of pid
 	 * @return a list of pid that satisfy tha pattern
 	 */
-	public String [] listObjects(String query)
+	public String [] listObjects(String query) throws Exception
 	{
 		String response = "";
 		String allResponses;

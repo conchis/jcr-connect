@@ -250,9 +250,12 @@ public class Test {
 			session = login("default", "superuser", "");
 			root = session.getRootNode();
 
-			test = root.getNode("testdata/node");
+			// test = root.getNode("testdata/node");
+			test = root.getNode("nonexistingnode");
 		} finally {
-			session.logout();
+			if (session != null) {
+				session.logout();
+			}
 		}
 	}
 
@@ -301,7 +304,9 @@ public class Test {
 			session.save();
 			/////////////////////////////////////////////////////////////
 		} finally {
-			session.logout();
+			if (session != null) {
+				session.logout();
+			}
 		}
 	}
 
@@ -488,7 +493,9 @@ public class Test {
 			}
 		} 
 		finally {
-			session.logout();
+			if (session != null) {
+				session.logout();
+			}
 		}
 	}
 
@@ -509,7 +516,9 @@ public class Test {
 			// System.out.println(test1.getProperty("jcr:encoding").getString());
 			// System.out.println(test1.getProperty("jcr:mimeType").getString());
 		} finally {
-			session.logout();
+			if (session != null) {
+				session.logout();
+			}
 		}
 	}
 
@@ -668,7 +677,9 @@ public class Test {
 			e.printStackTrace();
 			System.err.println(e.getMessage());
 		} finally {
-			session.logout();
+			if (session != null) {
+				session.logout();
+			}
 		}
 	}
 

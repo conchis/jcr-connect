@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.jcr.RepositoryException;
+
 import fedora.server.access.FedoraAPIA;
 import fedora.server.types.gen.FieldSearchQuery;
 import fedora.server.types.gen.FieldSearchResult;
@@ -34,6 +36,9 @@ import fedora.common.Constants;
 
 import org.apache.axis.types.NonNegativeInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * <code>FedoraConnectorAPIX</code> accesses Fedora repository
  * and implements the abstract methods defined in 
@@ -44,6 +49,10 @@ import org.apache.axis.types.NonNegativeInteger;
  * @author Xin Xiang
  */
 public class FedoraConnectorAPIX extends FedoraConnector {
+	/** log4j logger. */
+	private static Logger log = 
+		LoggerFactory.getLogger(FedoraConnectorREST.class);
+
 	/**
 	 * Creates a dummy Fedora object with default attributes.
 	 * @param pid pid the new object
@@ -89,7 +98,7 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 	 * @param pattern the pattern of pid
 	 * @return a list of pid that satisfy tha pattern
 	 */
-	public String [] listObjects(String pattern)
+	public String [] listObjects(String pattern) throws Exception
 	{
 		String [] resultFields = new String [] {"pid"};
 		FieldSearchQuery query = new FieldSearchQuery();
@@ -133,6 +142,9 @@ public class FedoraConnectorAPIX extends FedoraConnector {
 							   + 
 							   (e.getMessage() == null ? "" : 
 								": " + e.getMessage()));
+			String msg = "error connecting to the Fedora server";
+            log.error(msg);
+            throw new RepositoryException(msg, null);
 		}
 
 		return (String []) list.toArray(new String[0]);

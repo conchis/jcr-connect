@@ -29,6 +29,9 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import java.net.URLEncoder;
+import java.net.MalformedURLException;
+
+import javax.jcr.RepositoryException;
 
 import fedora.client.FedoraClient;
 
@@ -91,7 +94,8 @@ public abstract class FedoraConnector {
 	 * property file fedora.properties is present, the property values in 
 	 * that file are used. Otherwise the default values are used.
 	 */
-	public FedoraConnector() {
+	public FedoraConnector() // throws Exception
+	{
 		String protocol = "";
 		String host = "";
 		String port = "";
@@ -132,8 +136,10 @@ public abstract class FedoraConnector {
 
 		try {
 			fc = new FedoraClient(baseURL, user, pass);
-		} catch (Exception e) {
-			log.error("error connecting to the Fedora server", e);
+		} catch (MalformedURLException e) {
+			String msg = "error connecting to the Fedora server";
+            log.error(msg);
+            // throw new RepositoryException(msg, e);
 		}
 	}
 
@@ -143,7 +149,7 @@ public abstract class FedoraConnector {
 	 *
 	 * @param pid pid the new object
 	 */
-	public abstract void createObject(String pid);
+	public abstract void createObject(String pid) throws Exception;
 
 	/**
 	 * Deletes a digital object.
@@ -158,7 +164,7 @@ public abstract class FedoraConnector {
 	 * @param pattern the pattern of pid
 	 * @return a list of pid that satisfy tha pattern
 	 */
-	public abstract String [] listObjects(String pattern);
+	public abstract String [] listObjects(String pattern) throws Exception;
 
 	/**
 	 * Tests if a given digital object already exists in the Fedora 
@@ -234,8 +240,14 @@ public abstract class FedoraConnector {
 		postMethod.setDoAuthentication(true);
 		postMethod.getParams().setParameter("Connection", "Keep-Alive");
 		postMethod.setContentChunked(true);
-		fc.getHttpClient().executeMethod(postMethod);
-		
+		try {
+			fc.getHttpClient().executeMethod(postMethod);
+		} catch (Exception e) {
+			String msg = "error connecting to the Fedora server";
+            log.error(msg);
+            throw new RepositoryException(msg, null);
+		}
+
 		if (postMethod.getStatusCode() != SC_OK) {
 			log.warn("status code: " + postMethod.getStatusCode());
 		}
@@ -254,7 +266,7 @@ public abstract class FedoraConnector {
 	 * @param filter filter condition applied - null if there is no filter
 	 * @return list of pid of the descendants that satisfy the filter condition
 	 */
-	public String [] listDescendantsRI(String pid, String filter)
+	public String [] listDescendantsRI(String pid, String filter) throws Exception
 	{
 		String [] members;
 		Map<String, String> pathMap;
@@ -268,7 +280,11 @@ public abstract class FedoraConnector {
 		resultList = new ArrayList<String>();
 
 		if (pid == null) {
-			members = listObjectsRI(null);
+			try {
+				members = listObjectsRI(null);
+			} catch (Exception e) {
+				throw e;
+			}			
 		}
 		else {
 			// to be implemented
@@ -282,7 +298,11 @@ public abstract class FedoraConnector {
 
 		if (filter != null) {
 			if (pid == null) {
-				members = listObjectsRI(filter);
+				try {
+					members = listObjectsRI(filter);
+				} catch (Exception e) {
+					throw e;
+				}
 			}
 			else {
 				// to be implemented
@@ -325,7 +345,7 @@ public abstract class FedoraConnector {
 	 *
 	 * @param filter filter condition applied - null if there is no filter
 	 */
-	public String [] listObjectsRI(String filter)
+	public String [] listObjectsRI(String filter) throws Exception
 	{
 		String response = "";
 		String query;
@@ -358,8 +378,11 @@ public abstract class FedoraConnector {
 				list.add(line);
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			// e.printMessage();
+			// System.err.println(e.getMessage());
 			log.error("failed to list objects!", e);
+
+			throw e;
 		}
 
 		return  (String []) list.toArray(new String[0]);

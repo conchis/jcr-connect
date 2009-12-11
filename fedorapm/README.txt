@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-             Fedora JCR Connector Release 0.5 - September 2009
+             Fedora JCR Connector Release 0.6 - December 2009
 -------------------------------------------------------------------
 This is a full source code release of the JCR connector for Fedora,
 a popular digital asset management system that underlies a large number
@@ -46,6 +46,24 @@ software distributed under the License is distributed on an "AS IS"
 BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 or implied. See the License for the specific language governing
 permissions and limitations under the License.
+
+
+Changes from 0.5 release
+================================
+Changes in functionality are minimum. Exceptions related to the Fedora
+repository have been better handled and the source code
+refactored.
+
+
+Prerequisites
+================================
+The JCR connector for Fedora requires the following software:
+
+- Fedora 3.2+
+- Java SE 5.0+
+- Ant 1.7+
+
+Note that a Jackrabbit 1.5 installation is included with the adapter package.
 
 
 Building the Connector

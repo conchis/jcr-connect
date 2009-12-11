@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jcr.PropertyType;
+import javax.jcr.RepositoryException;
 
 // new
 import org.apache.jackrabbit.core.state.ChildNodeEntry;
@@ -180,7 +181,7 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 	/**
 	 * Creates a new <code>FedoraPersistenceManager</code> instance.
 	 */
-	public FedoraPersistenceManager() {
+	public FedoraPersistenceManager() throws RepositoryException {
 		initialized = false;
 
 		boolean property = true;
@@ -196,11 +197,17 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 			useREST = false;
 		}
 
-		if (useREST) {
-			fc = new FedoraConnectorREST();
-		}
-		else {
-			fc = new FedoraConnectorAPIX();
+		try {
+			if (useREST) {
+				fc = new FedoraConnectorREST();
+			}
+			else {
+				fc = new FedoraConnectorAPIX();
+			}
+		} catch (Exception e) {
+			String msg = "error connecting to the Fedora server";
+            log.error(msg);
+            throw new RepositoryException(msg, e);
 		}
 	}
 
@@ -1406,8 +1413,14 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 
 			// persist (the digital object) to Fedora repository if it does
 			// not exist already
-			if (! fc.existsObject(pid)) {
-				fc.createObject(pid);
+			try {
+				if (! fc.existsObject(pid)) {
+					fc.createObject(pid);
+				}
+			} catch (Exception e) {
+				String msg = "error connecting to the Fedora server";
+				log.error(msg);
+				throw new ItemStateException(msg, e);
 			}
 
 			// flush its children (DS nodes)
@@ -1435,8 +1448,14 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 					// also a digital object
 					// persist (the digital object) to Fedora repository if it does
 					// not exist already
-					if (! fc.existsObject(cpid)) {
-						fc.createObject(cpid);
+					try {
+						if (! fc.existsObject(cpid)) {
+							fc.createObject(cpid);
+						}
+					} catch (Exception e) {
+						String msg = "error connecting to the Fedora server";
+						log.error(msg);
+						throw new ItemStateException(msg, e);
 					}
 
 					log.debug("add relationship " + pid + ", " + cpid);
@@ -1686,7 +1705,9 @@ public class FedoraPersistenceManager extends AbstractPersistenceManager {
 								 // values[0].toString().getBytes());
 								 tmpFile);
 			} catch (Exception e) {
-
+				String msg = "error adding data stream";
+				log.error(msg);
+				throw new ItemStateException(msg, e);
 			}
                 
 		}

@@ -477,7 +477,13 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 				// put property URI as filter
 				query.addStep(nameURI, FedoraQuery.DEREF,
 							  propertyURI);
-				query.execute();
+				try {
+					query.execute();
+				} catch (Exception e) {
+					String msg = "error executing query";
+					throw new RepositoryException(msg, null);
+				}
+
 				continue;
 			}
 
@@ -548,7 +554,12 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 			log.debug("filter: " + filter);
  
 			query.addStep(name, type, filter);
-			query.execute();
+			try {
+				query.execute();
+			} catch (Exception e) {
+				String msg = "error executing query";
+				throw new RepositoryException(msg, null);
+			}
 		}
 		
 		return query;

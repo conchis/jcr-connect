@@ -116,7 +116,7 @@ class FedoraQuery {
 	 * Processes current step and executes the created SPARQL query
 	 * against the resource index.
 	 */
-	public void execute()
+	public void execute() throws Exception
 	{
 		int i, j;
 		String pid;
@@ -277,7 +277,14 @@ class FedoraQuery {
 			}
 
 			// search for the objects
-			result = fc.listObjects("*57" + name);
+			try {
+				result = fc.listObjects("*57" + name);
+			} catch (Exception e) {
+				String msg = "error listing objects";
+				log.error(msg);
+				throw new Exception(msg, null);
+			}
+
 			for (String t : result) {
 				log.debug("s: " + t);
 			}
