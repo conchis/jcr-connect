@@ -1,0 +1,56 @@
+<project name="xtfconnector" default="dist" basedir=".">
+
+  <property name="src" value="src"/>
+  <property name="build" value="bin"/>
+  <property name="lib" value="lib"/>
+  <property name="dist" value="dist"/>
+  <property name="jarfile" value="xtfconnector.jar"/>
+
+
+  <path id="classpath">
+    <pathelement path="bin"/>
+    <fileset dir="lib">
+      <include name="*.jar"/>
+    </fileset>
+   </path>
+
+  <target name="clean">
+    <delete dir="bin"/>
+    <delete dir="docs"/>
+  </target>
+
+  <target name="init">
+    <mkdir dir="bin"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac srcdir="src" destdir="bin" classpathref="classpath"
+      debug="on" deprecation="on"/>
+  </target>
+
+  <target name="dist" depends="compile"> 
+  <!-- create a jar file -->
+  <mkdir dir="${dist}"/>
+  <jar destfile="${dist}/${jarfile}" basedir="${build}"/>
+  </target>
+  
+  <target name="full" depends="clean,compile,docs"/>
+
+  <target name="t" depends="compile" description="Test Program">
+  <java classname="Test"  fork="yes"  maxmemory="512m">
+    <classpath refid="classpath"/>
+  </java>
+  </target>
+
+  <target name="query" depends="compile" description="Command line query utility">
+  <java classname="QueryCMD"  fork="yes"  maxmemory="512m">
+    <classpath refid="classpath"/>
+  </java>
+  </target>
+
+  <target name="docs" depends="compile" description="Generate documentation">
+    <javadoc packagenames="edu.northwestern.jcr.adapter.xtf.*" sourcepath="src" classpathref="classpath" destdir="docs" includenosourcepackages="true" access="private" author="true" version="true" use="true" />
+  </target>
+  
+</project>

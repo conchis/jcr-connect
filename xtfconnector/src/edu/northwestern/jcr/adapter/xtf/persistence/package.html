@@ -1,0 +1,83 @@
+<body>
+
+Implements a Java XTF client that takes a search phrase and returns
+a list of XTF documents.
+
+<ul>
+<li>Method
+
+<p>In current implementation the JCR adapter for XTF is a Jackrabbit index 
+manager that implements the 
+<a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/query/AbstractQueryHandler.html" target="_blank">org.apache.jackrabbit.core.query.AbstractQueryHandler</a> 
+interface. It translates all JCR queries to XTF queries and stores all 
+the items returned in a Jackrabbit repository. All future node/property 
+storing and loading requests are then directed to this Jackrabbit 
+repository.
+
+<p>This implementation is actually not a real "connector" since read/write 
+requests are not directed to the underlying XTF repository, instead, 
+they are addressed by a Jackrabbit repository which serves as a proxy. 
+The Jackrabbit repository is populated by JCR search requests such that 
+only those items that the client is interested in will be pulled out of 
+XTF repository and stored in the Jackrabbit repository.
+
+<li>Mapping
+
+<p>Each XTF item or collection is mapped to a JCR node in the Jackrabbit
+  repository.
+
+<p>The "path" attribute of the "docHit" element in the XTF query results will
+  be used as the JCR path for the corresponding JCR node in the Jackrabbit
+  repository. The "recordNum" attribute will also be attached if it is present.
+
+<p>The elements under "meta" tag in the XTF query results, particular those
+  Dublin Core metadata elements, will be stored in the Jackrabbit repository
+  as properties of the corresponding JCR node for easy search.
+
+<li>Miscellaneous
+
+<p>The "identifier" tag in the query results, if present, will contain an
+  HTTP link that points to the METS file describing the item/collection or to
+  the actual resource. If it contains a METS file link, the METS file will be
+  retrieved and parsed to fetch the file location of the underlying resources
+  (images, texts, etc.). To get the proper link to the METS file, the server
+  URL needs to be attached. For example, if "identifier" contains
+
+<p>http://ark.cdlib.org/ark:/13030/kt6n39n8g8
+
+<p>the URL of the METS file will be (the trailing "/" is required)
+
+<p>http://content.cdlib.org/mets/ark:/13030/kt6n39n8g8/
+
+<p>VTD-XML is used as a light-weigh parser to parse XML files
+(XTF query results and METS files).
+
+<p>For the CDLib instance on which the XTF connector is built:
+
+<p>Only items in oac.cdlib.org have oac4-tab values (EAD+TEI+images+MARC);
+Only items in calisphere.org have facet-type-tab values (TEI+images+websites)
+
+<p>The vocabulary for "facet-type-tab" is
+
+<ul>
+<li>website
+<li>image
+<li>text
+</ul>
+
+<p>The vocabulary for "oac4-tab" is
+
+<ul>
+<li>Collections::ead
+<li>Collections::marc
+<li>Items::image
+<li>Items::offline (MARC item level records of archival materials)
+<li>Items::text
+</ul>
+
+<p>Websites would not have an "oac4-tab". Collections::* and Items::offline
+would not have a "facet-type-tab".
+  
+</ul>
+
+</body>

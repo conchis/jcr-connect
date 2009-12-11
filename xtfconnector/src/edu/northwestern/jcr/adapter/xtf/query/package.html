@@ -1,0 +1,23 @@
+<body>
+
+<p>Implements a <a href="http://jackrabbit.apache.org/api/1.5/org/apache/jackrabbit/core/query/AbstractQueryHandler.html" target="_blank">Jackrabbit query handler</a> using
+XTF and other query handling classes.</p>
+
+<p>Both the XPath and SQL queries are translated by the Jackrabbit core 
+to the Abstract Query Tree (AQT), the common query description format 
+that allows Jackrabbit to implement a query engine which is (to a 
+certain extent) independent of the query syntax used (XPath or SQL). 
+The <a href="http://jackrabbit.apache.org/search-implementation.html">
+"Search Implementation" section of the Jackrabbit website</a> details the 
+implementation of searches in Jackrabbit along with the default search 
+index being used.</p>
+
+<p>The search index in Jackrabbit is pluggable and has a default 
+implementation based on Apache Lucene. The default implementation is 
+independent of the persistence manager being used. To connect to an
+existing XTF repository, a new search index manager needs to be written to
+interpret the AQT and generate <a href="http://sourceforge.net/apps/trac/xtf/wiki/tagRef_crossQuery_QueryParser_Output" target="_blank">raw XML query</a>
+statements that can be executed
+against the raw servlet of the XTF repository.
+
+</body>
