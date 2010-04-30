@@ -36,6 +36,8 @@ import javax.jcr.Workspace;
 import javax.jcr.Value;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.NamespaceException;
+import javax.jcr.ValueFactory;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
@@ -133,6 +135,13 @@ public class Test {
 
 		session.setNamespacePrefix("fedora", "http://www.fedora.info/");
 		session.setNamespacePrefix("sling", "http://sling.apache.org/jcr/sling/1.0");
+		try {
+			// register namespace
+			session.getWorkspace().getNamespaceRegistry().registerNamespace("dc", "http://purl.org/dc/elements/1.1");
+		} catch (NamespaceException e) {
+
+		}
+		session.setNamespacePrefix("dc", "http://purl.org/dc/elements/1.1");
 
 		return session;
 	}
@@ -169,16 +178,19 @@ public class Test {
 			/////////////////////////////////////////////////////////////
 			// write digital objects and streams to Fedora
 
+			// System.out.println(root.getProperty("jcr:primaryType").getString());
+
 			try {
 				test = root.getNode("test_1");
 			} catch (PathNotFoundException e) {
-				test = root.addNode("test_1");
+				test = root.addNode("test_1"); // , "nt:unstructured");
 			}
 			
+
 			try {
 				test = test.getNode("test_2");
 			} catch (PathNotFoundException e) {
-				test = test.addNode("test_2");
+				test = test.addNode("test_2", "nt:unstructured");
 			}
 			
 			// test.setProperty("image", new FileInputStream(new File("test.jpg")));
@@ -187,7 +199,8 @@ public class Test {
 			test = test.addNode("jcr:content", "nt:resource");
 			// test.setProperty("jcr:data", "<oai_dc:dc xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:oai_dc=\"http://www.openarchives.org/OAI/2.0/oai_dc/\"><dc:title>Updated DC from JCR</dc:title><dc:identifier>test:test</dc:identifier></oai_dc:dc>");
 			// test.setProperty("jcr:data", session.getValueFactory().createValue("this is the content", PropertyType.STRING));
-			test.setProperty("jcr:data", session.getValueFactory().createValue(new FileInputStream(new File("resource/test.jpg"))));
+			ValueFactory factory = session.getValueFactory();
+			test.setProperty("jcr:data", factory.createValue(factory.createBinary(new FileInputStream(new File("resource/test.jpg")))));
 			test.setProperty("jcr:mimeType", "image/jpeg");
 			test.setProperty("jcr:lastModified", "2009-07-08T00:00:00.000Z");
 			
@@ -329,11 +342,11 @@ public class Test {
 				System.out.println(test1.getProperty("jcr:data").getString());
 			
 				test1 = root.getNode("canberra_" + i + "/image/jcr:content");
-				is = test1.getProperty("jcr:data").getStream();
+				is = test1.getProperty("jcr:data").getBinary().getStream();
 				writeStream(is, "canberra/canberra_" + i + ".jpg");
 			
 				test1 = root.getNode("canberra_" + i + "/thumb/jcr:content");
-				is = test1.getProperty("jcr:data").getStream();
+				is = test1.getProperty("jcr:data").getBinary().getStream();
 				writeStream(is, "canberra/canberra_" + i + "_thumb.jpg");
 			
 				if (i == 6) {
@@ -377,7 +390,20 @@ public class Test {
 		initFedoraConnector();
 
 		// fc.addProperty("test:2", "http://sling.apache.org/jcr/sling/1.0/test", "abc");
-		pList = fc.listProperties("test:2");
+		pList = fc.listProperties("canberra:2");
+
+		for (String property : pList) {
+			System.out.println(property);
+		}
+	}
+
+	private static void testGSearch()
+	{
+		String [] pList;
+
+		initFedoraConnector();
+
+		pList = fc.searchFullText("rss");
 
 		for (String property : pList) {
 			System.out.println(property);
@@ -398,7 +424,8 @@ public class Test {
 
 		initFedoraConnector();
 
-		literal = fc.getProperty("test:2", "http://www.jcp.org/jcr/1.0/primaryType");
+		// literal = fc.getProperty("week1", "http://www.jcp.org/jcr/1.0/primaryType");
+		literal = fc.getProperty("canberra:2", "http://purl.org/dc/elements/1.1/identifier");
 
 		System.out.println(literal);
 	}
@@ -441,16 +468,18 @@ public class Test {
 
 			test = root.getNode("test_1/test_2");
 
-			// test.setProperty("myProperty", "myValue3");
-			test.setProperty("double", 
-							 session.getValueFactory().createValue(4.0)); 
-			//, PropertyType.DOUBLE));
-			test.setProperty("long", 
-							 session.getValueFactory().createValue(90834953485278298L)); 
-			test.setProperty("calendar", 
-							 session.getValueFactory().createValue(Calendar.getInstance())); 
-			test.setProperty("boolean", 
-							 session.getValueFactory().createValue(false)); 
+			// // test.setProperty("myProperty", "myValue3");
+			// test.setProperty("double", 
+			// 				 session.getValueFactory().createValue(4.0)); 
+			// //, PropertyType.DOUBLE));
+			// test.setProperty("long", 
+			// 				 session.getValueFactory().createValue(90834953485278298L)); 
+			// test.setProperty("calendar", 
+			// 				 session.getValueFactory().createValue(Calendar.getInstance())); 
+			// test.setProperty("boolean", 
+			// 				 session.getValueFactory().createValue(false)); 
+			
+			test.setProperty("dc:title", "test2");
 
 			session.save();
 		} 
@@ -464,18 +493,26 @@ public class Test {
 	{
 		Node root, test;
 		Property property;
+		String nodePath, propertyName;
 		initRepository();
 
 		try {
 			session = login("default", "superuser", "");
 			root = session.getRootNode();
 
-			// test = root.getNode("test_1/test_2");
-			// System.out.println(test.getProperty("myProperty").getString());
+			// nodePath = "testdata/docViewTest/bigNode";
+			// propertyName = "propName2";
+			// nodePath = "canberra_2";
+			// nodePath = "test_1/test_2";
+			nodePath = "changeme_13/HTML/jcr:content";
+			// propertyName = "dc:description";
+			// propertyName = "jcr:primaryType";
+			// propertyName = "dc:title";
+			// propertyName = "jcr:mimeType";
+			propertyName = "jcr:data";
 
-			test = root.getNode("testdata/docViewTest/bigNode");
-
-			property = test.getProperty("propName2");
+			test = root.getNode(nodePath);
+			property = test.getProperty(propertyName);
 
 			if (property.getDefinition().isMultiple()) {
 				System.out.println("multiple!");
@@ -489,7 +526,10 @@ public class Test {
 			else {
 				System.out.println("not multiple!");
 
-				System.out.println(test.getProperty("propName2").getString());
+				System.out.println(test.getProperty(propertyName).getString());
+				
+				// InputStream is = test.getProperty(propertyName).getBinary().getStream();
+				// writeStream(is, "test.html");
 			}
 		} 
 		finally {
@@ -510,11 +550,45 @@ public class Test {
 			session = login("default", "superuser", "");
 			root = session.getRootNode();
 
-			test1 = root.getNode("testdata/node/myResource/DC/jcr:content");
+			// test1 = root.getNode("testdata/node/myResource/DC/jcr:content");
+			test1 = root.getNode("canberra_1/image/jcr:content");
 
-			System.out.println(test1.getProperty("jcr:data").getString());
+			// System.out.println(test1.getProperty("jcr:data").getString());
 			// System.out.println(test1.getProperty("jcr:encoding").getString());
-			// System.out.println(test1.getProperty("jcr:mimeType").getString());
+			System.out.println(test1.getProperty("jcr:mimeType").getString());
+		} finally {
+			if (session != null) {
+				session.logout();
+			}
+		}
+	}
+
+	private static void testGetNodesJCR()
+		throws Exception
+	{
+		Node root, test1;
+
+		initRepository();
+
+		try {
+			session = login("default", "superuser", "");
+			root = session.getRootNode();
+
+			test1 = root.getNode("canberra_1");
+
+			NodeIterator it = test1.getNodes();
+			int i = 0;
+			System.out.println("number of items: " + it.getSize());
+
+			while (it.hasNext()) {
+				Node n = it.nextNode();
+
+				i++;
+
+				System.out.println();
+				System.out.println("item " + i);
+				System.out.println("path: " + n.getPath());
+			}
 		} finally {
 			if (session != null) {
 				session.logout();
@@ -578,6 +652,13 @@ public class Test {
 			session = login("default", "superuser", "");
 			Workspace ws = session.getWorkspace();
 			QueryManager qm = ws.getQueryManager();
+
+			String [] languages = qm.getSupportedQueryLanguages();
+			System.out.println("supported languages: ");
+			for (String language : languages) {
+				System.out.println(language);
+			}
+
 			Query q = qm.createQuery 
 				(
 				 // Exact path constraint
@@ -639,7 +720,7 @@ public class Test {
 				 // "/testdata/*[@prop1] order by @prop1",
 				 // "//*[@boolean = 'true']",
 				 // "//*[@double = '3.141592653589793']",
-				 "//*[@boolean] order by @boolean ascending",
+				 // "//*[@boolean] order by @boolean ascending",
 				 // "//*[@double != '3.14'] order by @double ascending",
 				 // "//*[@long] order by @long descending",
 				 // "//*[@calendar and @long] order by @long, @calendar descending",
@@ -650,7 +731,18 @@ public class Test {
 				 // "//element(*, nt:unstructured)[@boolean != 'false']",
 				 // "//element(*, nt:resource)[@boolean = 'true']",
 				 // "//element(*, nt:unstructured)[@double = '3.141592653589793']",
+				 // "//*[jcr:contains(@dc:identifier, 'canberra')]",
+				 // "//*[jcr:contains(@dc:title, 'Griffin')]",
+				 // "//*[jcr:contains(@jcr:data, 'rss')]",
+				 // "//*[jcr:contains(@jcr:data, 'podcast')]",
+				 // "//*[jcr:contains(@jcr:data, 'Plone')]",
+				 // "//*[jcr:contains(@jcr:data, 'css')]",
+				 // "//*[jcr:contains(@jcr:data, 'embed')]",
+				 "//*[jcr:contains(@jcr:data, 'asia')]",
 				 Query.XPATH);
+
+				 // "SELECT * FROM [nt:base]",
+				 // Query.JCR_SQL2);
 
 			QueryResult result = q.execute();
 
@@ -689,21 +781,22 @@ public class Test {
 		try {
 			initLog4j();
 
-			// testMultipleSessions();
 			// testAddProperty();
 			// testListProperty();
 			// testGetProperty();
 			// testDeleteProperty();
+			// testBulkDelete();
+			// testReadFedora();
+			// testBulkWriteFedora();
+			// testGSearch();
+
+			// testMultipleSessions();
 			// testAddPropertyJCR();
 			// testGetPropertyJCR();
-			// testBulkDelete();
 			// testReadJCR();
-			// testReadFedora();
+			// testGetNodesJCR();
 			// testBulkWriteJCR();
-			// testBulkWriteFedora();
-
 			// testWrite();
-			// testAddPropertyJCR();
 			// testRead();
 			// testImport();
 			// testWriteABCD();

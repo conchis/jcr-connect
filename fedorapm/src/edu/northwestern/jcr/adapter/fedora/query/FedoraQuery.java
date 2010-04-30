@@ -159,7 +159,7 @@ class FedoraQuery {
 
 					query += ") }";
 
-					log.debug(query);
+					log.info(query);
 					current = fc.searchObjects(query, "sparql");
 
 					for (String s : current) {
@@ -188,7 +188,11 @@ class FedoraQuery {
 		}
 
 		if (level == 1 && name.equals("*")) {
-			if (type == CHILDREN) {
+			if (filter.startsWith("dsm:")) {
+				// deal with full-text search against data streams
+				current = fc.searchFullText(filter.replace("dsm:", ""));
+			}
+			else if (type == CHILDREN) {
 				// first level objects
 				current = fc.listObjectsRI(filter);
 			}
@@ -343,7 +347,7 @@ class FedoraQuery {
 
 			query += "}";
 
-			log.debug(query);
+			log.info(query);
 			current = fc.searchObjects(query, "sparql");
 			path = new String[1];
 			path[0] = currentPath;
@@ -368,7 +372,7 @@ class FedoraQuery {
 
 			query += "}";
 
-			log.debug(query);
+			log.info(query);
 			temp = fc.searchObjects(query, "sparql");
 			if (temp.length > 0) {
 				resultList.add(current[i] + "," + temp[0]);

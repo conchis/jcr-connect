@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.LinkedList;
 import java.util.Properties;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import java.net.URLEncoder;
 import java.net.MalformedURLException;
@@ -78,8 +80,14 @@ public abstract class FedoraConnector {
 	/** fedora base URL. */
 	String baseURL;
 
+	/** gsearch URL. */
+	String gsearchURL;
+
 	/** phrase used to search for all objects. */
 	static String searchPhrase;
+
+	/** fields for full-text search against gSearch */
+	String [] gsearchFields;
 
 	/** first part of the FOXML template. */
 	static final String FOXMLPART1 = 
@@ -100,6 +108,7 @@ public abstract class FedoraConnector {
 		String host = "";
 		String port = "";
 		String context = "";
+		String gsearchContext = "";
 		String user = "";
 		String pass = "";
 		boolean property = true;
@@ -122,6 +131,9 @@ public abstract class FedoraConnector {
 			property = false;
 		}
 
+		gsearchContext = "fedoragsearch";
+		gsearchFields = new String [] {"rss"};
+
 		if (property) {
 			protocol = props.getProperty("protocol");
 			host = props.getProperty("host");
@@ -130,9 +142,21 @@ public abstract class FedoraConnector {
 			user = props.getProperty("user");
 			pass = props.getProperty("password");
 			searchPhrase = props.getProperty("phrase");
+
+			String s = props.getProperty("gsearchcontext");
+
+			if (s != null && ! s.equals("")) {
+				gsearchContext = s;
+			}
+
+			s = props.getProperty("gsearchfields");
+			if (s != null && ! s.equals("")) {
+				gsearchFields = s.split(",");
+			}			
 		}
 
 		baseURL = protocol + "://" + host + ":" + port + "/" + context;
+		gsearchURL = protocol + "://" + host + ":" + port + "/" + gsearchContext;
 
 		try {
 			fc = new FedoraClient(baseURL, user, pass);
@@ -204,7 +228,7 @@ public abstract class FedoraConnector {
 	/**
 	 * 
 	 */
-	// public abstract void modifyDCDataStream(String pid, byte [] bytes);
+	public abstract void modifyDCDataStream(String pid, byte [] bytes);
 
 	/**
 	 * Adds a data stream.
@@ -362,7 +386,7 @@ public abstract class FedoraConnector {
 
 		query += "}";
 
-		log.debug(query);
+		log.info(query);
 
 		try {
 			url = baseURL + "/risearch?type=tuples&flush=true&lang=sparql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
@@ -424,7 +448,7 @@ public abstract class FedoraConnector {
 
 		resultList = new ArrayList<String>();
 
-		log.debug(query);
+		log.info(query);
 
 		try {
 			url = baseURL + "/risearch?type=tuples&flush=true&lang=sparql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
@@ -636,6 +660,8 @@ public abstract class FedoraConnector {
 		query = "select $t from <#ri> where <" + PID.toURI(pid) + 
 			"> <" + uri + "> $t";
 
+		log.info(query);
+
 		try {
 			url = baseURL + "/risearch?type=tuples&flush=true&lang=itql&format=CSV&query=" + URLEncoder.encode(query, "UTF-8");
 
@@ -665,6 +691,11 @@ public abstract class FedoraConnector {
 	 */
 	public void deleteProperty(String pid, String uri)
 	{
+		if (uri.contains("http://purl.org/dc/elements/1.1")) {
+			// Dublin Core properties
+			return;
+		}
+
 		try {
 			if (!fc.getAPIM().purgeRelationship(pid, uri, 
 												// cannot be null
@@ -705,8 +736,9 @@ public abstract class FedoraConnector {
 
 			list = new ArrayList<String>();
 			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("info:fedora/") ||
-					line.startsWith("http://purl.org/dc/elements/1.1/")) {
+				if (line.startsWith("info:fedora/")
+					// || line.startsWith("http://purl.org/dc/elements/1.1/")
+					) {
 					// ignore Fedora and DC predicates
 					continue;
 				}
@@ -794,5 +826,96 @@ public abstract class FedoraConnector {
 		}
 
 		return list.toArray(new String [0]);
+	}
+
+	/**
+	 * Modifies or creates a Dublic Core field/value pair in the DC data stream.
+	 *
+	 * @param pid pid of the digital object
+	 * @param field Dublin Core field to be added or modified
+	 * @param value new value of the field
+	 */
+	public void modifyDCField(String pid, String field, String value)
+	{
+		String dcXML;
+		byte [] b;
+		String oldValue, newValue;	
+		Pattern pattern;
+		Matcher matcher;
+		int index;
+
+		if (field.equals("identifier")) {
+			// cannot change identifier
+			log.error("attemp to change dc:identifier!");
+			return;
+		}
+
+		b = getDataStream(pid, "DC");
+		dcXML = new String(b);
+
+		// DOT matches anything including newline characters
+		pattern = Pattern.compile("<dc:" + field + ">.*</dc:" + field + ">", Pattern.DOTALL);
+		matcher = pattern.matcher(dcXML);
+
+		newValue = "<dc:" + field + ">" + value + "</dc:" + field + ">";
+
+		if (matcher.find()) {
+			// replace current value
+			oldValue = matcher.group();
+			index = matcher.start();
+			dcXML = dcXML.substring(0, index) + newValue + dcXML.substring(index + oldValue.length());
+		}
+		else {
+			// add to the end
+			index = dcXML.indexOf("</oai_dc:dc>");
+			dcXML = dcXML.substring(0, index) + newValue + "\n</oai_dc:dc>";
+		}
+
+		modifyDCDataStream(pid, dcXML.getBytes());
+	}
+
+	/**
+	 * Runs full-text search agains the gSearch service.
+	 *
+	 * @param value value of the search expression
+	 * @return list of pids
+	 */
+	public String [] searchFullText(String value)
+	{
+		String response;
+		String url;
+		List<String> resultList;
+		Pattern pattern;
+		Matcher matcher;
+		String result = "";
+		String pid;
+
+		resultList = new ArrayList<String>();
+
+		// run the search against each field
+		for (String field : gsearchFields) {
+			url = gsearchURL + "/rest?operation=gfindObjects&query=dsm." + field + "%3A\"" + value + "\"";
+
+			try {
+				response = postMethod(url);
+			} catch (Exception e) {
+				return resultList.toArray(new String[0]);
+			}
+
+			result += response;
+		}
+
+		// DOT matches anything including newline characters
+		pattern = Pattern.compile("<span class=\"hitno\">[^<]+</span><a href=\"[^\"]+\">([^<]+)</a>", Pattern.DOTALL);
+		matcher = pattern.matcher(result);
+
+		while (matcher.find()) {
+			pid = matcher.group(1);
+			if (! resultList.contains(pid)) {
+				resultList.add(pid);
+			}
+		}
+
+		return resultList.toArray(new String[0]);
 	}
 }

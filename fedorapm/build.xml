@@ -1,10 +1,10 @@
-<project name="fedorapm" default="dist" basedir=".">
+<project name="fedoraconnector" default="dist" basedir=".">
 
   <property name="src" value="src"/>
   <property name="build" value="bin"/>
   <property name="lib" value="lib"/>
   <property name="dist" value="dist"/>
-  <property name="jarfile" value="fedorapm.jar"/>
+  <property name="jarfile" value="fedoraconnector.jar"/>
 
 
   <path id="classpath">
@@ -17,6 +17,7 @@
   <target name="clean">
     <delete dir="bin"/>
     <delete dir="docs"/>
+    <delete dir="dist"/>
   </target>
 
   <target name="init">

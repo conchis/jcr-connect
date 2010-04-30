@@ -16,7 +16,7 @@
  */
 package edu.northwestern.jcr.adapter.fedora.query;
 
-import org.apache.jackrabbit.core.NodeId;
+import org.apache.jackrabbit.core.id.NodeId;
 
 import java.io.IOException;
 

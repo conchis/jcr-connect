@@ -373,7 +373,42 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 	 */
     public Object visit(TextsearchQueryNode node, Object data) 
 	{
-		return null;
+        Name propertyName = node.getRelativePath().getNameElement().getName();
+        String [] stringValues = null;
+
+		stringValues = 
+			getStringValues(propertyName, node.getQuery());
+
+		String namespaceURI = propertyName.getNamespaceURI();
+		String localName = propertyName.getLocalName();
+		String op;
+		String filter;
+
+		if (namespaceURI.equals("")) {
+			namespaceURI = "http://sling.apache.org/jcr/sling/1.0";
+		}
+
+
+		if (namespaceURI.equals("http://purl.org/dc/elements/1.1")) {
+			// evaluate DC attributes
+			filter = "regex($" + localName + ", '" + stringValues[0] + "')";
+		}
+		else {
+			filter = "regex($" + localName + ", '" + stringValues[0] + "')";
+		}
+
+		// deal with full-text search of data stream
+		if (namespaceURI.equals("http://www.jcp.org/jcr/1.0") && localName.equals("data")) {
+			return new String [] {
+				"http://www.jcp.org/jcr/1.0/data",
+				stringValues[0]
+			};
+		}
+
+		return new String [] {
+			namespaceURI + "/" + localName,
+			filter
+		};
     }
 
 	/**
@@ -412,7 +447,7 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
         Name[] orderProperties = new Name[orderSpecs.length];
         boolean[] ascSpecs = new boolean[orderSpecs.length];
         for (int i = 0; i < orderSpecs.length; i++) {
-            orderProperties[i] = orderSpecs[i].getProperty();
+            orderProperties[i] = orderSpecs[i].getPropertyPath().getNameElement().getName();
             ascSpecs[i] = orderSpecs[i].isAscending();
 			log.debug(orderProperties[i] + ", " + ascSpecs[i]);
 
@@ -438,7 +473,6 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 
 			orderbyClause += "$" + localName + ") ";
         }
-
 
 		for (int i = 0; i < steps.length; i++) {
 			Name nameTest = steps[i].getNameTest();
@@ -537,20 +571,28 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 					for (String v : parts) {
 						int index = v.lastIndexOf("/");
 						localName = v.substring(index + 1);
+
+						// deal with full-text search against data stream
+						if (v.substring(0, index).equals("http://www.jcp.org/jcr/1.0") &&
+							localName.equals("data")) {
+							// indicate this is for full-text search
+							filter = "dsm:" + s[1] + "";
+							break;
+						}
+
 						prefix = "$s <" + v + "> $" + localName + ". " + prefix;
+					}
+
+					if (filter.startsWith("dsm:")) {
+						break;
 					}
 				}
 
-				if (pred.length > 0) {
+				if (pred.length > 0 && ! filter.startsWith("dsm:")) {
 					filter = prefix + " FILTER( " + filter + " ) ";
 				}
 			}
 
-			if (i == steps.length - 1 && !orderbyVariables.equals("")) {
-				// add order by clause
-				filter += orderbyVariables;
-			}
-			
 			log.debug("filter: " + filter);
  
 			query.addStep(name, type, filter);
@@ -605,8 +647,8 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
     public Object visit(RelationQueryNode node, Object data) 
 		throws RepositoryException 
 	{
-        Name propertyName = 
-			node.getRelativePath().getNameElement().getName();
+        LocationStepQueryNode[] steps = node.getRelativePath().getPathSteps();
+        Name propertyName = steps[steps.length - 1].getNameTest();
         String [] stringValues = null;
 
 		if (node.getOperation() != QueryConstants.OPERATION_NOT_NULL) {
@@ -617,6 +659,7 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 		String localName = propertyName.getLocalName();
 		String op;
 		String filter;
+		String likeString;
 
 		if (namespaceURI.equals("")) {
 			namespaceURI = "http://sling.apache.org/jcr/sling/1.0";
@@ -625,16 +668,41 @@ public class FedoraQueryBuilder implements QueryNodeVisitor {
 		if (node.getOperation() == QueryConstants.OPERATION_EQ_GENERAL
 			|| node.getOperation() == QueryConstants.OPERATION_EQ_VALUE) {
 			op = "=";
-			filter = "regex($" + localName + ", '%57" + stringValues[0] + "$')";
+			if (namespaceURI.equals("http://purl.org/dc/elements/1.1")) {
+				// evaluate DC attributes
+				filter = "regex($" + localName + ", '^" + stringValues[0] + "$')";
+			}
+			else {
+				filter = "regex($" + localName + ", '%57" + stringValues[0] + "$')";
+			}
 		}
 		else if (node.getOperation() == QueryConstants.OPERATION_NE_GENERAL
 				 || node.getOperation() == QueryConstants.OPERATION_NE_VALUE) {
 			op = "<>";
-			filter = "!regex($" + localName + ", '%57" + stringValues[0] + "$')";
+			if (namespaceURI.equals("http://purl.org/dc/elements/1.1")) {
+				// evaluate DC attributes
+				filter = "!regex($" + localName + ", '^" + stringValues[0] + "$')";
+			}
+			else {
+				filter = "!regex($" + localName + ", '%57" + stringValues[0] + "$')";
+			}
 		}
 		else if (node.getOperation() == QueryConstants.OPERATION_NOT_NULL) {
 			op = "NN";
 			filter = "bound($" + localName + ")";
+		}
+		else if (node.getOperation() == QueryConstants.OPERATION_LIKE) {
+			// add support for jcr:like function
+			op = "LIKE";
+			// log.info("LIKE: " + stringValues[0]);
+			likeString = stringValues[0].replaceAll("%", ".*").replaceAll("_", ".*");
+			if (namespaceURI.equals("http://purl.org/dc/elements/1.1")) {
+				// evaluate DC attributes
+				filter = "regex($" + localName + ", '" + likeString + "')";
+			}
+			else {
+				filter = "regex($" + localName + ", '" + likeString + "$')";
+			}
 		}
 		else {
 			op = "";

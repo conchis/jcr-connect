@@ -122,6 +122,7 @@ public class QueryCMD
 					q = qm.createQuery(query, Query.XPATH);
 					result = q.execute();
 				} catch (Exception e) {
+					e.printStackTrace();
 					System.err.println("Illegal query expression!");
 					continue;
 				}

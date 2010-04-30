@@ -24,8 +24,7 @@ import org.apache.jackrabbit.spi.Name;
 
 import org.apache.jackrabbit.spi.commons.name.PathFactoryImpl;
 import org.apache.jackrabbit.spi.commons.name.NameFactoryImpl;
-import org.apache.jackrabbit.core.NodeId;
-import org.apache.jackrabbit.uuid.UUID;
+import org.apache.jackrabbit.core.id.NodeId;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +114,12 @@ public class QueryResultImpl implements QueryResult {
     private int numResults = -1;
 
     /**
+     * The selector names associated with the score nodes. The selector names
+     * are set when the query is executed via {@link #getResults(long)}.
+     */
+    private Name[] selectorNames;
+
+    /**
      * The number of results that are invalid, either because a node does not
      * exist anymore or because the session does not have access to the node.
      */
@@ -187,6 +192,17 @@ public class QueryResultImpl implements QueryResult {
     /**
      * {@inheritDoc}
      */
+    public String[] getSelectorNames() throws RepositoryException {
+        String[] names = new String[selectorNames.length];
+        for (int i = 0; i < selectorNames.length; i++) {
+            names[i] = session.getJCRName(selectorNames[i]);
+        }
+        return names;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public String[] getColumnNames() throws RepositoryException {
         try {
             String[] propNames = new String[selectProps.length];
@@ -213,7 +229,8 @@ public class QueryResultImpl implements QueryResult {
      */
     public RowIterator getRows() throws RepositoryException {
         return new RowIteratorImpl(getNodeIterator(), selectProps,
-								   queryImpl.getSelectorNames(), itemMgr, session
+								   null, // queryImpl.getSelectorNames(), 
+								   itemMgr, session
 								   );
     }
 

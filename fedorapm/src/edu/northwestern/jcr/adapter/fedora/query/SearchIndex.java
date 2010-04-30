@@ -17,8 +17,7 @@ package edu.northwestern.jcr.adapter.fedora.query;
 
 import org.apache.jackrabbit.core.ItemManager;
 import org.apache.jackrabbit.core.SessionImpl;
-import org.apache.jackrabbit.core.NodeId;
-import org.apache.jackrabbit.core.NodeIdIterator;
+import org.apache.jackrabbit.core.id.NodeId;
 import org.apache.jackrabbit.core.fs.FileSystem;
 import org.apache.jackrabbit.core.fs.FileSystemResource;
 import org.apache.jackrabbit.core.fs.FileSystemException;
@@ -28,10 +27,7 @@ import org.apache.jackrabbit.core.query.ExecutableQuery;
 import org.apache.jackrabbit.core.query.QueryHandler;
 import org.apache.jackrabbit.core.query.QueryHandlerContext;
 import org.apache.jackrabbit.core.state.NodeState;
-import org.apache.jackrabbit.core.state.NodeStateIterator;
 import org.apache.jackrabbit.core.state.ItemStateManager;
-import org.apache.jackrabbit.extractor.DefaultTextExtractor;
-import org.apache.jackrabbit.extractor.TextExtractor;
 import org.apache.jackrabbit.spi.commons.conversion.NamePathResolver;
 import org.apache.jackrabbit.spi.Name;
 import org.apache.jackrabbit.spi.Path;
@@ -40,12 +36,10 @@ import org.apache.jackrabbit.spi.commons.name.NameConstants;
 import org.apache.jackrabbit.spi.commons.name.PathFactoryImpl;
 import org.apache.jackrabbit.spi.commons.query.DefaultQueryNodeFactory;
 import org.apache.jackrabbit.spi.commons.query.qom.QueryObjectModelTree;
-import org.apache.jackrabbit.uuid.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Element;
 
@@ -382,14 +376,16 @@ public class SearchIndex extends AbstractQueryHandler {
      * Ignore the updates since the resource index is managed by
 	 * Fedora.
 	 *
-     * @param remove uuids of nodes to remove.
+     * @param remove ids of nodes to remove.
      * @param add    NodeStates to add. Calls to <code>next()</code> on this
      *               iterator may return <code>null</code>, to indicate that a
      *               node could not be indexed successfully.
+     * @throws RepositoryException if an error occurs while indexing a node.
+     * @throws IOException         if an error occurs while updating the index.
      */
-    public void updateNodes(NodeIdIterator remove, NodeStateIterator add)
+    public void updateNodes(Iterator<NodeId> remove, Iterator<NodeState> add)
 	{
-    }
+	}
 
     /**
      * Creates a new query by specifying the query statement itself and the
@@ -411,6 +407,7 @@ public class SearchIndex extends AbstractQueryHandler {
                                              String statement,
                                              String language)
             throws InvalidQueryException {
+		log.info("creating query: " + statement);
         QueryImpl query = new QueryImpl(session, itemMgr, this,
                 getContext().getPropertyTypeRegistry(), statement, language, getQueryNodeFactory());
         query.setRespectDocumentOrder(documentOrder);
@@ -435,6 +432,14 @@ public class SearchIndex extends AbstractQueryHandler {
             SessionImpl session,
             ItemManager itemMgr,
             QueryObjectModelTree qomTree) throws InvalidQueryException {
+		log.info("creating query using QOM tree ...");
+		return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Iterable<NodeId> getWeaklyReferringNodes(NodeId id) {
 		return null;
     }
 
@@ -480,6 +485,7 @@ public class SearchIndex extends AbstractQueryHandler {
 				Long long1, long2;
 				Calendar calendar1, calendar2;
 				Boolean boolean1, boolean2;
+				String propertyType;
 				int i;
 				int compare = 0;
 
@@ -498,15 +504,23 @@ public class SearchIndex extends AbstractQueryHandler {
 
 				for (i = 0; i < valueString1.length; ++i) {
 					// loop over the values
+					// default type (STRING) for all DC attributes
+					propertyType = "1";
+
 					value1 = valueString1[i];
-					parts = value1.split("%57");
-					value1 = parts[parts.length - 1];
+					if (value1.matches("%57")) {
+						parts = value1.split("%57");
+						value1 = parts[parts.length - 1];						
+					}
 
 					value2 = valueString2[i];
-					parts = value2.split("%57");
-					value2 = parts[parts.length - 1];
+					if (value2.matches("%57")) {
+						parts = value2.split("%57");
+						value2 = parts[parts.length - 1];
+						propertyType = parts[0];
+					}
 
-					switch (Integer.parseInt(parts[0])) {
+					switch (Integer.parseInt(propertyType)) {
 					case PropertyType.STRING:
 						if (orderSpecs[i]) {
 							compare = value1.compareTo(value2);
@@ -611,6 +625,9 @@ public class SearchIndex extends AbstractQueryHandler {
 		// query has been executes and the result is available
 		result = query.getCurrentResult();
 
+		log.info("number of hits: " + result.length);
+		log.info("number of order properties: " + orderProps.length);
+
 		if (orderProps != null && orderProps.length > 0 &&
 			result.length > 0) {
 			// do not bother if there is no result
@@ -646,7 +663,7 @@ public class SearchIndex extends AbstractQueryHandler {
 
 			String sparql = "select " + select + " from <#ri> {" +
 				where + "}";
-			log.debug(sparql);
+			log.info(sparql);
 
 			String [] resultWithProperty = 
 				FedoraPersistenceManager.fc.searchObjects(sparql, "sparql");

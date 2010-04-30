@@ -106,11 +106,6 @@ public class FedoraConnectorREST extends FedoraConnector {
 		
 			return postMethod.getStatusCode();
 		} catch (Exception e) {
-			// e.printStackTrace();
-			// log.warn("failed to post!");
-			// 
-			// return -1;
-
 			String msg = "error connecting to the Fedora server";
             log.error(msg);
             throw new RepositoryException(msg, null);
@@ -417,6 +412,34 @@ public class FedoraConnectorREST extends FedoraConnector {
 	}
 
 	/**
+	 * CHANGE ME - use REST !!!
+	 * Modfies the default Dublin Core data stream.
+	 *
+	 * @param pid pid of the object
+	 * @param bytes byte content of the new data stream
+	 */
+	public void modifyDCDataStream(String pid, byte [] bytes)
+	{
+		try {
+			// make the SOAP call on API-M using the connection stub
+			fc.getAPIM().modifyDatastreamByValue(pid,
+												 "DC",
+												 null,
+												 null,
+												 null,
+												 null,
+												 bytes,
+												 null,
+												 null,
+												 null,
+												 true);
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("failed to update DC stream!");
+		}
+	}
+
+	/**
 	 * Adds a data stream.
 	 * Wrapper of addDatastream in Fedora REST.
 	 *
@@ -480,6 +503,6 @@ public class FedoraConnectorREST extends FedoraConnector {
 		statusCode = httpDelete(url);
 		if (statusCode != SC_OK) {
 			log.warn("status code: " + statusCode);
-		};
+		}
 	}
 }

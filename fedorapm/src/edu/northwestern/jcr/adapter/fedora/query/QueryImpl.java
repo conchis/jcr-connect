@@ -28,7 +28,7 @@ import javax.jcr.query.QueryResult;
 import org.apache.jackrabbit.core.ItemManager;
 import org.apache.jackrabbit.core.SessionImpl;
 import org.apache.jackrabbit.core.nodetype.NodeTypeImpl;
-import org.apache.jackrabbit.core.nodetype.PropertyDefinitionImpl;
+import org.apache.jackrabbit.spi.commons.nodetype.PropertyDefinitionImpl;
 import org.apache.jackrabbit.core.query.PropertyTypeRegistry;
 import org.apache.jackrabbit.spi.Name;
 import org.apache.jackrabbit.spi.commons.name.NameConstants;
@@ -89,6 +89,8 @@ public class QueryImpl extends AbstractQueryImpl {
                      String language,
                      QueryNodeFactory factory) throws InvalidQueryException {
         super(session, itemMgr, index, propReg);
+		log.info("Creating query: " + statement);
+
         // parse query according to language
         // build query tree using the passed factory
         this.root = QueryParser.parse(statement, language, session, factory);
@@ -122,7 +124,7 @@ public class QueryImpl extends AbstractQueryImpl {
         Name[] orderProperties = new Name[orderSpecs.length];
         boolean[] ascSpecs = new boolean[orderSpecs.length];
         for (int i = 0; i < orderSpecs.length; i++) {
-            orderProperties[i] = orderSpecs[i].getProperty();
+            orderProperties[i] = orderSpecs[i].getPropertyPath().getNameElement().getName(); // getProperty();
             ascSpecs[i] = orderSpecs[i].isAscending();
         }
 
@@ -166,8 +168,8 @@ public class QueryImpl extends AbstractQueryImpl {
             PropertyDefinition[] propDefs = nt.getPropertyDefinitions();
             for (int i = 0; i < propDefs.length; i++) {
                 PropertyDefinitionImpl propDef = (PropertyDefinitionImpl) propDefs[i];
-                if (!propDef.definesResidual() && !propDef.isMultiple()) {
-                    selectProps.add(propDef.getQName());
+                if (/* !propDef.definesResidual() && */ !propDef.isMultiple()) {
+                    // selectProps.add(propDef.getQName());
                 }
             }
         }
@@ -194,9 +196,6 @@ public class QueryImpl extends AbstractQueryImpl {
         return this.root.needsSystemTree();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public Name[] getSelectorNames() {
         return new Name[]{DEFAULT_SELECTOR_NAME};
     }

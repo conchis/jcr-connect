@@ -16,7 +16,7 @@
  */
 package edu.northwestern.jcr.adapter.fedora.query;
 
-import org.apache.jackrabbit.core.NodeId;
+import org.apache.jackrabbit.core.id.NodeId;
 
 /**
  * <code>ScoreNode</code> implements a simple container which holds a mapping
