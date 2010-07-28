@@ -11,11 +11,13 @@
       <facet-type id="web">
         <modules>
           <module name="outliner" />
+          <module name="content_core" />
         </modules>
       </facet-type>
       <facet-type id="Scala">
         <modules>
           <module name="outliner" />
+          <module name="content_core" />
         </modules>
       </facet-type>
     </autodetection-disabled>

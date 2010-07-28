@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="0" time="0.023" errors="0" skipped="0" tests="7" name="edu.northwestern.art.content_core.properties.PropertiesSpec">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries"/>
+    <property name="java.vm.version" value="16.3-b01-279"/>
+    <property name="awt.nativeDoubleBuffering" value="true"/>
+    <property name="gopherProxySet" value="false"/>
+    <property name="mrj.build" value="10M3065"/>
+    <property name="java.vm.vendor" value="Apple Inc."/>
+    <property name="java.vendor.url" value="http://www.apple.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/Users/jonathan/Projects/jcr-connect/content_core"/>
+    <property name="java.runtime.version" value="1.6.0_20-b02-279-10M3065"/>
+    <property name="java.awt.graphicsenv" value="apple.awt.CGraphicsEnvironment"/>
+    <property name="basedir" value="/Users/jonathan/Projects/jcr-connect/content_core"/>
+    <property name="java.endorsed.dirs" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/endorsed"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.io.tmpdir" value="/var/folders/+B/+B6qXUoyGX8++StdtOQHDE+++TI/-Tmp-/"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.jnu.encoding" value="MacRoman"/>
+    <property name="java.library.path" value="/Applications/IntelliJ IDEA 9.0.2.app/Contents/Resources/Java:/System/Library/PrivateFrameworks/JavaApplicationLauncher.framework/Resources:.:/Users/jonathan/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java"/>
+    <property name="surefire.test.class.path" value="/Users/jonathan/Projects/jcr-connect/content_core/target/test-classes:/Users/jonathan/Projects/jcr-connect/content_core/target/classes:/Users/jonathan/.m2/repository/org/scala-lang/scala-library/2.8.0/scala-library-2.8.0.jar:/Users/jonathan/.m2/repository/junit/junit/4.4/junit-4.4.jar:/Users/jonathan/.m2/repository/org/scalatest/scalatest/1.2-for-scala-2.8.0.final-SNAPSHOT/scalatest-1.2-for-scala-2.8.0.final-SNAPSHOT.jar:/Users/jonathan/.m2/repository/javax/servlet/servlet-api/2.4/servlet-api-2.4.jar:/Users/jonathan/.m2/repository/javax/persistence/persistence-api/1.0/persistence-api-1.0.jar:/Users/jonathan/.m2/repository/com/h2database/h2/1.2.135/h2-1.2.135.jar:/Users/jonathan/.m2/repository/org/eclipse/persistence/eclipselink/2.0.0/eclipselink-2.0.0.jar:/Users/jonathan/.m2/repository/com/sun/jersey/jersey-server/1.3/jersey-server-1.3.jar:/Users/jonathan/.m2/repository/com/sun/jersey/jersey-core/1.3/jersey-core-1.3.jar:/Users/jonathan/.m2/repository/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar:/Users/jonathan/.m2/repository/asm/asm/3.1/asm-3.1.jar:/Users/jonathan/.m2/repository/com/sun/jersey/jersey-client/1.3/jersey-client-1.3.jar:/Users/jonathan/.m2/repository/javax/jcr/jcr/2.0/jcr-2.0.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-api/2.1.0/jackrabbit-api-2.1.0.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-core/2.1.0/jackrabbit-core-2.1.0.jar:/Users/jonathan/.m2/repository/concurrent/concurrent/1.3.4/concurrent-1.3.4.jar:/Users/jonathan/.m2/repository/commons-collections/commons-collections/3.2.1/commons-collections-3.2.1.jar:/Users/jonathan/.m2/repository/commons-io/commons-io/1.4/commons-io-1.4.jar:/Users/jonathan/.m2/repository/commons-dbcp/commons-dbcp/1.2.2/commons-dbcp-1.2.2.jar:/Users/jonathan/.m2/repository/commons-pool/commons-pool/1.3/commons-pool-1.3.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-jcr-commons/2.1.0/jackrabbit-jcr-commons-2.1.0.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-spi-commons/2.1.0/jackrabbit-spi-commons-2.1.0.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-spi/2.1.0/jackrabbit-spi-2.1.0.jar:/Users/jonathan/.m2/repository/org/slf4j/slf4j-api/1.5.8/slf4j-api-1.5.8.jar:/Users/jonathan/.m2/repository/org/apache/tika/tika-parsers/0.6/tika-parsers-0.6.jar:/Users/jonathan/.m2/repository/org/apache/tika/tika-core/0.6/tika-core-0.6.jar:/Users/jonathan/.m2/repository/org/apache/commons/commons-compress/1.0/commons-compress-1.0.jar:/Users/jonathan/.m2/repository/org/apache/pdfbox/pdfbox/1.0.0/pdfbox-1.0.0.jar:/Users/jonathan/.m2/repository/org/apache/pdfbox/fontbox/1.0.0/fontbox-1.0.0.jar:/Users/jonathan/.m2/repository/org/apache/pdfbox/jempbox/1.0.0/jempbox-1.0.0.jar:/Users/jonathan/.m2/repository/org/apache/poi/poi/3.6/poi-3.6.jar:/Users/jonathan/.m2/repository/log4j/log4j/1.2.14/log4j-1.2.14.jar:/Users/jonathan/.m2/repository/org/apache/poi/poi-scratchpad/3.6/poi-scratchpad-3.6.jar:/Users/jonathan/.m2/repository/org/apache/poi/poi-ooxml/3.6/poi-ooxml-3.6.jar:/Users/jonathan/.m2/repository/org/apache/poi/poi-ooxml-schemas/3.6/poi-ooxml-schemas-3.6.jar:/Users/jonathan/.m2/repository/org/apache/xmlbeans/xmlbeans/2.3.0/xmlbeans-2.3.0.jar:/Users/jonathan/.m2/repository/org/apache/geronimo/specs/geronimo-stax-api_1.0_spec/1.0.1/geronimo-stax-api_1.0_spec-1.0.1.jar:/Users/jonathan/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/jonathan/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar:/Users/jonathan/.m2/repository/org/ccil/cowan/tagsoup/tagsoup/1.2/tagsoup-1.2.jar:/Users/jonathan/.m2/repository/com/drewnoakes/metadata-extractor/2.4.0-beta-1/metadata-extractor-2.4.0-beta-1.jar:/Users/jonathan/.m2/repository/org/slf4j/jcl-over-slf4j/1.5.8/jcl-over-slf4j-1.5.8.jar:/Users/jonathan/.m2/repository/org/apache/lucene/lucene-core/2.4.1/lucene-core-2.4.1.jar:/Users/jonathan/.m2/repository/org/apache/derby/derby/10.5.3.0_1/derby-10.5.3.0_1.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-jcr-servlet/2.1.0/jackrabbit-jcr-servlet-2.1.0.jar:/Users/jonathan/.m2/repository/org/apache/jackrabbit/jackrabbit-jcr-rmi/2.1.0/jackrabbit-jcr-rmi-2.1.0.jar:/Users/jonathan/.m2/repository/org/slf4j/slf4j-log4j12/1.4.2/slf4j-log4j12-1.4.2.jar:"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="50.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler"/>
+    <property name="os.version" value="10.6.4"/>
+    <property name="http.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="user.home" value="/Users/jonathan"/>
+    <property name="user.timezone" value="America/Chicago"/>
+    <property name="java.awt.printerjob" value="apple.awt.CPrinterJob"/>
+    <property name="java.specification.version" value="1.6"/>
+    <property name="file.encoding" value="MacRoman"/>
+    <property name="user.name" value="jonathan"/>
+    <property name="java.class.path" value="/Users/jonathan/.m2/repository/org/apache/maven/surefire/surefire-booter/2.4.3/surefire-booter-2.4.3.jar:/Users/jonathan/.m2/repository/org/apache/maven/surefire/surefire-api/2.4.3/surefire-api-2.4.3.jar"/>
+    <property name="java.vm.specification.version" value="1.0"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home"/>
+    <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="apple.awt.CToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.6.0_20"/>
+    <property name="java.ext.dirs" value="/Users/jonathan/Library/Java/Extensions:/Library/Java/Extensions:/System/Library/Java/Extensions:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Home/lib/ext"/>
+    <property name="sun.boot.class.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsfd.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/classes.jar:/System/Library/Frameworks/JavaVM.framework/Frameworks/JavaRuntimeSupport.framework/Resources/Java/JavaRuntimeSupport.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/ui.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/laf.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/sunrsasign.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jsse.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/jce.jar:/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Classes/charsets.jar"/>
+    <property name="java.vendor" value="Apple Inc."/>
+    <property name="localRepository" value="/Users/jonathan/.m2/repository"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.apple.com/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="mrj.version" value="1060.1.6.0_20-279"/>
+    <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
+    <property name="sun.cpu.isalist" value=""/>
+  </properties>
+  <testcase time="0.002" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should store a map from names to values with types"/>
+  <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support storage of Seq values"/>
+  <testcase time="0" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support storage of map values"/>
+  <testcase time="0.005" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should have a toString method that returns a JSON rendering"/>
+  <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support rendering of nested JSONSerializable objects"/>
+  <testcase time="0.003" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="The Properties object should support contruction of a Properties intance from a JSON string"/>
+  <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="The Properties object should Throw an exception when initialized with an incorrect JSON string"/>
+</testsuite>

@@ -21,23 +21,23 @@ package edu.northwestern.art.content_core.content
 
 import java.util.Date
 
-import edu.northwestern.art.content_core.properties.Properties
-import javax.persistence.Entity
+import java.io.Serializable
+import javax.persistence.{Temporal, TemporalType, Embeddable, Entity}
 
-@Entity
-class Metadata {
+import edu.northwestern.art.content_core.properties.{JSONSerializable, Properties}
 
-  var name: String           = ""
-  var title: String          = ""
-  var description: String    = ""
-  var creators: List[String] = List()
-  var rights: List[String]   = List()
-  var types: List[String]    = List()
-  var date: Date             = null
+@Embeddable
+class Metadata extends Serializable with JSONSerializable {
+
+  var description: String     = ""
+  var creators: Array[String] = Array()
+  var rights: Array[String]   = Array()
+  var types: Array[String]    = Array()
+
+  @Temporal(TemporalType.TIMESTAMP)
+  var date: Date              = null
 
   def toJSON = Properties(
-      "name"        -> name,
-      "title"       -> title,
       "description" -> description,
       "creators"    -> creators,
       "rights"      -> rights,
