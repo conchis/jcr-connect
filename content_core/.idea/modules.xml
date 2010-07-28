@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/content_core.iml" filepath="$PROJECT_DIR$/content_core.iml" />
-      <module fileurl="file://$PROJECT_DIR$/outliner.iml" filepath="$PROJECT_DIR$/outliner.iml" />
     </modules>
   </component>
 </project>

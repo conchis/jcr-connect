@@ -20,9 +20,15 @@
 package edu.northwestern.art.content_core.images
 
 import java.awt.image.BufferedImage
+import javax.persistence.{Lob, Entity}
+import edu.northwestern.art.content_core.properties.Properties
 
-class BinaryImage(name: String, format: String,
-                  width: Int, height: Int,
-                  val image: BufferedImage)
-        extends ImageSource(name, format, width, height) {
+@Entity
+class BinaryImage extends ImageSource {
+
+  @Lob
+  var image: BufferedImage = null
+
+  def toJSON = Properties("name" -> name, "format" -> format,
+      "width" -> width, "height" -> height).toJSON
 }

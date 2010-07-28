@@ -19,4 +19,7 @@
 
 package edu.northwestern.art.content_core.images
 
-class ImageAreaMarker
+import javax.persistence.Entity
+
+class ImageAreaMarker {
+}

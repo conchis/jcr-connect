@@ -19,8 +19,13 @@
 
 package edu.northwestern.art.content_core.images
 
-class TiledImageURL(name: String, width: Int, height: Int, val url: String)
-        extends ImageSource(name, "tiled", width, height) {
-  
+import javax.persistence.Entity
+import edu.northwestern.art.content_core.properties.Properties
 
+@Entity
+class TiledImageURL extends ImageSource {
+  var url: String = ""
+
+  def toJSON = Properties("name" -> name, "format" -> format,
+      "width" -> width, "height" -> height, "url" -> url).toJSON
 }

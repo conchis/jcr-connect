@@ -21,12 +21,16 @@ package edu.northwestern.art.content_core.images
 
 import edu.northwestern.art.content_core.content.{Item, Metadata}
 import edu.northwestern.art.content_core.properties.Properties
+import javax.persistence.{OneToMany, Entity}
 
-class ImageItem(metadata: Metadata, val sources: List[ImageSource] = List())
-        extends Item {
+
+@Entity
+class ImageItem extends Item {
+
+  @OneToMany(mappedBy="item")
+  var sources: Array[ImageSource] = Array()
 
   override def toJSON = Properties(
       "metadata"  -> metadata,
-      "sources"   -> sources
-    ).toJSON
+      "sources"   -> sources).toJSON
 }

@@ -19,7 +19,14 @@
 
 package edu.northwestern.art.content_core.images
 
-class ImageURL(name: String, width: Int, height: Int, val url: String)
-        extends ImageSource(name, "url", width, height) {
+import javax.persistence.Entity
+import edu.northwestern.art.content_core.properties.Properties
 
+@Entity
+class ImageURL extends ImageSource {
+
+  var url: String = ""
+
+  def toJSON = Properties("name" -> name, "format" -> format,
+      "width" -> width, "height" -> height, "url" -> url).toJSON
 }

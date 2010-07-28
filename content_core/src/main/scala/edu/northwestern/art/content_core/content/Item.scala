@@ -32,11 +32,10 @@ class Item extends JSONSerializable {
   @Id @GeneratedValue
   var id: Int = 0
 
-  var title: String = null
-
   @Embedded
   var metadata: Metadata = null
 
+  /** URL of original source content. */
   var source: String = null
 
   @ManyToMany
@@ -114,7 +113,7 @@ class Item extends JSONSerializable {
    */
 
   def toJSON: JSONObject =
-    Properties("id" -> id, "title" -> title, "metadata" -> metadata,
+    Properties("id" -> id, "metadata" -> metadata,
       "source" -> source, "categories" -> categoryIds).toJSON
 
 }
@@ -124,8 +123,9 @@ object Item extends Storage[Item] {
   def apply(title: String, source: String): Item = {
     val item = new Item
     persist(item)
-    
-    item.title = title
+
+    item.metadata = new Metadata
+    item.metadata.title = title
     item.source = source
     item
   }

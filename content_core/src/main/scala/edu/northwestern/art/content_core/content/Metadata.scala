@@ -29,6 +29,7 @@ import edu.northwestern.art.content_core.properties.{JSONSerializable, Propertie
 @Embeddable
 class Metadata extends Serializable with JSONSerializable {
 
+  var title: String           = ""
   var description: String     = ""
   var creators: Array[String] = Array()
   var rights: Array[String]   = Array()
@@ -38,6 +39,7 @@ class Metadata extends Serializable with JSONSerializable {
   var date: Date              = null
 
   def toJSON = Properties(
+      "title"       -> title,
       "description" -> description,
       "creators"    -> creators,
       "rights"      -> rights,

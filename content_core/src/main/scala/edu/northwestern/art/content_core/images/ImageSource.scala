@@ -19,5 +19,20 @@
 
 package edu.northwestern.art.content_core.images
 
-abstract class ImageSource(val name: String, val format: String,
-                  val width: Int, val height: Int)
+import edu.northwestern.art.content_core.properties.JSONSerializable
+import javax.persistence.{ManyToOne, Id, GeneratedValue, Entity}
+
+@Entity
+abstract class ImageSource extends JSONSerializable {
+
+  @Id @GeneratedValue
+  var id: Int = 0
+
+  @ManyToOne
+  var item: ImageItem = null
+
+  var name:   String = ""
+  var format: String = ""
+  var width:  Int    = 0
+  var height: Int    = 0
+}
