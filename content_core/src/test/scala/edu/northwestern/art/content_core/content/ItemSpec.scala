@@ -96,4 +96,23 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
     }
   }
 
+  it should "track metadata" in {
+    var id = 0
+
+    transaction {
+      val md = Metadata("Tc", "Dc", creators = Array("C1c", "C2c"),
+        rights = Array("R1c"), types = Array("T1c", "T2c", "T3c"))
+      val item = Item(md, "SIC1")
+      id = item.id
+    }
+
+    val item2 = Item.find(id).get
+    val md2 = item2.metadata
+    md2.title should equal("Tc")
+    md2.description should equal("Dc")
+    md2.creators should equal(Array("C1c", "C2c"))
+    md2.rights should equal(Array("R1c"))
+    md2.types should equal(Array("T1c", "T2c", "T3c"))
+  }
+
 }

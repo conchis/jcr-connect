@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.36" errors="0" skipped="0" tests="10" name="edu.northwestern.art.content_core.content.CategorySpec">
+<testsuite failures="0" time="0.63" errors="0" skipped="0" tests="10" name="edu.northwestern.art.content_core.content.CategorySpec">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries"/>
@@ -63,14 +63,14 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.02" classname="edu.northwestern.art.content_core.content.CategorySpec" name="The Category companion object should provide a method to create new trees of nodes"/>
+  <testcase time="0.021" classname="edu.northwestern.art.content_core.content.CategorySpec" name="The Category companion object should provide a method to create new trees of nodes"/>
   <testcase time="0.009" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should track its index in the parent node"/>
   <testcase time="0.018" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should provide information on the number of child categories"/>
-  <testcase time="0.017" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should provide access to child nodes by name"/>
-  <testcase time="0.033" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should Support allow an existing category tree to be moved"/>
-  <testcase time="0.085" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should support removing a category tree"/>
-  <testcase time="0.071" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should renumber child indexes when a child is removed"/>
-  <testcase time="0.008" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should Track all Items that are in the category"/>
-  <testcase time="0.005" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should Provide a method for removing an item from this category"/>
-  <testcase time="0.088" classname="edu.northwestern.art.content_core.content.CategorySpec" name="The Category companion object should Support finding a category by categoryId"/>
+  <testcase time="0.021" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should provide access to child nodes by name"/>
+  <testcase time="0.038" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should Support allow an existing category tree to be moved"/>
+  <testcase time="0.099" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should support removing a category tree"/>
+  <testcase time="0.107" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should renumber child indexes when a child is removed"/>
+  <testcase time="0.014" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should Track all Items that are in the category"/>
+  <testcase time="0.007" classname="edu.northwestern.art.content_core.content.CategorySpec" name="A Category should Provide a method for removing an item from this category"/>
+  <testcase time="0.289" classname="edu.northwestern.art.content_core.content.CategorySpec" name="The Category companion object should Support finding a category by categoryId"/>
 </testsuite>

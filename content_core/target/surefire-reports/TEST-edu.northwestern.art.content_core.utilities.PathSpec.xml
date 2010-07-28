@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.028" errors="0" skipped="0" tests="5" name="edu.northwestern.art.content_core.utilities.PathSpec">
+<testsuite failures="0" time="0.025" errors="0" skipped="0" tests="5" name="edu.northwestern.art.content_core.utilities.PathSpec">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries"/>
@@ -63,9 +63,9 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.018" classname="edu.northwestern.art.content_core.utilities.PathSpec" name="A Path should provide an array of path name tokens"/>
+  <testcase time="0.017" classname="edu.northwestern.art.content_core.utilities.PathSpec" name="A Path should provide an array of path name tokens"/>
   <testcase time="0.001" classname="edu.northwestern.art.content_core.utilities.PathSpec" name="A Path should allow other paths to be joined into a new path"/>
-  <testcase time="0.004" classname="edu.northwestern.art.content_core.utilities.PathSpec" name="A Path should provide a normalized representation"/>
+  <testcase time="0.003" classname="edu.northwestern.art.content_core.utilities.PathSpec" name="A Path should provide a normalized representation"/>
   <testcase time="0.001" classname="A Path should provide the name (last token)(edu.northwestern.art.content_core.utilities.PathSpec)" name="A Path should provide the name "/>
   <testcase time="0.001" classname="edu.northwestern.art.content_core.utilities.PathSpec" name="A Path should provide access to the path of its parent directory"/>
 </testsuite>

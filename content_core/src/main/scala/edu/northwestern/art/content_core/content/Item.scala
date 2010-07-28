@@ -120,14 +120,25 @@ class Item extends JSONSerializable {
 
 object Item extends Storage[Item] {
 
-  def apply(title: String, source: String): Item = {
+  def create(metadata: Metadata = null, source: String = null): Item = {
     val item = new Item
     persist(item)
 
-    item.metadata = new Metadata
-    item.metadata.title = title
+    item.metadata = metadata
     item.source = source
     item
   }
+
+  def apply(title: String, source: String): Item =
+    create(Metadata(title), source)
+
+  def apply(title: String): Item =
+    create(Metadata(title), null)
+
+  def apply(metadata: Metadata, source: String): Item =
+    create(metadata, source)
+
+  def apply(metadata: Metadata): Item =
+    create(metadata, null)
   
 }

@@ -26,6 +26,10 @@ import javax.persistence.{Temporal, TemporalType, Embeddable, Entity}
 
 import edu.northwestern.art.content_core.properties.{JSONSerializable, Properties}
 
+/**
+ * Basic DC fields stored for each item.
+ */
+
 @Embeddable
 class Metadata extends Serializable with JSONSerializable {
 
@@ -46,5 +50,23 @@ class Metadata extends Serializable with JSONSerializable {
       "types"       -> types,
       "date"        -> date
     ).toJSON
+
+}
+
+object Metadata {
+
+  def apply(title: String, description: String = null,
+            creators: Array[String] = Array(), rights: Array[String] = Array(),
+            types: Array[String] = Array()): Metadata = {
+    val metadata = new Metadata
+
+    metadata.title = title
+    metadata.description = description
+    metadata.creators    = creators
+    metadata.rights      = rights
+    metadata.types       = types
+
+    metadata
+  }
 
 }

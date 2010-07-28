@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.023" errors="0" skipped="0" tests="7" name="edu.northwestern.art.content_core.properties.PropertiesSpec">
+<testsuite failures="0" time="0.025" errors="0" skipped="0" tests="7" name="edu.northwestern.art.content_core.properties.PropertiesSpec">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries"/>
@@ -63,11 +63,11 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.002" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should store a map from names to values with types"/>
+  <testcase time="0.003" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should store a map from names to values with types"/>
   <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support storage of Seq values"/>
-  <testcase time="0" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support storage of map values"/>
-  <testcase time="0.005" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should have a toString method that returns a JSON rendering"/>
-  <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support rendering of nested JSONSerializable objects"/>
-  <testcase time="0.003" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="The Properties object should support contruction of a Properties intance from a JSON string"/>
-  <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="The Properties object should Throw an exception when initialized with an incorrect JSON string"/>
+  <testcase time="0.001" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support storage of map values"/>
+  <testcase time="0.007" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should have a toString method that returns a JSON rendering"/>
+  <testcase time="0.007" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="A Properties object should support rendering of nested JSONSerializable objects"/>
+  <testcase time="0.002" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="The Properties object should support contruction of a Properties intance from a JSON string"/>
+  <testcase time="0" classname="edu.northwestern.art.content_core.properties.PropertiesSpec" name="The Properties object should Throw an exception when initialized with an incorrect JSON string"/>
 </testsuite>

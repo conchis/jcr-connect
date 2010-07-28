@@ -60,91 +60,46 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Metadata.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Metadata.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="41" column="29" selection-start="1328" selection-end="1328" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Item.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Item.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="0" selection-start="1000" selection-end="1039" vertical-scroll-proportion="0.0">
+            <state line="120" column="33" selection-start="3122" selection-end="3122" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ImageItem.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageItem.scala">
+      <file leaf-file-name="MetadataSpec.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/edu/northwestern/art/content_core/content/MetadataSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="0" selection-start="1018" selection-end="1121" vertical-scroll-proportion="0.0">
+            <state line="48" column="54" selection-start="1752" selection-end="1752" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ImageURL.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageURL.scala">
+      <file leaf-file-name="Metadata.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Metadata.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="29" column="0" selection-start="893" selection-end="1019" vertical-scroll-proportion="0.0">
+            <state line="68" column="42" selection-start="1981" selection-end="1981" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TiledImageURL.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/TiledImageURL.scala">
+      <file leaf-file-name="ItemSpec.scala" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/scala/edu/northwestern/art/content_core/content/ItemSpec.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="0" selection-start="897" selection-end="1023" vertical-scroll-proportion="0.0">
+            <state line="115" column="56" selection-start="3401" selection-end="3401" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ImageSource.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageSource.scala">
+      <file leaf-file-name="pom.xml" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="28" selection-start="1007" selection-end="1007" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BinaryImage.scala" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/BinaryImage.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="33" column="64" selection-start="1071" selection-end="1071" vertical-scroll-proportion="0.4025157">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ImageAreaMarker.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageAreaMarker.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="18" selection-start="785" selection-end="785" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ImageAreaAnnotation.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageAreaAnnotation.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="6" selection-start="733" selection-end="733" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Category.scala" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Category.scala">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="0" selection-start="1725" selection-end="1760" vertical-scroll-proportion="0.0">
+            <state line="136" column="30" selection-start="4875" selection-end="4875" vertical-scroll-proportion="3.1145039">
               <folding />
             </state>
           </provider>
@@ -164,22 +119,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/ImageItem.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageAreaAnnotation.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/time_based/AudioSource.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/time_based/VideoSource.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/Folder.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/Item.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/Thumbnail.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/time_based/TimeBasedItem.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Metadata.scala" />
-        <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Item.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageAreaMarker.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageItem.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageURL.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/TiledImageURL.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageSource.scala" />
         <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/BinaryImage.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Metadata.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/edu/northwestern/art/content_core/content/MetadataSpec.scala" />
+        <option value="$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Item.scala" />
+        <option value="$PROJECT_DIR$/src/test/scala/edu/northwestern/art/content_core/content/ItemSpec.scala" />
       </list>
     </option>
   </component>
@@ -258,7 +213,6 @@
     <panes>
       <pane id="PackagesPane" />
       <pane id="Scope" />
-      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -290,6 +244,14 @@
               <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="scala" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -353,50 +315,17 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
+              <option name="myItemId" value="resources" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="content_core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="images" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="content_core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="content_core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="scala" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="content_core" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="content" />
+              <option name="myItemId" value="META-INF" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
+      <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -413,9 +342,9 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -706,6 +635,21 @@
         <option name="Maven.BeforeRunTask" enabled="false" />
       </method>
     </configuration>
+    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="version" value="false" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="Make" enabled="true" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+      </method>
+    </configuration>
     <configuration default="true" type="TestUnitRunConfigurationType" factoryName="Test::Unit/Shoulda">
       <predefined_log_file id="RUBY_TESTUNIT" enabled="true" />
       <module name="" />
@@ -722,21 +666,6 @@
       <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_METHOD_NAME" VALUE="" />
       <RTEST_RUN_CONFIG_SETTINGS_ID NAME="TEST_TEST_TYPE" VALUE="TEST_SCRIPT" />
       <RTEST_RUN_CONFIG_SETTINGS_ID NAME="INHERITANCE_CHECK_DISABLED" VALUE="false" />
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="Make" enabled="true" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
-      <module name="" />
-      <setting name="path" value="" />
-      <setting name="package" value="" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="version" value="false" />
-      <setting name="workingDirectory" value="$PROJECT_DIR$" />
       <method>
         <option name="AntTarget" enabled="false" />
         <option name="BuildArtifacts" enabled="false" />
@@ -948,7 +877,32 @@
         <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="test-compile" />
       </method>
     </configuration>
-    <list size="8">
+    <configuration default="false" name="MetadataSpec" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="emma" />
+      <extension name="snapshooter" />
+      <module name="content_core" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" value="" />
+      <option name="PACKAGE_NAME" value="edu.northwestern.art.content_core.content" />
+      <option name="MAIN_CLASS_NAME" value="edu.northwestern.art.content_core.content.MetadataSpec" />
+      <option name="METHOD_NAME" value="" />
+      <option name="TEST_OBJECT" value="class" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="moduleWithDependencies" />
+      </option>
+      <envs />
+      <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Run" />
+      <method>
+        <option name="Maven.BeforeRunTask" enabled="true" file="$PROJECT_DIR$/pom.xml" goal="test-compile" />
+      </method>
+    </configuration>
+    <list size="9">
       <item index="0" class="java.lang.String" itemvalue="JUnit.CategorySpec" />
       <item index="1" class="java.lang.String" itemvalue="JUnit.PathSpec" />
       <item index="2" class="java.lang.String" itemvalue="JUnit.PropertiesSpec" />
@@ -957,6 +911,7 @@
       <item index="5" class="java.lang.String" itemvalue="JUnit.QueryServiceSpec" />
       <item index="6" class="java.lang.String" itemvalue="JUnit.ItemServiceSpec" />
       <item index="7" class="java.lang.String" itemvalue="JUnit.ItemSpec" />
+      <item index="8" class="java.lang.String" itemvalue="JUnit.MetadataSpec" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -990,7 +945,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="9" y="22" width="1431" height="874" extended-state="0" />
+    <frame x="45" y="136" width="1393" height="969" extended-state="0" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
@@ -1001,15 +956,15 @@
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.43589744" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.4342857" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29069766" sideWeight="0.3628205" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29069766" sideWeight="0.26666668" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16582187" sideWeight="0.7" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17349218" sideWeight="0.67885715" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25343955" sideWeight="0.7" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.29102564" sideWeight="0.9975083" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25614297" sideWeight="0.67885715" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31314287" sideWeight="0.9538347" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32692307" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1053,26 +1008,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/Folder.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="57" selection-start="1019" selection-end="1019" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/ImageItem.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="6" selection-start="798" selection-end="798" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/Item.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="0" selection-start="728" selection-end="728" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/catalog/Thumbnail.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="55" selection-start="1017" selection-end="1017" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/time_based/TimeBasedItem.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state line="27" column="30" selection-start="965" selection-end="965" vertical-scroll-proportion="0.627907" />
@@ -1083,56 +1018,34 @@
         <state line="28" column="6" selection-start="1011" selection-end="1011" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Category.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="0" selection-start="1725" selection-end="1760" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Metadata.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="41" column="29" selection-start="1328" selection-end="1328" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Item.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="0" selection-start="1000" selection-end="1039" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageAreaMarker.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="18" selection-start="785" selection-end="785" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="24" column="18" selection-start="785" selection-end="785" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageAreaAnnotation.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="6" selection-start="733" selection-end="733" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageItem.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="0" selection-start="1018" selection-end="1121" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageURL.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="29" column="0" selection-start="893" selection-end="1019" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="21" column="6" selection-start="733" selection-end="733" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/TiledImageURL.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="0" selection-start="897" selection-end="1023" vertical-scroll-proportion="0.0">
+        <state line="28" column="0" selection-start="897" selection-end="1023" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/BinaryImage.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="33" column="64" selection-start="1071" selection-end="1071" vertical-scroll-proportion="0.3713733" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageURL.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="0" selection-start="893" selection-end="1019" vertical-scroll-proportion="0.27852997" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/ImageItem.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="6" selection-start="979" selection-end="979" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1144,9 +1057,51 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/images/BinaryImage.scala">
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Category.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="33" column="64" selection-start="1071" selection-end="1071" vertical-scroll-proportion="0.4025157">
+        <state line="65" column="45" selection-start="1794" selection-end="1794" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Metadata.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="42" selection-start="1981" selection-end="1981" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/edu/northwestern/art/content_core/content/MetadataSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="48" column="54" selection-start="1752" selection-end="1752" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/content/Item.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="120" column="33" selection-start="3122" selection-end="3122" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/edu/northwestern/art/content_core/utilities/Storage.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="40" selection-start="916" selection-end="932" vertical-scroll-proportion="0.19115044">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/scala/edu/northwestern/art/content_core/content/ItemSpec.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="115" column="56" selection-start="3401" selection-end="3401" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="136" column="30" selection-start="4875" selection-end="4875" vertical-scroll-proportion="3.1145039">
           <folding />
         </state>
       </provider>

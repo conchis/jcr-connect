@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="0.189" errors="0" skipped="0" tests="3" name="edu.northwestern.art.content_core.content.ItemSpec">
+<testsuite failures="0" time="0.28" errors="0" skipped="0" tests="3" name="edu.northwestern.art.content_core.content.ItemSpec">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
     <property name="sun.boot.library.path" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.6.0/Libraries"/>
@@ -63,7 +63,7 @@
     <property name="ftp.nonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.056" classname="edu.northwestern.art.content_core.content.ItemSpec" name="An Item should provide an Array of catgories that include the item"/>
-  <testcase time="0.038" classname="edu.northwestern.art.content_core.content.ItemSpec" name="An Item should provide methods for adding and testing if the item is in a specified category"/>
-  <testcase time="0.092" classname="edu.northwestern.art.content_core.content.ItemSpec" name="An Item should allow a client to replace all categories"/>
+  <testcase time="0.067" classname="edu.northwestern.art.content_core.content.ItemSpec" name="An Item should provide an Array of catgories that include the item"/>
+  <testcase time="0.061" classname="edu.northwestern.art.content_core.content.ItemSpec" name="An Item should provide methods for adding and testing if the item is in a specified category"/>
+  <testcase time="0.147" classname="edu.northwestern.art.content_core.content.ItemSpec" name="An Item should allow a client to replace all categories"/>
 </testsuite>
