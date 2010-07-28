@@ -1,0 +1,204 @@
+<METS:mets PROFILE="EC_IMAGE" LABEL="100269" TYPE="FedoraObject" OBJID="ec:100269" xsi:schemaLocation="http://www.loc.gov/METS/ http://www.fedora.info/definitions/1/0/mets-fedora-ext.xsd" xmlns:fedora-auditing="http://fedora.comm.nsdlib.org/audit" xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:nuimg="http://www.at.northwestern.edu/fedora/xsd/nuimg" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:METS="http://www.loc.gov/METS/">
+  <METS:metsHdr RECORDSTATUS="A" LASTMODDATE="2005-04-21T16:36:07" CREATEDATE="2005-04-21T16:36:07"></METS:metsHdr>
+  <METS:dmdSecFedora STATUS="A" ID="DC">
+    <METS:descMD CREATED="2004-01-19T10:32:00" ID="DC1.0">
+      <METS:mdWrap LABEL="DC Record for 100269" OTHERMDTYPE="UNSPECIFIED" MDTYPE="OTHER" MIMETYPE="text/xml">
+        <METS:xmlData>
+<oai_dc:dc xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/">
+  <dc:title>front</dc:title>
+  <dc:creator></dc:creator>
+  <dc:description></dc:description>
+  <dc:date></dc:date>
+  <dc:type>IllustrationPostcard</dc:type>
+  <dc:format>image/jpeg</dc:format>
+  <dc:identifier>ec:100269</dc:identifier>
+  <dc:relation>ec:2334</dc:relation>
+  <dc:coverage></dc:coverage>
+  <dc:coverage></dc:coverage>
+  <dc:rights></dc:rights>
+  <dc:rights></dc:rights>
+</oai_dc:dc>
+        </METS:xmlData>      </METS:mdWrap>
+    </METS:descMD>
+  </METS:dmdSecFedora>
+  <METS:fileSec>
+    <METS:fileGrp ID="DATASTREAMS">
+      <METS:fileGrp STATUS="A" ID="DS3">
+        <METS:file OWNERID="R" SIZE="0" MIMETYPE="image/jpeg" CREATED="2004-01-19T06:32:00" ID="DS3.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/fedora/fedora/get/ec:100269/nubehav:00013/getWithHeight?HEIGHT=100" LOCTYPE="URL" xlink:title="thumbnail image"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS21">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS21.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/xsl/image/image-label.xsl" LOCTYPE="URL" xlink:title="label XSLT "></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS11">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS11.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/histsrc/100269" LOCTYPE="URL" xlink:title="Historical Sources XML"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS5">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS5.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/xsl/image/image-coverpage.xsl" LOCTYPE="URL" xlink:title="coverpage xsl"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS2">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS2.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-relationships/100269" LOCTYPE="URL" xlink:title="relationships metadata"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS9">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS9.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-assetdef/100269" LOCTYPE="URL" xlink:title="OKI Asset Definition"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="NUIMG_XML">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="NUIMG_XML1">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-nuimg/100269" LOCTYPE="URL" xlink:title="image/server metadata "></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS13">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS13.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/xsl/common/html-histsrc.xsl" LOCTYPE="URL" xlink:title="Historical Sources XSLT "></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS12">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS12.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/xsl/common/html-seealsos.xsl" LOCTYPE="URL" xlink:title="See Also XSLT"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS6">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS6.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/xsl/image/image-viewer-nuimg.xsl" LOCTYPE="URL" xlink:title="viewer page xsl"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS8">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS8.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-mix/100269" LOCTYPE="URL" xlink:title="MIX technical metadata "></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS7">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS7.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-nuimg/100269" LOCTYPE="URL" xlink:title="image/server metadata "></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS1">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS1.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-all/100269" LOCTYPE="URL" xlink:title="all metadata"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS10">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS10.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/seealsos/100269" LOCTYPE="URL" xlink:title="See Also XML"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS18">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS18.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/xsl/image/image-embeddedcontent.xsl" LOCTYPE="URL" xlink:title="embeddedcontent xsl"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS4">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS4.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-reference/100269" LOCTYPE="URL" xlink:title="reference metadata"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+      <METS:fileGrp STATUS="A" ID="DS20">
+        <METS:file OWNERID="E" SIZE="0" MIMETYPE="text/xml" CREATED="2004-01-19T11:32:00" ID="DS20.0">
+          <METS:FLocat xlink:href="http://ogden.at.northwestern.edu/tomcat/cocoon/ec/image/image-xmlcontent/100269" LOCTYPE="URL" xlink:title="XML Content"></METS:FLocat>
+        </METS:file>
+      </METS:fileGrp>
+    </METS:fileGrp>
+  </METS:fileSec>
+  <METS:structMap TYPE="fedora:dsBindingMap" ID="S3">
+    <METS:div LABEL="DS Binding Map for Addressable Image Mechanism" TYPE="nubehav:00014">
+      <METS:div ORDER="0" LABEL="MIX technical metadata for image" TYPE="xml_mixmetadata">
+        <METS:fptr FILEID="DS8"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="metadata for image server image" TYPE="xml_nuimgmetadata">
+        <METS:fptr FILEID="DS7"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="image viewer xslt (DS5)" TYPE="xsl_viewer">
+        <METS:fptr FILEID="DS6"></METS:fptr>
+      </METS:div>
+    </METS:div>
+  </METS:structMap>
+  <METS:structMap TYPE="fedora:dsBindingMap" ID="S1">
+    <METS:div LABEL="DS Binding Map for Core Mechanism" TYPE="nubehav:00006">
+      <METS:div ORDER="0" LABEL="coverpage XML (DS1)" TYPE="xml_metadata">
+        <METS:fptr FILEID="DS1"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="relationship metadata (DS2)" TYPE="xml_relationships">
+        <METS:fptr FILEID="DS2"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="thumbnail image (DS3)" TYPE="thumbnail">
+        <METS:fptr FILEID="DS3"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="reference xml (DS4)" TYPE="xml_reference">
+        <METS:fptr FILEID="DS4"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="coverpage xsl (DS5)" TYPE="xsl_coverpage">
+        <METS:fptr FILEID="DS5"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="OKI Asset Definition (DS9)" TYPE="xml_assetdef">
+        <METS:fptr FILEID="DS9"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="embeddedcontent xsl (DS18)" TYPE="xsl_embeddedcontent">
+        <METS:fptr FILEID="DS18"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="XML Content (DS20)" TYPE="xml_content">
+        <METS:fptr FILEID="DS20"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="label xsl (DS21)" TYPE="xsl_label">
+        <METS:fptr FILEID="DS21"></METS:fptr>
+      </METS:div>
+    </METS:div>
+  </METS:structMap>
+  <METS:structMap TYPE="fedora:dsBindingMap" ID="S4">
+    <METS:div LABEL="DS Binding Map for Encyclopedia Entry Behavior" TYPE="nubehav:00036">
+      <METS:div ORDER="0" LABEL="See Alsos XML (DS10)" TYPE="xml_seealsos">
+        <METS:fptr FILEID="DS10"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="Historical Sources XML (DS11)" TYPE="xml_histsrc">
+        <METS:fptr FILEID="DS11"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="See Alsos XSLT (DS12)" TYPE="xsl_seealsos">
+        <METS:fptr FILEID="DS12"></METS:fptr>
+      </METS:div>
+      <METS:div ORDER="0" LABEL="Historical Sources XML (DS13)" TYPE="xsl_histsrc">
+        <METS:fptr FILEID="DS13"></METS:fptr>
+      </METS:div>
+    </METS:div>
+  </METS:structMap>
+  <METS:structMap TYPE="fedora:dsBindingMap" ID="S2">
+    <METS:div LABEL="DS Binding Map for UVA Mechanism" TYPE="nubehav:00028">
+      <METS:div ORDER="0" LABEL="metadata for image server image" TYPE="xml_nuimgmetadata">
+        <METS:fptr FILEID="DS7"></METS:fptr>
+      </METS:div>
+    </METS:div>
+  </METS:structMap>
+  <METS:behaviorSec STATUS="A" ID="DISS3">
+    <METS:serviceBinding LABEL="Addressable Image Behaviors" CREATED="2004-01-07T06:32:00" BTYPE="nubehav:00013" STRUCTID="S3" ID="DISS3.0">
+      <METS:interfaceMD xlink:href="nubehav:00013" LOCTYPE="URN" LABEL="Addressable Image Behavior Definition"></METS:interfaceMD>
+      <METS:serviceBindMD xlink:href="nubehav:00014" LOCTYPE="URN" LABEL="Addressable Image Behavior Mechanism"></METS:serviceBindMD>
+    </METS:serviceBinding>
+  </METS:behaviorSec>
+  <METS:behaviorSec STATUS="A" ID="DISS1">
+    <METS:serviceBinding LABEL="General HTML Page Behaviors" CREATED="2004-01-07T06:32:00" BTYPE="nubehav:00005" STRUCTID="S1" ID="DISS1.0">
+      <METS:interfaceMD xlink:href="nubehav:00005" LOCTYPE="URN" LABEL="Core Behavior Definition"></METS:interfaceMD>
+      <METS:serviceBindMD xlink:href="nubehav:00006" LOCTYPE="URN" LABEL="Core Behavior Mechanism"></METS:serviceBindMD>
+    </METS:serviceBinding>
+  </METS:behaviorSec>
+  <METS:behaviorSec STATUS="A" ID="DISS4">
+    <METS:serviceBinding LABEL="Encyclopedia Entry Behaviors" CREATED="2004-01-07T06:32:00" BTYPE="nubehav:00035" STRUCTID="S4" ID="DISS4.0">
+      <METS:interfaceMD xlink:href="nubehav:00035" LOCTYPE="URN" LABEL="Core Behavior Definition"></METS:interfaceMD>
+      <METS:serviceBindMD xlink:href="nubehav:00036" LOCTYPE="URN" LABEL="Core Behavior Mechanism"></METS:serviceBindMD>
+    </METS:serviceBinding>
+  </METS:behaviorSec>
+  <METS:behaviorSec STATUS="A" ID="DISS2">
+    <METS:serviceBinding LABEL="UVA Simple Image Behaviors" CREATED="2003-10-17T11:32:00" BTYPE="demo:1" STRUCTID="S2" ID="DISS2.0">
+      <METS:interfaceMD xlink:href="demo:1" LOCTYPE="URN" LABEL="UVA Simple Image Behavior Definition"></METS:interfaceMD>
+      <METS:serviceBindMD xlink:href="nubehav:00028" LOCTYPE="URN" LABEL="Addressable image implementation of Simple Image Behavior Mechanism"></METS:serviceBindMD>
+    </METS:serviceBinding>
+  </METS:behaviorSec>
+</METS:mets>

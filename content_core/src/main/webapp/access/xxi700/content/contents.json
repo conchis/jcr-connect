@@ -1,0 +1,50 @@
+{
+   "children": [
+      {
+         "creators": [],
+         "name": "ec_100269",
+         "thumbnail": {
+            "height": 95,
+            "path": "ec_100269/thumbnail.jpg",
+            "width": 150
+         },
+         "title": "front",
+         "type": "ImageItem"
+      },
+      {
+         "creators": [],
+         "name": "ec_100270",
+         "thumbnail": {
+            "height": 94,
+            "path": "ec_100270/thumbnail.jpg",
+            "width": 150
+         },
+         "title": "back",
+         "type": "ImageItem"
+      },
+      {
+         "creators": [],
+         "name": "ec_100271",
+         "thumbnail": {
+            "height": 93,
+            "path": "ec_100271/thumbnail.jpg",
+            "width": 150
+         },
+         "title": "front",
+         "type": "ImageItem"
+      },
+      {
+         "creators": [],
+         "name": "ec_100272",
+         "thumbnail": {
+            "height": 93,
+            "path": "ec_100272/thumbnail.jpg",
+            "width": 150
+         },
+         "title": "back",
+         "type": "ImageItem"
+      }
+   ],
+   "name": "content",
+   "type": "Folder"
+}

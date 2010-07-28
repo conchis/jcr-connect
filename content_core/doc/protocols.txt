@@ -1,0 +1,27 @@
+
+TAXONOMY SERVICE
+
+GET [context]/taxon/[tid]
+	Returns JSON representation of Taxonomy
+	
+GET [context]/taxon/[tid]/[cid]
+	Returns JSON representation of category
+	Includes item counts
+	
+POST [context]/taxon/[tid]
+	Creates a new category
+
+	category id (unique in taxonomy)
+	parent id (none if top-level category)
+	category description
+	
+POST [context]/taxon/[tid]/[cid]
+	Updates category information
+	
+	category id (optional, must match)
+	parent id (may move category)
+	category description
+	
+DELETE [context]/taxon/[tid]/[cid]
+	Removes a category and all children
+	

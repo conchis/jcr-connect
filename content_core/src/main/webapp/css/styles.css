@@ -1,0 +1,22 @@
+/* Shared CSS */
+
+body, div, span, p, li, th, td {
+    font-family: arial, helvetica, sans-serif;
+    font-size: 11px;
+}
+
+body {
+    background-color: #999;
+    margin: 0px;
+}
+
+#main {
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 750px;
+    height: 490px;
+    overflow: hidden;
+    background-color: white;
+}
+

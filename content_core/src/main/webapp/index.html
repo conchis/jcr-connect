@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>JCR-Connect Search</title>
+
+    <style type="text/css">
+        @import url(js/jquery-ui/css/custom-theme/jquery-ui-1.8.2.custom.css);
+        @import url(js/webaction.css);
+        @import url(css/styles.css);
+        @import url(css/search.css);
+    </style>
+
+    <script type="text/JavaScript" src="js/jquery-1.4.2.min.js"></script>
+    <script type="text/JavaScript" src="js/base/1.0/base2-p.js"></script>
+    <script type="text/javascript" src="js/webaction.js"></script>
+    <script type="text/javascript" src="js/jquery-ui/js/jquery-ui-1.8.2.custom.min.js"></script>
+    <script type="text/JavaScript" src="js/search.js"></script>
+<script type="text/Javascript">
+
+var REPOSITORY_URL = "/jackrabbit/repository/default/content/";
+
+var search_terms = ["Street", "River", "Chicago", "Evanston"];
+var matched = [];
+
+function status(message) {
+	jQuery("#status").html(message);	
+}
+
+function search(text) {
+	status("Searching..");
+    jQuery.getJSON("search", {q: text}, function (data) {
+        var index_array = makeIndexArray(data);
+		status("" + index_array.length + " items found");
+        makeIndex(index_array);
+    });    
+}
+
+$(document).ready(function() {
+    jQuery("#tabs").tabs();
+    var search_text = jQuery("#search-text");
+    search_text.autocomplete({source: search_terms});
+    search_text.change(function () {
+        search(search_text.val());
+    });
+});
+</script>
+
+</head>
+<body>
+<div id="main">
+
+    <div id="tabs">
+        <ul>
+            <li><a href="#search">Search</a></li>
+            <li><a href="#browse">Browse</a></li>
+            <li><a href="#bookmarks">Bookmarks</a></li>
+        </ul> 
+            
+        <div id="search"> 
+            <div id="query">
+                <form>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td class="label"><label for="search-text">Search:</label></td>
+                                <td><input class="text-input" type="text" id="search-text" /></td>
+                            </tr>
+                            <tr>
+                                <td class="label"><label for="repos">Repository:</label></td>
+                                <td>
+                                    <select id="repos" class="select-input">
+                                        <option selected="selected">All Repositories</option>
+                                        <option>California Digital Libraries</option>
+                                        <option>Chicago History</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+            
+            <div id="select">
+                <div id="ranges">
+					<div id="status"></div>
+                </div>
+                <div id="thumbs">
+                </div>
+            </div>
+            
+            <div id="view">
+                <div id="view-title">
+                </div>
+                <div id="view-by">
+                </div>
+                <div id="view-image">
+                </div>
+            </div>
+        </div>
+        
+        <div id="browse">
+            <h2>Browse Repositories</h2>
+        </div>
+        
+        <div id="bookmarks">
+            <h2>Bookmarks</h2>
+        </div>
+        
+    </div>
+    
+
+</div>
+</body>
+</html>

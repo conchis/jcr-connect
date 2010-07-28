@@ -1,0 +1,122 @@
+
+#tabs {
+    position: relative;
+    width: 750px;
+    height: 490px;
+    margin: 0;
+}
+
+/*** Search Mode ***/
+
+#search {
+    position: relative;
+    width: 750px;
+    margin: 0;
+    padding: 0;
+}
+
+/* Search query */
+
+#query {
+    position: relative;
+    left: 0px;
+    width: 750px;
+    height: 60px;
+    border-bottom: 1px solid #CCC;
+    border-top: 1px solid #CCC;
+}
+
+#query form {
+    margin: 3px 5px;
+}
+
+#query .label {
+    font-weight: bold;
+    text-align: right;
+    margin-right: 8px;
+}
+
+#query .text-input {
+    background-color: #EEE;
+    border: 1px solid #999;
+    width: 200px;
+}
+
+#query .select-input {
+    width: 206px;
+}
+
+/** Browse Area */
+
+#select {
+    position: relative;
+    display: block;
+    float:left;
+    left: 0px;
+    width: 180px;
+    height: 475px;
+    border-right: 1px #CCC solid;
+}
+
+#ranges {
+    position: absolute;
+    top: 0;
+    width: 180px;
+    height: 21px;
+    background-color: #003366;
+}
+
+#status {
+    background-color: #003366;
+    color: white;
+    margin-left: 5px;
+    margin-top: 4px;
+}
+
+#thumbs {
+    position: absolute;
+    top: 21px;
+}
+
+.wa_table_body {
+    position: relative;
+    top: -18px;
+}
+
+/** View Area */
+
+#view {
+    position: relative;
+    float: right;
+    display: block;
+    margin-top: 5px;
+    width: 560px;
+}
+
+#view-title {
+    width: 550px;
+    font-size: 1.5em;
+    font-weight: bold;
+    border-bottom: 1px solid #CCC;
+}
+
+#view-by {
+    width: 550px;
+}
+
+#view-description {
+    width: 550px;
+}
+
+#view-image {
+    margin: 5px 0;
+    width: 550px;
+}
+
+/*** Categories Mode ***/
+
+
+
+/*** Advanced Mode ***/
+
+
