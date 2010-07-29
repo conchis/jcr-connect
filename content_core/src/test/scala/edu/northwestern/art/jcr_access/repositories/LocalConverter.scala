@@ -1,5 +1,5 @@
 /** 
- *Copyright 2010 Northwestern University.
+ * Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,9 +14,15 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 29 [07] 2010
+ * @version 29 July 2010
  */
 
 package edu.northwestern.art.jcr_access.repositories
 
-class LocalConverter
+/**
+ * Converts Items to JCR nodes and visa versa.
+ */
+
+class LocalConverter {
+
+}

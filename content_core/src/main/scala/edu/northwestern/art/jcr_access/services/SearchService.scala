@@ -19,4 +19,9 @@
 
 package edu.northwestern.art.jcr_access.services
 
-class SearchService
+import javax.ws.rs.Path
+
+@Path("/search")
+class SearchService {
+  
+}

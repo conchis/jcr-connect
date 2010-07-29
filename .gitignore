@@ -1,4 +1,5 @@
 .DS_Store
 **/.DS_Store
-apache-tomcat-6.0.26
-data/jackrabbit
+content_core/apache-tomcat-6.0.26
+content_core/data/jackrabbit
+content_core/target

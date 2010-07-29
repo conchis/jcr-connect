@@ -19,4 +19,10 @@
 
 package edu.northwestern.art.jcr_access.services
 
-class AccessService
+import javax.ws.rs.Path
+
+@Path("/access")
+class AccessService {
+
+  
+}
