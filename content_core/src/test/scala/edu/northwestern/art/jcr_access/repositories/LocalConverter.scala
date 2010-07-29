@@ -17,6 +17,6 @@
  * @version 29 [07] 2010
  */
 
-package edu.northwestern.art.jcr_access.services
+package edu.northwestern.art.jcr_access.repositories
 
-class AceessService
+class LocalConverter
