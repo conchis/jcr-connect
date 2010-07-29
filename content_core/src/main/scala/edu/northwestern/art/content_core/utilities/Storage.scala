@@ -99,11 +99,12 @@ object Storage {
    * @param work closure block to be executed during the transaction
    */
 
-  def transaction(work: => Unit) {
+  def transaction[T] (work: => T): T = {
     try {
       manager.getTransaction.begin
-      work
+      val result = work
       manager.getTransaction.commit
+      result
     }
     catch {
       case except: Throwable =>
@@ -111,7 +112,6 @@ object Storage {
         manager.getTransaction.rollback()
         throw except
     }
-
   }
 
   /**

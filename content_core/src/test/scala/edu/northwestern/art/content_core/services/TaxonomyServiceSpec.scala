@@ -33,7 +33,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl
 @RunWith(classOf[JUnitRunner])
 class TaxonomyServiceSpec extends FlatSpec with ShouldMatchers {
 
-  val serviceUrl = "http://localhost:8080/outliner/taxon"
+  val serviceUrl = "http://localhost:8080/content_core/taxon"
   val client = Client.create
 
 
@@ -44,7 +44,7 @@ class TaxonomyServiceSpec extends FlatSpec with ShouldMatchers {
     parameters.add("name", "T1")
     val result = resource.queryParams(parameters).post(classOf[String])
 
-    result should include("edu.northwestern.art.outliner.content.Taxonomy")
+    result should include("edu.northwestern.art.content_core.content.Taxonomy")
     result should include("\"name\":\"T1\"")
   }
 
@@ -52,7 +52,7 @@ class TaxonomyServiceSpec extends FlatSpec with ShouldMatchers {
     val resource = client.resource(serviceUrl + "/T1")
     val result = resource.get(classOf[String])
     println("r2: " + result)
-    result should include("edu.northwestern.art.outliner.content.Taxonomy")
+    result should include("edu.northwestern.art.content_core.content.Taxonomy")
     result should include("\"name\":\"T1\"")
   }
   
@@ -65,7 +65,7 @@ class TaxonomyServiceSpec extends FlatSpec with ShouldMatchers {
     val result = resource.queryParams(parameters).post(classOf[String])
 
 
-    result should include("edu.northwestern.art.outliner.content.Category")
+    result should include("edu.northwestern.art.content_core.content.Category")
     result should include("\"name\":\"C1\"")
 
     //val taxon = Taxonomy.find("T1")
@@ -75,7 +75,7 @@ class TaxonomyServiceSpec extends FlatSpec with ShouldMatchers {
 
   it should "provide JSON for a specific category" in {
     //val result = service.getCategory("T1", "C1")
-    //result should include("edu.northwestern.art.outliner.content.Category")
+    //result should include("edu.northwestern.art.content_core.content.Category")
     //result should include("\"name\":\"C1\"")
   }
 

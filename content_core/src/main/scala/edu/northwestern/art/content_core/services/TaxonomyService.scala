@@ -47,10 +47,7 @@ class TaxonomyService {
   @POST @Path("/")
   @Produces(Array("application/json"))
   def createTaxonomy(@QueryParam("name") taxonomyName: String): String = {
-    var taxonomy: Taxonomy = null
-    transaction {
-      taxonomy = Taxonomy(taxonomyName)
-    }
+    val taxonomy: Taxonomy = transaction { Taxonomy(taxonomyName) }
     return taxonomy.toString
   }
   
@@ -64,9 +61,8 @@ class TaxonomyService {
 
     try {
       val taxonomy = Taxonomy.find(taxonomyName)
-      var category: Category = null
-      transaction {
-        category = taxonomy.add(Category(categoryName))
+      val category: Category = transaction {
+        taxonomy.add(Category(categoryName))
       }
       return category.toString
     }
@@ -82,7 +78,7 @@ class TaxonomyService {
                   @PathParam("cid") categoryName: String): String = {
     try {
       val taxonomy = Taxonomy.find(taxonomyName)
-      var category: Category = taxonomy.category(categoryName)
+      val category: Category = taxonomy.category(categoryName)
       category.toString
     }
     catch {
