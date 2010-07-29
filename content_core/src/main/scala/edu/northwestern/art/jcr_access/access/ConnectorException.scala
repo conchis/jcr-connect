@@ -1,5 +1,5 @@
-/** 
- * Copyright 2010 Northwestern University.
+/**
+ *   Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,14 +14,26 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 29 [07] 2010
+ * @version 29[07] 2010
  */
 
-package edu.northwestern.art.jcr_access.services
+package edu.northwestern.art.jcr_access.access
 
-import javax.ws.rs.Path
+class ConnectorException(message: String, reason: Throwable)
+        extends RuntimeException(message, reason) {
 
-@Path("/search")
-class SearchService {
-  
+
+  /**
+   * Constructs a ConnectorException with a specified message.
+   */
+
+  def this(message: String) = this(message, null)
+
+  /**
+   * Constructs a ConnectorException with a specified reason exception,
+   * no message string.
+   */
+
+  def this(reason: Throwable) = this(null, reason)
+
 }

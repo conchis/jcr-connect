@@ -23,21 +23,38 @@ import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.content_core.catalog.Folder
 import edu.northwestern.art.content_core.content.Item
 
+import org.apache.jackrabbit.rmi.repository.URLRemoteRepository
+import javax.jcr.{PathNotFoundException, Session}
+
 /**
  * Simple connector to a local repository storing content in a straightforward
- * way -- as files and folders.
+ * way -- simple files and folders.
  */
 
-class LocalConnector extends RepositoryConnector {
+class LocalConnector(repository_url: String, user: String,
+          password: String) extends
+        RepositoryConnector(repository_url, null, user, password) {
+
+  def isItem(path: String): Boolean = {
+    session((session: Session) => {
+      try {
+        val home_node = session.getNode(path)
+        home_node.getNode("contents.json/jcr:content")
+        true
+      }
+      catch {
+        case _: PathNotFoundException =>
+          false
+      }
+    })
+  }
+
+  def isFolder(path: String): Boolean = false
 
   def catalog(path: String): Folder = null
 
   def put(path: String, item: Item) = null
 
   def get(path: String): Item = null
-
-  def isFolder(path: String): Boolean = null
-
-  def isItem(path: String): Boolean = null
 
 }

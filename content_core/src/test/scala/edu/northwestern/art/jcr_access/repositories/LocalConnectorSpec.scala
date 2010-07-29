@@ -19,4 +19,39 @@
 
 package edu.northwestern.art.jcr_access.repositories
 
-class LocalConnectorSpec
+import org.scalatest.matchers.ShouldMatchers
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FlatSpec
+import javax.jcr.Session
+
+@RunWith(classOf[JUnitRunner])
+class LocalConnectorSpec extends FlatSpec with ShouldMatchers {
+
+  val repository_url = "http://localhost:8080/jackrabbit/rmi"
+  val user = "admin"
+  val pass = "admin"
+
+  val connector = new LocalConnector(repository_url, user, pass)
+
+  "A LocalConnector" should "provide a method for executing code in a session" in {
+    connector.session((s: Session) => {
+      val content = s.getNode("/content")
+      assert(content != null)
+    })
+  }
+
+  it should "Allow session blocks to be nested without creating a second session" in {
+    connector.session((s1: Session) => {
+      connector.session((s2: Session) => {
+        s1 should equal(s2)
+      })
+    })
+  }
+
+  it should "Provide a method to determine if a specified path corresponds to an Item node" in {
+    assert(!connector.isItem("/content/foo"))
+    assert(connector.isItem("/content/ec_100647"))
+  }
+
+}

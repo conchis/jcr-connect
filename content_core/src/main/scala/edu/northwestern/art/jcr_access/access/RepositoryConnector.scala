@@ -21,23 +21,66 @@ package edu.northwestern.art.jcr_access.access
 
 import edu.northwestern.art.content_core.content.Item
 import edu.northwestern.art.content_core.catalog.Folder
+import org.apache.jackrabbit.rmi.repository.URLRemoteRepository
+import javax.jcr.{SimpleCredentials, Session}
 
 /**
  * A RepositoryConnector provides an interface for accessing content
  * as content_core Items in a repository.
  */
 
-trait RepositoryConnector {
+abstract class RepositoryConnector(val repository_url: String, workspace: String,
+    val user: String, val password: String) {
+
+  /** JCR Repository accessed via this connector */
+  val repository = new URLRemoteRepository(repository_url)
+
+  /** Login credentials for repository. */
+  val credentials = new SimpleCredentials(user, password.toCharArray)
+
+  /** JCR Session if active, null otherwise. */
+  private var saved_session: Session = null
 
   /**
-   * Returns true only if the specified path identifies an Item
+   * Returns the current session if one if active.
+   */
+
+  def session: Session =
+    if (saved_session !=null)
+      saved_session
+    else
+      throw new ConnectorException("No active JCR session")
+
+  /**
+   *  Executes a function within a JCR repository session. The JCR session is
+   * passed to the callback function. This method is designed to allow
+   * calls to be nested without creating a new session.
+   */
+
+  def session[T] (callback: (Session) => T): T = {
+    if (saved_session == null) {
+      saved_session = repository.login(credentials, workspace)
+      try {
+        callback(saved_session)
+      }
+      finally {
+        saved_session.logout
+        saved_session = null
+      }
+    }
+    else
+      callback(saved_session)
+  }
+
+  /**
+   *  Returns true only if the specified path identifies an Item
    * in the repository.
    */
 
   def isItem(path: String): Boolean
 
   /**
-   * Returns true only if the specified path corrsponds to a Folder
+   * Returns true only if the specified path corresponds to a Folder
    * in the repository.
    */
 
