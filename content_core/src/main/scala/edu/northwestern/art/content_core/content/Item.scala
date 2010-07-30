@@ -21,6 +21,9 @@ package edu.northwestern.art.content_core.content
 
 import java.util.ArrayList
 import javax.persistence._
+
+import scala.collection.JavaConversions._
+
 import org.json.JSONObject
 
 import edu.northwestern.art.content_core.utilities.Storage
@@ -32,17 +35,27 @@ class Item extends JSONSerializable {
   @Id @GeneratedValue
   var id: Int = 0
 
+  /** Name of item */
+  var name: String = ""
+
   @Embedded
   var metadata: Metadata = null
 
-  /** URL of original source content. */
-  var source: String = null
-
   @ManyToMany
-  var category_references: java.util.List[Category] = new ArrayList
+  var categories: java.util.List[Category] = new ArrayList
 
   /**
-   * Returns true only if this item is in a specified category.
+   * Selectively initializes fields of an Item.
+   */
+
+  protected def initialize(metadata: Metadata = this.metadata,
+          categories: Iterable[Category] = this.categories) {
+    this.metadata = metadata
+    setCategories(this.categories)
+  }
+
+  /**
+   *  Returns true only if this item is in a specified category.
    */
 
   def inCategory(category: Category): Boolean = category.containsItem(this)
@@ -78,18 +91,11 @@ class Item extends JSONSerializable {
   def removeFrom(categoryId: String): Boolean = removeFrom(Category.find(categoryId))
 
   /**
-   * Returns an Array of Category objects that include this item.
-   */
-
-  def categories: Array[Category] =
-    category_references.toArray map (_.asInstanceOf[Category])
-
-  /**
    * Sets the categories that this item belongs to.
    */
 
-  def categories_= (newCategories: Array[Category]) {
-    categories.forall(removeFrom)
+  def setCategories(newCategories: Iterable[Category]) {
+    categories.toList.forall(removeFrom)
     newCategories.forall(addTo)
   }
 
@@ -98,14 +104,14 @@ class Item extends JSONSerializable {
    * for all categories in this item.
    */
 
-  def categoryIds: Array[String] = categories.map(_.categoryId)
+  def categoryIds = categories map(_.categoryId)
 
   /**
    * Sets the ids of all categories that should contain this item.
    */
 
-  def categoryIds_= (newIds: Array[String]) {
-    categories = newIds.map(Category.find)
+  def categoryIds_= (newIds: Iterable[String]) {
+    setCategories(newIds map(Category.find))
   }
 
   /**
@@ -114,31 +120,27 @@ class Item extends JSONSerializable {
 
   def toJSON: JSONObject =
     Properties("id" -> id, "metadata" -> metadata,
-      "source" -> source, "categories" -> categoryIds).toJSON
+      "categories" -> categoryIds).toJSON
 
 }
 
 object Item extends Storage[Item] {
 
-  def create(metadata: Metadata = null, source: String = null): Item = {
+  def create(metadata: Metadata = null): Item = {
     val item = new Item
     persist(item)
 
     item.metadata = metadata
-    item.source = source
     item
   }
 
   def apply(title: String, source: String): Item =
-    create(Metadata(title), source)
+    create(Metadata(title))
 
   def apply(title: String): Item =
-    create(Metadata(title), null)
+    create(Metadata(title))
 
   def apply(metadata: Metadata, source: String): Item =
-    create(metadata, source)
-
-  def apply(metadata: Metadata): Item =
-    create(metadata, null)
+    create(metadata)
   
 }

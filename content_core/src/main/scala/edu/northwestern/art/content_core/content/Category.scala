@@ -22,6 +22,8 @@ package edu.northwestern.art.content_core.content
 import javax.persistence._
 import org.json.JSONObject
 
+import scala.collection.JavaConversions._
+
 import edu.northwestern.art.content_core.utilities.Storage
 import edu.northwestern.art.content_core.properties.{Properties, JSONSerializable}
 import java.util.{ArrayList, Date}
@@ -44,6 +46,10 @@ class Category extends JSONSerializable {
   /** Index of this Category in parent Category */
   var index: Int = 0
 
+  /** Subcategories of this category. */
+  @OneToMany(mappedBy="parent") @OrderBy("index")
+  var subcategories: java.util.List[Category] = new ArrayList
+
   /** Category Name */
   var name: String = null
 
@@ -52,8 +58,8 @@ class Category extends JSONSerializable {
   var description: String = null
 
   /** Items in category. */
-  @ManyToMany(mappedBy="category_references")
-  var item_references: java.util.List[Item] = new ArrayList
+  @ManyToMany(mappedBy="categories")
+  var items: java.util.List[Item] = new ArrayList
 
   /**Time stamp for node creation. */
   @Temporal(TemporalType.TIMESTAMP)
@@ -82,7 +88,7 @@ class Category extends JSONSerializable {
   def belongsTo(taxonomy: Taxonomy) {
     if (taxonomy != this.taxonomy) {
       this.taxonomy = taxonomy
-      children.foreach(_.belongsTo(taxonomy))  
+      subcategories.foreach(_.belongsTo(taxonomy))
     }
   }
 
@@ -90,25 +96,7 @@ class Category extends JSONSerializable {
    * Returns a count of child (sub) Categories.
    */
   
-  def count: Int = {
-    val query = Category.manager.createQuery(
-      "SELECT Count(n) FROM Category n WHERE n.parent.id = :this_id ")
-    query.setParameter("this_id", id)
-    query.getSingleResult.asInstanceOf[Long].toInt
-  }
-
-  /**
-   * Returns an Array[Category] of child (sub) Categories.
-   */
-
-  def children: Array[Category] = {
-    val query = Category.manager.createQuery(
-      "SELECT n FROM Category n " +
-              "WHERE n.parent.id = :this_id " +
-              "ORDER BY n.index ASC")
-    query.setParameter("this_id", id)
-    query.getResultList.toArray map (_.asInstanceOf[Category])
-  }
+  def count: Int = subcategories.size
 
   /**
    * Returns Some(category) if the category has a child with a
@@ -116,7 +104,7 @@ class Category extends JSONSerializable {
    */
 
   def get(name: String): Option[Category] =
-    children.find(_.name == name)
+    subcategories.find(_.name == name)
 
   /**
    * Adds a child node to this node. An index may be specified,
@@ -128,6 +116,7 @@ class Category extends JSONSerializable {
     if (index == -1) {
       child.index = count
       child.parent = this
+      subcategories.add(child)
     }
     else {
       val new_index =
@@ -139,6 +128,7 @@ class Category extends JSONSerializable {
       reorderChildren(new_index, 1)
       child.index = new_index
       child.parent = this
+      subcategories.add(new_index, child)
     }
     updated = new Date
   }
@@ -149,6 +139,7 @@ class Category extends JSONSerializable {
 
   def detachChild(child: Category): Boolean = {
     if (child.parent != null && child.parent.id == id) {
+      subcategories.remove(child)
       child.parent = null
       reorderChildren(child.index, 0)
       updated = new Date
@@ -170,7 +161,7 @@ class Category extends JSONSerializable {
    */
 
   def remove {
-    for (child <- children)
+    for (child <- subcategories.toList)
       child.remove
     detach
     Category.manager.remove(this)
@@ -183,11 +174,11 @@ class Category extends JSONSerializable {
    */
 
   private def reorderChildren(start: Int, offset: Int) {
-    val categories = children
-    println("children: " + categories.toList)
-    println("start: " + start + ", end = " + (categories.length - 1))
-    for (index <- start to categories.length - 1) {
-      val child = categories(index)
+    //val categories: List[Category] = subcategories
+    println("children: " + subcategories.toList)
+    println("start: " + start + ", end = " + (subcategories.size - 1))
+    for (index <- start to subcategories.size - 1) {
+      val child = subcategories(index)
       println("renum " + child + " index := " + (index + offset))
       child.index = index + offset
     }
@@ -197,40 +188,35 @@ class Category extends JSONSerializable {
    * Returns true if this Category contains a specified Item.
    */
 
-  def containsItem(item: Item): Boolean =
-    item_references != null && item_references.contains(item)
+  def containsItem(item: Item): Boolean = items.contains(item)
 
   /**
    * Adds an Item to this Category.
    */
 
-  def addItem(item: Item): Boolean =
+  def addItem(item: Item): Boolean = {
     if (containsItem(item))
       false
-    else {  
-      item_references.add(item)
-      item.category_references.add(this)
+    else {
+      items.add(item)
+      item.categories.add(this)
       true
     }
+  }
 
   /**
    * Removes an Item from this category.
    */
 
   def removeItem(item: Item): Boolean = {
-    item.category_references.remove(this)
-    item_references.remove(item)
-  }
-
-  /**
-   *  Returns an array of items in this Category.
-   */
-
-  def items: Array[Item] =
-    if (item_references == null)
-      Array()
+    if (containsItem(item)) {
+      item.categories.remove(this)
+      items.remove(item)
+      true
+    }
     else
-      item_references.toArray map (_.asInstanceOf[Item])
+      false
+  }
 
   /**
    *     Returns a JSON rendering of this node.
@@ -240,7 +226,7 @@ class Category extends JSONSerializable {
     if (count > 0)
       Properties(
         "class" -> classOf[Category].getCanonicalName,
-        "id" -> id, "name" -> name, "children" -> children).toJSON
+        "id" -> id, "name" -> name, "subcategories" -> subcategories).toJSON
     else
       Properties(
         "class" -> classOf[Category].getCanonicalName,
@@ -256,7 +242,7 @@ class Category extends JSONSerializable {
 
 object Category extends Storage[Category] {
 
-  def create(name: String, children: Array[Category]) = {
+  def create(name: String, subcategories: Array[Category]) = {
     val category = new Category()
     persist(category)
 
@@ -264,7 +250,7 @@ object Category extends Storage[Category] {
     category.created = new Date()
     category.updated = new Date()
 
-    children.foreach(category.add(_))
+    subcategories.foreach(category.add(_))
     category
   }
 
@@ -272,8 +258,8 @@ object Category extends Storage[Category] {
    * Creates a new Category, or nested tree of Category objects.
    */
 
-  def apply(name: String, children: Category*): Category =
-    create(name, Array(children: _*))
+  def apply(name: String, subcategories: Category*): Category =
+    create(name, Array(subcategories: _*))
 
   /**
    * Find a category with a specified Taxonomy and name.

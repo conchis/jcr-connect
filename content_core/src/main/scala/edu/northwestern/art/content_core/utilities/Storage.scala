@@ -100,7 +100,7 @@ object Storage {
    */
 
   def transaction[T] (work: => T): T = {
-    try {
+    try {                                                                    
       manager.getTransaction.begin
       val result = work
       manager.getTransaction.commit

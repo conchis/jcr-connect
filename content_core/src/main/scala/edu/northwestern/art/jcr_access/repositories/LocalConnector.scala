@@ -20,11 +20,13 @@
 package edu.northwestern.art.jcr_access.repositories
 
 import edu.northwestern.art.jcr_access.access.RepositoryConnector
-import edu.northwestern.art.content_core.catalog.Folder
 import edu.northwestern.art.content_core.content.Item
 
 import org.apache.jackrabbit.rmi.repository.URLRemoteRepository
-import javax.jcr.{PathNotFoundException, Session}
+import org.json.JSONObject
+import javax.jcr.{Node, PathNotFoundException, Session}
+import edu.northwestern.art.content_core.catalog.{ImageItem, Folder}
+import edu.northwestern.art.content_core.images.ImageItem
 
 /**
  * Simple connector to a local repository storing content in a straightforward
@@ -36,10 +38,9 @@ class LocalConnector(repository_url: String, user: String,
         RepositoryConnector(repository_url, null, user, password) {
 
   def isItem(path: String): Boolean = {
-    session((session: Session) => {
+    session((jcr_session: Session) => {
       try {
-        val home_node = session.getNode(path)
-        home_node.getNode("contents.json/jcr:content")
+        getItemJSON(jcr_session.getNode(path))
         true
       }
       catch {
@@ -49,12 +50,27 @@ class LocalConnector(repository_url: String, user: String,
     })
   }
 
-  def isFolder(path: String): Boolean = false
+  def get(path: String): Item = {
+    null    
+  }
 
   def catalog(path: String): Folder = null
 
   def put(path: String, item: Item) = null
 
-  def get(path: String): Item = null
+  private def getItemJSON(node: Node): JSONObject = {
+    val contents = node.getNode("contents.json/jcr:content");
+    new JSONObject(contents.getProperty("jcr:data").getString)
+  }
+
+  /*private def makeItem(node: Node): Item = {
+    val content = getContentJSON(node)
+    val name: String = parent.getName
+    val metadata = content.getJSONObject("metadata")
+    val creators = getCreators(metadata)
+    val title: String = metadata.getString("title")
+    ImageItem(name, title, creators, getThumb(name, content))
+  }
+  */
 
 }

@@ -41,7 +41,7 @@ class LocalConnectorSpec extends FlatSpec with ShouldMatchers {
     })
   }
 
-  it should "Allow session blocks to be nested without creating a second session" in {
+  it should "Allow session blocks to be nested without creating a second JCR session" in {
     connector.session((s1: Session) => {
       connector.session((s2: Session) => {
         s1 should equal(s2)

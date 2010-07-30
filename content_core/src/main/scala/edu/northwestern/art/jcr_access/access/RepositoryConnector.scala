@@ -1,5 +1,5 @@
 /**
- *     Copyright 2010 Northwestern University.
+ * Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -52,7 +52,7 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
       throw new ConnectorException("No active JCR session")
 
   /**
-   *  Executes a function within a JCR repository session. The JCR session is
+   * Executes a function within a JCR repository session. The JCR session is
    * passed to the callback function. This method is designed to allow
    * calls to be nested without creating a new session.
    */
@@ -78,13 +78,6 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
    */
 
   def isItem(path: String): Boolean
-
-  /**
-   * Returns true only if the specified path corresponds to a Folder
-   * in the repository.
-   */
-
-  def isFolder(path: String): Boolean
 
   /**
    * Returns an Item (not managed) containing content from the specified

@@ -24,6 +24,9 @@ import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 
+import scala.collection.JavaConversions._
+import scala.collection.mutable.ArrayBuffer
+
 import edu.northwestern.art.content_core.utilities.Storage
 import edu.northwestern.art.content_core.utilities.Storage.transaction
 
@@ -44,9 +47,9 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
       c2.addItem(item)
       c3.addItem(item)
 
-      item.categories.map(_.categoryId) should equal(Array("XT1:XC1", "XT1:XC2", "XT1:XC3"))
+      item.categories.map(_.categoryId) should equal(ArrayBuffer("XT1:XC1", "XT1:XC2", "XT1:XC3"))
 
-      item.categoryIds should equal(Array("XT1:XC1", "XT1:XC2", "XT1:XC3"))
+      item.categoryIds should equal(ArrayBuffer("XT1:XC1", "XT1:XC2", "XT1:XC3"))
     }
   }
 
@@ -89,10 +92,14 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
       item.addTo(c1)
       item.addTo(c2)
 
-      item.categoryIds should equal(Array("BT1:BC1", "BT1:BC2"))
+      item.categoryIds should equal(ArrayBuffer("BT1:BC1", "BT1:BC2"))
+
+      println("START in cats " + item.categoryIds)
       item.categoryIds = Array("BT1:BC3", "BT1:BC4")
 
-      item.categoryIds should equal(Array("BT1:BC3", "BT1:BC4"))
+      println("cat ids: " + item.categoryIds)
+
+      item.categoryIds should equal(ArrayBuffer("BT1:BC3", "BT1:BC4"))
     }
   }
 

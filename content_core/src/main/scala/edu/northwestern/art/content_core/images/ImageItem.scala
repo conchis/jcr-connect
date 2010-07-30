@@ -31,6 +31,12 @@ class ImageItem extends Item {
   var sources: Array[ImageSource] = Array()
 
   override def toJSON = Properties(
+      "name"      -> name,
       "metadata"  -> metadata,
       "sources"   -> sources).toJSON
 }
+
+object ImageItem {
+  
+}
+

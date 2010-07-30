@@ -19,6 +19,7 @@
 
 package edu.northwestern.art.content_core.properties
 
+import scala.collection.JavaConversions._
 import org.json.{JSONArray, JSONObject}
 
 /**
@@ -40,8 +41,8 @@ object PropertyValue {
   implicit def asPropertyValue(value: JSONSerializable) =
     new JSONValue(value)
 
-  implicit def asPropertyValue(values: Seq[_]) =
-    new ArrayValue(values map apply)
+  implicit def asPropertyValue(values: Iterable[_]) =
+    new ArrayValue(values.toList map apply)
 
   implicit def asPropertyValue(map: Map[_, _]) = {
     val property_map =
@@ -80,15 +81,17 @@ object PropertyValue {
     case value: Int                     => asPropertyValue(value)
     case value: Boolean                 => asPropertyValue(value)
     case value: String                  => asPropertyValue(value)
-    case value: Seq[_]                  => asPropertyValue(value)
     case value: Map[_, _]               => asPropertyValue(value)
+    case value: Iterable[_]             => asPropertyValue(value)
     case value: Array[_]                => asPropertyValue(value)
+    case value: java.util.Collection[_] => asPropertyValue(value)
     case value: JSONObject              => asPropertyValue(value)
     case value: JSONArray               => asPropertyValue(value)
     case value: JSONSerializable        => asPropertyValue(value)
     case value: PropertyValue           => value
     case _ =>
-      throw new Exception("Unknown property type: " + source)
+      throw new PropertyException("Unknown property type: " +
+              source.asInstanceOf[AnyRef].getClass)
   }
 
   implicit def toInt(property_value: PropertyValue): Int =

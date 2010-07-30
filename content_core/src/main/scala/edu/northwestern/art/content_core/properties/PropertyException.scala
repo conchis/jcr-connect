@@ -1,5 +1,5 @@
 /** 
- *Copyright 2010 Northwestern University.
+ * Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,14 +14,22 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 22 [07] 2010
+ * @version 30 July 2010
  */
 
-package edu.northwestern.art.content_core.users
+package edu.northwestern.art.content_core.properties
 
-import javax.persistence.Entity
-import edu.northwestern.art.content_core.content.Item
+/**
+ * Exception thrown when properties are invalid.
+ */
 
-@Entity
-class Group extends Agent {
+class PropertyException(message: String, reason: Throwable)
+        extends RuntimeException(message, reason) {
+
+  /** Constructs a PropertyException with a descriptive message. */
+  def this(message: String) = this(message, null)
+
+  /** Constructs a PropertyException wrapping another Throwable. */
+  def this(reason: Throwable) = this(null, reason)
+
 }
