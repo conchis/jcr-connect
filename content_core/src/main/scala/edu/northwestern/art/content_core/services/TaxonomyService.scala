@@ -47,7 +47,7 @@ class TaxonomyService {
   @POST @Path("/")
   @Produces(Array("application/json"))
   def createTaxonomy(@QueryParam("name") taxonomyName: String): String = {
-    val taxonomy: Taxonomy = transaction { Taxonomy(taxonomyName) }
+    val taxonomy: Taxonomy = transaction { Taxonomy.create(taxonomyName) }
     return taxonomy.toString
   }
   
@@ -62,7 +62,7 @@ class TaxonomyService {
     try {
       val taxonomy = Taxonomy.find(taxonomyName)
       val category: Category = transaction {
-        taxonomy.add(Category(categoryName))
+        taxonomy.add(Category.create(categoryName))
       }
       return category.toString
     }

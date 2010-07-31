@@ -101,14 +101,19 @@ class Taxonomy extends JSONSerializable {
 
 object Taxonomy extends Storage[Taxonomy] {
 
-  def apply(name: String, description: String = null): Taxonomy = {
-    val taxonomy = new Taxonomy
-    manager.persist(taxonomy)
+  def initialize(taxonomy: Taxonomy, name: String, description: String,
+      categoryTree: Category) = {
     taxonomy.name = name
     taxonomy.description = description
-    taxonomy.categoryTree = Category("/")
-    taxonomy.categoryTree.belongsTo(taxonomy)
+    taxonomy.categoryTree = categoryTree
+    categoryTree.belongsTo(taxonomy)
     taxonomy
+  }
+
+  def create(name: String, description: String = null): Taxonomy = {
+    val taxonomy = new Taxonomy
+    manager.persist(taxonomy)
+    initialize(taxonomy, name, description, Category.create("/"))
   }
 
   /**

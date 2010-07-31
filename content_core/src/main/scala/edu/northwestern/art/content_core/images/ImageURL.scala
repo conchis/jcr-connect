@@ -19,10 +19,11 @@
 
 package edu.northwestern.art.content_core.images
 
-import javax.persistence.Entity
 import edu.northwestern.art.content_core.properties.Properties
+import javax.persistence.{Inheritance, InheritanceType, Entity}
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 class ImageURL extends ImageSource {
 
   var url: String = ""

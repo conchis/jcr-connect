@@ -45,50 +45,46 @@ class Item extends JSONSerializable {
   var categories: java.util.List[Category] = new ArrayList
 
   /**
-   * Selectively initializes fields of an Item.
-   */
-
-  protected def initialize(metadata: Metadata = this.metadata,
-          categories: Iterable[Category] = this.categories) {
-    this.metadata = metadata
-    setCategories(this.categories)
-  }
-
-  /**
    *  Returns true only if this item is in a specified category.
    */
 
-  def inCategory(category: Category): Boolean = category.containsItem(this)
+  def inCategory(category: Category): Boolean =
+    category.containsItem(this)
 
   /**
    * Returns true only if this item is in a category specified by categoryId.
    */
 
-  def inCategory(categoryId: String): Boolean = inCategory(Category.find(categoryId))
+  def inCategory(categoryId: String): Boolean =
+    inCategory(Category.find(categoryId))
 
   /**
    * Adds this item to a specified category.
    */
 
-  def addTo(category: Category): Boolean = category.addItem(this)
+  def addTo(category: Category): Boolean =
+    category.addItem(this)
 
   /**
    * Adds this item to a category specified by categoryId.
    */
 
-  def addTo(categoryId: String): Boolean = addTo(Category.find(categoryId))
+  def addTo(categoryId: String): Boolean =
+    addTo(Category.find(categoryId))
 
   /**
    * Removes this item from a specified category.
    */
 
-  def removeFrom(category: Category): Boolean = category.removeItem(this)
+  def removeFrom(category: Category): Boolean =
+    category.removeItem(this)
 
   /**
    * Removes this item from a category specified by categoryId.
    */
 
-  def removeFrom(categoryId: String): Boolean = removeFrom(Category.find(categoryId))
+  def removeFrom(categoryId: String): Boolean =
+    removeFrom(Category.find(categoryId))
 
   /**
    * Sets the categories that this item belongs to.
@@ -126,21 +122,19 @@ class Item extends JSONSerializable {
 
 object Item extends Storage[Item] {
 
-  def create(metadata: Metadata = null): Item = {
-    val item = new Item
-    persist(item)
-
+  def initialize(item: Item, name: String, metadata: Metadata,
+      categories: Iterable[Category]) = {
+    item.name = name
     item.metadata = metadata
+    item.categories = new ArrayList(categories)
     item
   }
 
-  def apply(title: String, source: String): Item =
-    create(Metadata(title))
-
-  def apply(title: String): Item =
-    create(Metadata(title))
-
-  def apply(metadata: Metadata, source: String): Item =
-    create(metadata)
+  def create(name: String, metadata: Metadata = null,
+      categories: Iterable[Category] = List()): Item = {
+    val item = new Item
+    persist(item)
+    initialize(item, name, metadata, categories)
+  }
   
 }

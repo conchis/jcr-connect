@@ -19,16 +19,20 @@
 
 package edu.northwestern.art.content_core.images
 
-import edu.northwestern.art.content_core.content.{Item, Metadata}
-import edu.northwestern.art.content_core.properties.Properties
-import javax.persistence.{OneToMany, Entity}
+import scala.collection.JavaConversions._
 
+import javax.persistence.{OneToMany, Entity}
+import java.util.ArrayList
+
+import edu.northwestern.art.content_core.properties.Properties
+import edu.northwestern.art.content_core.content.{Category, Item, Metadata}
+import edu.northwestern.art.content_core.utilities.Storage
 
 @Entity
 class ImageItem extends Item {
 
   @OneToMany(mappedBy="item")
-  var sources: Array[ImageSource] = Array()
+  var sources: java.util.List[ImageSource] = new ArrayList
 
   override def toJSON = Properties(
       "name"      -> name,
@@ -36,7 +40,22 @@ class ImageItem extends Item {
       "sources"   -> sources).toJSON
 }
 
-object ImageItem {
-  
+object ImageItem extends Storage[ImageItem] {
+
+  def initialize(item: ImageItem, name: String, metadata: Metadata,
+      categories: Iterable[Category], sources: Iterable[ImageSource]):
+      ImageItem = {
+    Item.initialize(item, name, metadata, categories)
+    item.sources = new ArrayList(sources)
+    item
+  }
+
+  def create(name: String, metadata: Metadata,
+      categories: Iterable[Category] = List(),
+      sources: Iterable[ImageSource] = List()) = {
+    val item = new ImageItem
+    persist(item)
+    initialize(item, name, metadata, categories, sources)
+  }
 }
 

@@ -36,8 +36,9 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
   "The Category companion object" should "provide a method to create new trees of nodes" in {
     var n: Category = null
     transaction {
-      n = Category("C1",
-            Category("C2"), Category("C3"))
+      n = Category.create("C1",
+            Category.create("C2"),
+            Category.create("C3"))
     }
     n.name should equal("C1")
     val children = n.subcategories
@@ -49,9 +50,9 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
   "A Category" should "track its index in the parent node" in {
     var n: Category = null
     transaction {
-      n = Category("C4",
-            Category("C5"),
-            Category("C6"))
+      n = Category.create("C4",
+            Category.create("C5"),
+            Category.create("C6"))
     }
     val children = n.subcategories
     children.size should equal(2)
@@ -62,11 +63,11 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
   "A Category" should "provide information on the number of child categories" in {
     var n: Category = null
     transaction {
-      n = Category("C4",
-            Category("C5",
-              Category("C5.1")),
-            Category("C6"),
-            Category("C7"))
+      n = Category.create("C4",
+            Category.create("C5",
+              Category.create("C5.1")),
+            Category.create("C6"),
+            Category.create("C7"))
     }
 
     n.count should equal(3)
@@ -77,10 +78,10 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
   "A Category" should "provide access to child nodes by name" in {
     var n: Category = null;
     transaction {
-      n = Category("C8",
-            Category("C9" ),
-            Category("C10"),
-            Category("C11"))
+      n = Category.create("C8",
+            Category.create("C9" ),
+            Category.create("C10"),
+            Category.create("C11"))
     }
     val c10 = n.get("C10")
     c10.get.name should equal("C10")
@@ -96,10 +97,10 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
   it should "Support allow an existing category tree to be moved" in {
     var n: Category = null;
     transaction {
-      n = Category("N1",
-            Category("N2",
-              Category("N3",
-                Category("N4"))))
+      n = Category.create("N1",
+            Category.create("N2",
+              Category.create("N3",
+                Category.create("N4"))))
     }
     transaction {
       val n3 = n.get("N2").get.get("N3")
@@ -118,10 +119,10 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
     var n3: Category = null
     var n4: Category = null
     transaction {
-      n1 = Category("N1")
-      n2 = Category("N2")
-      n3 = Category("N3")
-      n4 = Category("N4")
+      n1 = Category.create("N1")
+      n2 = Category.create("N2")
+      n3 = Category.create("N3")
+      n4 = Category.create("N4")
 
       n2.add(n4)
       n2.add(n3)
@@ -143,11 +144,11 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
     var n4: Category = null
     var n5: Category = null
     transaction {
-      n1 = Category("N1")
-      n2 = Category("N2")
-      n3 = Category("N3")
-      n4 = Category("N4")
-      n5 = Category("N5")
+      n1 = Category.create("N1")
+      n2 = Category.create("N2")
+      n3 = Category.create("N3")
+      n4 = Category.create("N4")
+      n5 = Category.create("N5")
 
       n1.add(n2)
       n1.add(n3)
@@ -169,12 +170,12 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
 
   it should "Track all Items that are in the category" in {
     transaction {
-      val c1 = Category("XC1")
-      val c2 = Category("XC2")
-      val c3 = Category("XC3")
-      val i1 = Item("XI1", "XS1")
-      val i2 = Item("XI2", "XS2")
-      val i3 = Item("XI3", "XS3")
+      val c1 = Category.create("XC1")
+      val c2 = Category.create("XC2")
+      val c3 = Category.create("XC3")
+      val i1 = Item.create("XI1")
+      val i2 = Item.create("XI2")
+      val i3 = Item.create("XI3")
       c1.addItem(i1)
       c1.addItem(i2)
 
@@ -200,9 +201,9 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
 
   it should "Provide a method for removing an item from this category" in {
     transaction {
-      val c1 = Category("YC1")
-      val i1 = Item("YI1", "YS1")
-      val i2 = Item("YI2", "YS2")
+      val c1 = Category.create("YC1")
+      val i1 = Item.create("YI1")
+      val i2 = Item.create("YI2")
       c1.addItem(i1)
       c1.addItem(i2)
 
@@ -225,10 +226,10 @@ class CategorySpec extends FlatSpec with ShouldMatchers {
 
   "The Category companion object" should "Support finding a category by categoryId" in {
     transaction {
-      val t1 = Taxonomy("VT1")
+      val t1 = Taxonomy.create("VT1")
 
-      val c1 = t1.add(Category("VC1"))
-      val c2 = t1.add(Category("VC2"))
+      val c1 = t1.add(Category.create("VC1"))
+      val c2 = t1.add(Category.create("VC2"))
 
       Category.find("VT1:VC1") should equal(c1)
       Category.find("VT1:VC2") should equal(c2)

@@ -37,12 +37,12 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
   "An Item" should "provide an Array of catgories that include the item" in {
 
     transaction {
-      val t1 = Taxonomy("XT1")
-      val c1 = t1.add(Category("XC1"))
-      val c2 = t1.add(Category("XC2"))
-      val c3 = t1.add(Category("XC3"))
+      val t1 = Taxonomy.create("XT1")
+      val c1 = t1.add(Category.create("XC1"))
+      val c2 = t1.add(Category.create("XC2"))
+      val c3 = t1.add(Category.create("XC3"))
 
-      val item = Item("I1", "IS1")
+      val item = Item.create("I1")
       c1.addItem(item)
       c2.addItem(item)
       c3.addItem(item)
@@ -56,11 +56,11 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
   it should "provide methods for adding and testing if the item is in a specified category" in {
 
     transaction {
-      val t1 = Taxonomy("AT1")
-      val c1 = t1.add(Category("AC1"))
-      val c2 = t1.add(Category("AC2"))
+      val t1 = Taxonomy.create("AT1")
+      val c1 = t1.add(Category.create("AC1"))
+      val c2 = t1.add(Category.create("AC2"))
 
-      val item = Item("I1", "IS1")
+      val item = Item.create("I1")
       item.addTo(c1)
   
       assert(item.inCategory(c1))
@@ -82,13 +82,13 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
 
   it should "allow a client to replace all categories" in {
     transaction {
-      val t1 = Taxonomy("BT1")
-      val c1 = t1.add(Category("BC1"))
-      val c2 = t1.add(Category("BC2"))
-      val c3 = t1.add(Category("BC3"))
-      val c4 = t1.add(Category("BC4"))
+      val t1 = Taxonomy.create("BT1")
+      val c1 = t1.add(Category.create("BC1"))
+      val c2 = t1.add(Category.create("BC2"))
+      val c3 = t1.add(Category.create("BC3"))
+      val c4 = t1.add(Category.create("BC4"))
 
-      val item = Item("IB1", "SIB1")
+      val item = Item.create("IB1")
       item.addTo(c1)
       item.addTo(c2)
 
@@ -109,7 +109,7 @@ class ItemSpec extends FlatSpec with ShouldMatchers {
     transaction {
       val md = Metadata("Tc", "Dc", creators = Array("C1c", "C2c"),
         rights = Array("R1c"), types = Array("T1c", "T2c", "T3c"))
-      val item = Item(md, "SIC1")
+      val item = Item.create("T1", metadata=md)
       id = item.id
     }
 

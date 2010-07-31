@@ -1,5 +1,5 @@
 /**
- *  Copyright 2010 Northwestern University.
+ *   Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -19,13 +19,51 @@
 
 package edu.northwestern.art.content_core.images
 
-import javax.persistence.Entity
 import edu.northwestern.art.content_core.properties.Properties
+import edu.northwestern.art.content_core.utilities.Storage
+import reflect.BeanInfo
+import javax.persistence.{Inheritance, InheritanceType, Entity}
+
+/**
+ * TiledImageURL represents an image source as a tiled image at a specified
+ * URL.
+ */
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 class TiledImageURL extends ImageSource {
+
   var url: String = ""
+
+  /**
+   * Optionally set the fields of this object.
+   */
+
+  def initialize(url: String = url) = {
+    this.url = url
+    this
+  }
 
   def toJSON = Properties("name" -> name, "format" -> format,
       "width" -> width, "height" -> height, "url" -> url).toJSON
+}
+
+object TiledImageURL extends Storage[TiledImageURL] {
+
+  /**
+   *  Creates a TiledImageURL
+   */
+
+  def apply(url: String) =
+    (new TiledImageURL).initialize(url)
+
+  /**
+   * Creates and persists a TiledImageURL.
+   */
+
+  def create(url: String) {
+      val tiledImageURL = new TiledImageURL
+      persist(tiledImageURL)
+      tiledImageURL.initialize(url)
+  }
 }

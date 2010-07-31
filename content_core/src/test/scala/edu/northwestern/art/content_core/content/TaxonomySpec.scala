@@ -32,7 +32,7 @@ class TaxonomySpec extends FlatSpec with ShouldMatchers {
 
   "A Taxonomy" should "Support the addition of category trees" in {
     transaction {
-      val t1 = Taxonomy("T1", "Test Taxonomy 1")
+      val t1 = Taxonomy.create("T1", "Test Taxonomy 1")
     }
   }
 

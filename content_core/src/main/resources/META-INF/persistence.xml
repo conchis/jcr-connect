@@ -7,6 +7,10 @@
         <class>edu.northwestern.art.content_core.content.Taxonomy</class>
         <class>edu.northwestern.art.content_core.content.Category</class>
         <class>edu.northwestern.art.content_core.content.Item</class>
+        <class>edu.northwestern.art.content_core.images.ImageItem</class>
+        <class>edu.northwestern.art.content_core.images.ImageSource</class>
+        <class>edu.northwestern.art.content_core.images.ImageURL</class>
+        <class>edu.northwestern.art.content_core.images.TiledImageURL</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
@@ -28,6 +32,10 @@
         <class>edu.northwestern.art.content_core.content.Taxonomy</class>
         <class>edu.northwestern.art.content_core.content.Category</class>
         <class>edu.northwestern.art.content_core.content.Item</class>
+        <class>edu.northwestern.art.content_core.images.ImageItem</class>
+        <class>edu.northwestern.art.content_core.images.ImageSource</class>
+        <class>edu.northwestern.art.content_core.images.ImageURL</class>
+        <class>edu.northwestern.art.content_core.images.TiledImageURL</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />

@@ -1,5 +1,5 @@
-/**
- *  Copyright 2010 Northwestern University.
+/** 
+ *Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,26 +14,27 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 14 July 2010
+ * @version 31 [07] 2010
  */
 
 package edu.northwestern.art.content_core.images
 
-import edu.northwestern.art.content_core.properties.JSONSerializable
 import edu.northwestern.art.content_core.utilities.Storage
-import javax.persistence._
+import edu.northwestern.art.content_core.utilities.Storage.transaction
 
-@Entity
-abstract class ImageSource extends JSONSerializable {
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FlatSpec
+import org.scalatest.matchers.ShouldMatchers
+import edu.northwestern.art.content_core.content.Metadata
 
-  @Id @GeneratedValue
-  var id: Int = 0
+@RunWith(classOf[JUnitRunner])
+class ImageItemSpec extends FlatSpec with ShouldMatchers {
+  Storage.unit("Testing")
 
-  @ManyToOne
-  var item: ImageItem = null
+  "An ImageItem" should "do something" in {
+    val item = ImageItem.create("IM1", Metadata("Test Image"))
+    println(item)
+  }
 
-  var name:   String = ""
-  var format: String = ""
-  var width:  Int    = 0
-  var height: Int    = 0
 }

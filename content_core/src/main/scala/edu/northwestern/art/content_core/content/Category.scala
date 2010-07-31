@@ -174,12 +174,8 @@ class Category extends JSONSerializable {
    */
 
   private def reorderChildren(start: Int, offset: Int) {
-    //val categories: List[Category] = subcategories
-    println("children: " + subcategories.toList)
-    println("start: " + start + ", end = " + (subcategories.size - 1))
     for (index <- start to subcategories.size - 1) {
       val child = subcategories(index)
-      println("renum " + child + " index := " + (index + offset))
       child.index = index + offset
     }
   }
@@ -242,24 +238,36 @@ class Category extends JSONSerializable {
 
 object Category extends Storage[Category] {
 
-  def create(name: String, subcategories: Array[Category]) = {
-    val category = new Category()
-    persist(category)
+  def initialize(category: Category, name: String,
+      subcategories: Iterable[Category]): Category = {
 
+    // Initialize fields
     category.name = name
     category.created = new Date()
     category.updated = new Date()
 
+    // Add subcategories
     subcategories.foreach(category.add(_))
     category
   }
 
+  def create(name: String, subcategories: Iterable[Category]): Category = {
+    val category = new Category()
+    persist(category)
+    initialize(category, name, subcategories)
+  }
+
+  def create(name: String, subcategories: Category*): Category =
+    create(name, subcategories)
+
   /**
    * Creates a new Category, or nested tree of Category objects.
-   */
+   * /
 
   def apply(name: String, subcategories: Category*): Category =
     create(name, Array(subcategories: _*))
+  */
+
 
   /**
    * Find a category with a specified Taxonomy and name.
