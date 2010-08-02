@@ -33,7 +33,10 @@ class ImageItemSpec extends FlatSpec with ShouldMatchers {
   Storage.unit("Testing")
 
   "An ImageItem" should "do something" in {
-    val item = ImageItem.create("IM1", Metadata("Test Image"))
+    val item = ImageItem.create("IM1", Metadata("Test Image"), List(),
+      List(
+        ImageURL.create("u1", "http://u1"),
+        ImageURL.create("u2", "http://u2")))
     println(item)
   }
 

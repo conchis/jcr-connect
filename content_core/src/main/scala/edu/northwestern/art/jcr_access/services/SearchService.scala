@@ -14,7 +14,7 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 29 [07] 2010
+ * @version 29 July 2010
  */
 
 package edu.northwestern.art.jcr_access.services

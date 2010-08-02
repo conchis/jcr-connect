@@ -21,6 +21,7 @@ package edu.northwestern.art.content_core.images
 
 import edu.northwestern.art.content_core.properties.Properties
 import javax.persistence.{Inheritance, InheritanceType, Entity}
+import edu.northwestern.art.content_core.utilities.Storage
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -30,4 +31,22 @@ class ImageURL extends ImageSource {
 
   def toJSON = Properties("name" -> name, "format" -> format,
       "width" -> width, "height" -> height, "url" -> url).toJSON
+}
+
+object ImageURL extends Storage[ImageURL] {
+
+  def initialize(source: ImageURL, name: String, format: String,
+      width: Int, height: Int, url: String): ImageURL = {
+    ImageSource.initialize(source, name, format, width, height)
+    source.url = url
+    source
+  }
+
+  def create(name: String, url: String, format: String = null,
+      width: Int = 0, height: Int = 0): ImageURL = {
+    val source = new ImageURL
+    initialize(source, name, format, width, height, url)
+    source
+  }
+
 }

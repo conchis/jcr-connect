@@ -21,6 +21,7 @@ package edu.northwestern.art.content_core.properties
 
 import scala.collection.JavaConversions._
 import org.json.{JSONArray, JSONObject}
+import java.util.Date
 
 /**
  * Wrappers used to support type safety via implicit conversion when getting
@@ -37,6 +38,9 @@ object PropertyValue {
 
   implicit def asPropertyValue(value: String) =
     new StringValue(value)
+
+  implicit def asPropertyValue(value: Date) =
+    new DateValue(value)
 
   implicit def asPropertyValue(value: JSONSerializable) =
     new JSONValue(value)
@@ -81,6 +85,7 @@ object PropertyValue {
     case value: Int                     => asPropertyValue(value)
     case value: Boolean                 => asPropertyValue(value)
     case value: String                  => asPropertyValue(value)
+    case value: Date                    => asPropertyValue(value)
     case value: Map[_, _]               => asPropertyValue(value)
     case value: Iterable[_]             => asPropertyValue(value)
     case value: Array[_]                => asPropertyValue(value)

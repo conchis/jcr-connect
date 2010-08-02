@@ -32,8 +32,20 @@ abstract class ImageSource extends JSONSerializable {
   @ManyToOne
   var item: ImageItem = null
 
-  var name:   String = ""
-  var format: String = ""
+  var name:   String = null
+  var format: String = null
   var width:  Int    = 0
   var height: Int    = 0
+}
+
+object ImageSource {
+
+  def initialize(source: ImageSource, name: String, format: String,
+      width: Int, height: Int) {
+    source.name = name
+    source.format = format
+    source.width = width
+    source.height = height
+    source
+  }
 }

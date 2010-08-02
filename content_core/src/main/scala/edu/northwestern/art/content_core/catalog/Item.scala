@@ -20,12 +20,14 @@
 package edu.northwestern.art.content_core.catalog
 
 import edu.northwestern.art.content_core.properties.JSONSerializable
+import java.util.Date
 
 abstract class Item(
           val kind: String,
           val name: String,
           val title: String,
-          val creators: List[String] = List()
+          val creators: List[String] = List(),
+          val modified: Date = null
         )
         extends JSONSerializable {
 

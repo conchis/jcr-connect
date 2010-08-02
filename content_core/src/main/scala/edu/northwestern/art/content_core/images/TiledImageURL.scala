@@ -35,35 +35,24 @@ class TiledImageURL extends ImageSource {
 
   var url: String = ""
 
-  /**
-   * Optionally set the fields of this object.
-   */
-
-  def initialize(url: String = url) = {
-    this.url = url
-    this
-  }
-
   def toJSON = Properties("name" -> name, "format" -> format,
       "width" -> width, "height" -> height, "url" -> url).toJSON
 }
 
 object TiledImageURL extends Storage[TiledImageURL] {
 
-  /**
-   *  Creates a TiledImageURL
-   */
-
-  def apply(url: String) =
-    (new TiledImageURL).initialize(url)
-
-  /**
-   * Creates and persists a TiledImageURL.
-   */
-
-  def create(url: String) {
-      val tiledImageURL = new TiledImageURL
-      persist(tiledImageURL)
-      tiledImageURL.initialize(url)
+  def initialize(source: TiledImageURL, name: String, format: String,
+      width: Int, height: Int, url: String): TiledImageURL = {
+    ImageSource.initialize(source, name, format, width, height)
+    source.url = url
+    source
   }
+
+  def create(name: String, url: String, format: String = null,
+      width: Int = 0, height: Int = 0): TiledImageURL = {
+    val source = new TiledImageURL
+    initialize(source, name, format, width, height, url)
+    source
+  }
+
 }
