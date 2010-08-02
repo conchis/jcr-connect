@@ -1,0 +1,79 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five"
+    i18n_domain="northwestern.jcr">
+
+  <!-- configure your content components here -->
+  
+  <!-- -*- extra stuff goes here -*- -->
+  <class class=".jcrdocument.JCRDocument">
+    <require
+        permission="zope2.View"
+        interface="..interfaces.IJCRDocument"
+        />
+    <require
+        permission="cmf.ModifyPortalContent"
+        set_schema="..interfaces.IJCRDocument"
+        />
+  </class>
+  <class class=".annotatedimage.AnnotatedImage">
+    <require
+        permission="zope2.View"
+        interface="..interfaces.IAnnotatedImage"
+        />
+    <require
+        permission="cmf.ModifyPortalContent"
+        set_schema="..interfaces.IAnnotatedImage"
+        />
+  </class>
+  <class class=".jcrrepository.JCRRepository">
+    <require
+        permission="zope2.View"
+        interface="..interfaces.IJCRRepository"
+        />
+    <require
+        permission="cmf.ModifyPortalContent"
+        set_schema="..interfaces.IJCRRepository"
+        />
+  </class>
+  <class class=".jcrimage.JCRImage">
+    <require
+        permission="zope2.View"
+        interface="..interfaces.IJCRImage"
+        />
+    <require
+        permission="cmf.ModifyPortalContent"
+        set_schema="..interfaces.IJCRImage"
+        />
+  </class>
+  <class class=".jcrfolder.JCRFolder">
+    <require
+        permission="zope2.View"
+        interface="..interfaces.IJCRFolder"
+        />
+    <require
+        permission="cmf.ModifyPortalContent"
+        set_schema="..interfaces.IJCRFolder"
+        />
+  </class>
+ 
+  <adapter factory=".jcrimage.BannerProvider" />
+
+  <subscriber 
+      provides="Products.Archetypes.interfaces.IObjectPostValidation"
+      factory=".jcrrepository.ValidateRepositoryCodeUniqueness" 
+      />
+ 
+  <!--
+  <subscriber 
+      provides="Products.Archetypes.interfaces.IObjectPostValidation"
+      factory=".jcrimage.ValidateFilmCodeUniqueness" 
+      />
+  -->
+  
+  <utility
+      component=".jcrimage.CurrentFilmsVocabularyFactory"
+      name="northwestern.jcr.explorer.CurrentFilms"
+      />
+
+</configure>

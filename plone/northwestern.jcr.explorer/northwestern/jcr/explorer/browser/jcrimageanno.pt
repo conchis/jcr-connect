@@ -1,0 +1,99 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+xmlns:tal="http://xml.zope.org/namespaces/tal"
+xmlns:metal="http://xml.zope.org/namespaces/metal"
+xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+lang="en"
+metal:use-macro="here/main_template/macros/master"
+i18n:domain="plone">
+
+<body>
+
+<div metal:fill-slot="main">
+  <tal:main-macro metal:define-macro="main"
+  tal:define="kssClassesView context/@@kss_field_decorator_view;
+  getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;
+  ">
+
+<div tal:replace="structure provider:plone.abovecontenttitle" />
+
+
+  <h1 class="documentFirstHeading">
+  <!--
+  <metal:field use-macro="python:here.widget('title', mode='view')">
+  Title
+  </metal:field>
+  -->
+  <span tal:define="title python:here.title + ' (annotations)'" tal:content="title">
+  Title
+  </span>
+  </h1>
+
+  <p class="Description">
+  <span tal:define="description python:here.description" tal:content="description">
+  Description
+  </span>
+  </p>
+
+
+<div tal:replace="structure provider:plone.abovecontentbody" />
+
+  <span tal:condition="python:here.tileURL == ''">
+  <a href=""
+  class="discreet"
+  tal:attributes="href string:$here_url/image_view_fullscreen">
+  <tal:block condition="size" replace="structure python: here.tag(scale='preview')" />
+  <br />
+  <span class="visualNoPrint">
+  <img src="" alt="" tal:replace="structure here/search_icon.gif" />
+  <span i18n:translate="label_click_to_view_full_image">Click to view full-size image&hellip;</span>
+  </span>
+  </a>
+  </span>
+
+
+  <!--
+  <span i18n:translate="label_size">This is the image annotation view!!!</span>:
+  -->
+  
+  <span class="discreet visualNoPrint">
+  <!--
+  &mdash;
+  <span i18n:translate="label_size">Image size</span>:
+
+  <span tal:define="size python:here.getObjSize(here)"
+  tal:content="size">
+  File size
+  </span>
+  -->
+  
+  <!--
+  <span tal:condition="python:test(size, 0, 1)"
+  i18n:translate="no_image_uploaded">
+  (No image has been uploaded yet)
+  </span>
+  -->
+  </span>
+
+
+	<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" width="100%%" height="500" id="tree-view" align="middle" tal:condition="here/tileURL">
+		<param name="allowScriptAccess" value="sameDomain" />
+		<param name="movie" tal:attributes="value string:image-marker.swf?image=${here/tileURL}&amp;server=${here/absolute_url}" value="image-marker.swf" />
+		<param name="quality" value="high" />
+		<param name="scale" value="noscale" />
+		<param name="salign" value="lt" />
+		<param name="bgcolor" value="#ffffff" />
+		<embed src="image-marker.swf" tal:attributes="src string:image-marker.swf?image=${here/tileURL}&amp;server=${here/absolute_url}" quality="high" scale="noscale" salign="lt" bgcolor="#ffffff" width="100%%" height="500" name="tree-view" align="middle" allowscriptaccess="sameDomain" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" />
+	</object>
+  
+<div metal:use-macro="here/document_relateditems/macros/relatedItems">
+  show related items if they exist
+</div>
+
+<div tal:replace="structure provider:plone.belowcontentbody" />
+
+  </tal:main-macro>
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,87 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="northwestern.jcr.explorer">
+<body>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+           tal:define="text context/description;">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 class="documentFirstHeading">
+            <span metal:use-macro="python:context.widget('title', mode='view')" />
+        </h1>
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <div STYLE="color: red" class="documentDescription">
+            <span metal:use-macro="python:context.widget('description', mode='view')" />
+        </div>
+
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+		<!--
+        <p tal:condition="python: not text and is_editable"
+           i18n:translate="no_body_text"
+           class="discreet">
+            This item does not have any body text, click the edit tab to change it.
+        </p>
+		-->
+		  
+		<!--
+        <div tal:condition="text" metal:use-macro="python:context.widget('text', mode='view')" />
+		-->
+
+		  <!--
+		  <form id="repository_synch_form" name="repository_synch_form"
+		  action="synchToRepository" method="post" enctype="multipart/form-data"
+		  tal:attributes="action string:${here/absolute_url}/synchToRepository">
+		  <input class="form-button" type="submit" name="form.button.synch"
+		  value="Synch To Repository" />
+		  </form>
+		  -->
+		  
+        <tal:areas condition="view/have_jcr_folders">
+            <h2 i18n:translate="title_filmfolder_subareas">Folders</h2>
+            <dl>
+                <tal:block repeat="area view/jcr_folders">
+                    <dt>
+                        <a tal:attributes="href area/url"
+                           tal:content="area/title">Area Title</a>
+                    </dt>
+                    <dd tal:content="area/description" />
+                </tal:block>
+            </dl>
+        </tal:areas>
+        
+        <tal:files condition="view/have_jcr_files">
+            <h2 i18n:translate="title_filmfolder_subareas">Files</h2>
+            <dl>
+                <tal:block repeat="file view/jcr_files">
+                    <dt>
+                        <a tal:attributes="href file/url"
+                           tal:content="file/title">File title</a>
+                    </dt>
+					<dd/>
+					<!--
+                    <dd tal:content="file/address" />
+					-->
+                </tal:block>
+            </dl>
+        </tal:files>
+
+        <div metal:use-macro="context/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+    
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>

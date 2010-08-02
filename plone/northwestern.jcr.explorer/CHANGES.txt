@@ -1,0 +1,8 @@
+Changelog
+=========
+
+0.1 (2010-02-10)
+----------------
+
+- Created recipe with ZopeSkel
+  [Xin Xiang, Northwestern University]

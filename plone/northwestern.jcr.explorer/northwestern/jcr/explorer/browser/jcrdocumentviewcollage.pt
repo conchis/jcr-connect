@@ -1,0 +1,9 @@
+<tal:manager replace="structure provider:collage.ContentManager" />
+
+<div>
+<style type="text/css" media="all" tal:content=" python:'@import &quot;' + here.css + '&quot;'">
+</style>
+  <p tal:define="text python:here.getText()" tal:replace="structure text">
+  Text
+  </p>	  
+</div>

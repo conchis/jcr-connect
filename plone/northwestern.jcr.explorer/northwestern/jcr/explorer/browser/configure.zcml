@@ -1,0 +1,115 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="northwestern.jcr">
+
+  <include package="plone.app.contentmenu" />
+
+  <!-- -*- extra stuff goes here -*- -->
+
+  <browser:page
+      for="..interfaces.IJCRDocument"
+      name="jcrdocument_view"
+      class=".jcrdocumentview.JCRDocumentView"
+       permission="zope.Public"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRDocument"
+      name="standard"
+      class=".jcrdocumentviewcollage.JCRDocumentViewCollage"
+      permission="zope.Public"
+      layer="Products.Collage.interfaces.ICollageBrowserLayer"
+      />
+
+  <browser:page
+      for="..interfaces.IAnnotatedImage"
+      name="annotatedimage_view"
+      class=".annotatedimageview.AnnotatedImageView"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="..interfaces.IAnnotatedImage"
+      name="annotatedimage_view_collage"
+      class=".annotatedimageviewcollage.AnnotatedImageViewCollage"
+      permission="zope.Public"
+      layer="Products.Collage.interfaces.ICollageBrowserLayer"
+      />
+
+  <browser:resource
+      name="annotatedimage_icon"
+      image="annotatedimage_icon.jpg"
+      />
+
+  <browser:resource
+      name="northwestern-jcr-explorer.css"
+      file="jcrcontent.css"
+      />
+        
+  <browser:resource
+      name="jcrimage_icon"
+      image="jcrimage_icon.jpg"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRImage"
+      name="jcrimage_view"
+      class=".jcrimageview.JCRImageView"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRImage"
+      name="jcrimage_anno"
+      class=".jcrimageanno.JCRImageAnno"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRImage"
+      name="standard"
+      class=".jcrimageviewcollage.JCRImageViewCollage"
+      permission="zope.Public"
+      layer="Products.Collage.interfaces.ICollageBrowserLayer"
+      />
+
+  <browser:resource
+      name="jcrfolder_icon"
+      image="jcrfolder_icon.jpg"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRFolder"
+      name="jcrfolder_view"
+      class=".jcrfolderview.JCRFolderView"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRFolder"
+      name="jcrfolder_search"
+      class=".jcrfoldersearch.JCRFolderSearch"
+      permission="zope.Public"
+      />
+
+  <browser:resource
+      name="jcrrepository_icon"
+      image="jcrrepository_icon.png"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRRepository"
+      name="jcrrepository_view"
+      class=".jcrrepositoryview.JCRRepositoryView"
+      permission="zope.Public"
+      />
+
+  <browser:page
+      for="..interfaces.IJCRRepository"
+      name="jcrrepository_search"
+      class=".jcrrepositorysearch.JCRRepositorySearch"
+      permission="zope.Public"
+      />
+
+</configure>

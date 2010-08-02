@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<object name="JCRRepository"
+        meta_type="Factory-based Type Information with dynamic views"
+        i18n:domain="northwestern.jcr.explorer"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <property name="title" i18n:translate="">JCRRepository</property>
+  <property name="description" i18n:translate="">
+      A collection of items in a JCR Repository.
+  </property>
+  <property name="content_meta_type">JCRRepository</property>
+  <property name="content_icon">++resource++jcrrepository_icon</property>
+  <property name="product">northwestern.jcr.explorer</property>
+  <property name="factory">addJCRRepository</property>
+  <property name="immediate_view">atct_edit</property>
+  <property name="global_allow">True</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types">
+      <element value="RichDocument" />
+      <element value="Image" />
+      <element value="JCRFolder" />
+  </property>
+  <property name="allow_discussion">False</property>
+  <property name="default_view">jcrrepository_view</property>
+  <property name="view_methods">
+      <element value="view" />
+      <element value="jcrrepository_search" />
+  </property>
+  <alias from="(Default)" to="(dynamic view)" />
+  <alias from="edit" to="atct_edit" />
+  <alias from="sharing" to="@@sharing" />
+  <alias from="view" to="(selected layout)" />
+  <alias from="search" to="jcrrepository_search" />
+  <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${folder_url}/" visible="True">
+    <permission value="View" />
+  </action>
+  <action title="Search" action_id="search" category="object" condition_expr=""
+    url_expr="string:${object_url}/search" visible="True">
+    <permission value="Modify portal content" />
+  </action>
+  <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/edit" visible="True">
+    <permission value="Modify portal content" />
+  </action>
+</object>

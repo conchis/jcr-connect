@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<import-steps>
+  <import-step id="northwestern.jcr.explorer.setup_explorer"
+               version="20090613-01"
+               handler="northwestern.jcr.explorer.setuphandlers.setupExplorer"
+               title="JCR Explorer: miscellaneous import steps">
+    <dependency step="types" />
+	<dependency step="skins" />
+    Various import steps that are not handled by GS import/export
+    handlers.
+  </import-step>
+</import-steps>
