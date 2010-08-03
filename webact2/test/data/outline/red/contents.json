@@ -1,0 +1,22 @@
+{
+	"name": "red",
+	"title": "Red Folder",
+	"type": "Folder",	
+	"children": [
+		{
+			"name": "r1.json",
+			"title": "R1 JSON File",
+			"type": "text/json"
+		},
+		{
+			"name": "r2.json",
+			"title": "R2 JSON File",
+			"type": "text/json"
+		},
+		{
+			"name": "r3.json",
+			"title": "R3 JSON File",
+			"type": "text/json"
+		}
+	]
+}

@@ -1,0 +1,77 @@
+body div li {
+	font-family: arial, sans-serif;
+	font-size: 13px;
+}
+
+ul {
+	width: 300px;
+	list-style-type: none;
+	padding-left: 0px;
+	overflow: hidden;
+}
+
+li {
+	background-color: white;
+	border-bottom: 2px solid white;
+	list-style: none;
+}
+
+.category-label {
+	position: relative;
+	display:  block;
+	height: 16px;
+	font-weight: bold;
+	padding: 4px 22px;
+}
+
+.category-open {
+}
+
+.category-open ul {
+}
+
+.category-open ul > li {	
+	padding-left: 12px;
+}
+
+.category-open .category-label {
+	background: #FAFAFA url(../../images/category-open.png) no-repeat 2px 2px;
+}
+
+.category-close .category-label {
+	background: #FAFAFA url(../../images/category-closed.png) no-repeat 2px 2px;
+}
+
+.category-close ul {
+	position: absolute;
+	visibility: hidden;
+}
+
+.item {
+	list-style-type: none;
+	list-style-image: none;
+}
+
+.checkbox {
+	float: right;
+	display: inline-block;
+	width: 24px;
+	height: 16px;;
+	background: url(../../images/checkbox-up.png) no-repeat;
+}
+
+.checkbox-checked {
+	display: inline-block;
+	float: right;
+	width: 24px;
+	height: 16px;;
+	background: url(../../images/checkbox-down.png) no-repeat;
+}
+
+.delete-button {
+	display: inline-block;
+	float: right;
+	width: 60px;
+	height: 16px;;
+	background: url(../../images/delete.png) no-repeat;
+}

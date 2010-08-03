@@ -1,0 +1,7 @@
+/* @override css/styles.css -- http://sauer.at.northwestern.edu/webact2/css/styles.css */
+
+/* Webaction 2 Site Styles (Not part of library) */
+
+body, h1, h2, p, li, th, td {
+	font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}

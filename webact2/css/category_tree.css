@@ -1,0 +1,45 @@
+
+
+.wa_ctree {
+	position: relative;
+	width: 350px;
+	height: 200px;
+	overflow: auto;
+	border: 1px solid #CCC;
+	font-size: 13px;
+}
+
+.wa_ctree ul {
+	list-style: none;
+	margin: 0;
+	padding-left: 0px;
+}
+
+.wa_ctree_label {
+	display:  block;
+	height: 16px;
+	padding: 4px 22px;
+}
+
+.wa_ctree_open > span {
+	background: #EEE url(../images/category-open.png) no-repeat 2px 2px;
+	font-weight: bold;
+}
+
+.wa_ctree_close > span {
+	background: #EEE url(../images/category-closed.png) no-repeat 2px 2px;
+	font-weight: bold;
+}
+
+.wa_ctree_close > ul {
+	position:  absolute;
+	visibility: hidden;
+}
+
+.wa_ctree_item {
+	background: url(../images/checkbox-up.png) no-repeat 98% 2px;
+}
+
+.wa_ctree_checked {
+	background: url(../images/checkbox-down.png) no-repeat 98% 2px;
+}

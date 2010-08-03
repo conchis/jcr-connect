@@ -1,0 +1,12 @@
+{
+	"name": "green",
+	"title": "Green Folder",
+	"type": "Folder",	
+	"children": [
+		{
+			"name": "g1.json",
+			"title": "G1 JSON File",
+			"type": "text/json"
+		}
+	]
+}

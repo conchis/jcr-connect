@@ -1,0 +1,37 @@
+/* Button Styles */
+
+.wa_button {
+	float: left;
+	width: 40px;
+	height: 12px;
+	padding: 2px;
+	margin-right: 3px;
+	border: 1px #DDDDDD solid;
+	background-color: #FDFDFD;
+	cursor: pointer; cursor: hand;
+	font-size: 12px;
+}
+
+.wa_button:hover {
+	background-color: #F0F2F9;
+}
+
+.wa_button_pressed {
+    color: #FFFFFF;
+	background-color: #697798;
+}
+
+.wa_button_pressed:hover {
+    color: #FFFFFF;
+	background-color: #697798;
+}
+
+.wa_button_grey {
+    color: #666666;
+	background-color: #DDDDDD;
+}
+
+.wa_button_grey:hover {
+    color: #666666;
+	background-color: #DDDDDD;
+}

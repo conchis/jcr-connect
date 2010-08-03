@@ -1,0 +1,17 @@
+{
+	"name": "blue",
+	"title": "Blue Folder",
+	"type": "Folder",	
+	"children": [
+		{
+			"name": "b1.json",
+			"title": "B1 JSON File",
+			"type": "text/json"
+		},
+		{
+			"name": "b2.json",
+			"title": "B2 JSON File",
+			"type": "text/json"
+		}
+	]
+}
