@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!-- This import step informs the portal_factory tool that we want it to
+     manage our content types. This tool deals with the fact that in
+     Archetypes and most CMF types, the object is actually created before
+     the first edit form is filled in. That is, there are no true "add forms".
+     The factory tool creates a temporary object in lieu of an "add form",
+     and then moves the object to the proper location after it has been
+     successfully saved.
+  -->
+<object name="portal_factory" meta_type="Plone Factory Tool">
+  <factorytypes>
+    <!-- -*- extra stuff goes here -*- -->
+    <type portal_type="JCRDocument" />
+    <type portal_type="AnnotatedImage" />
+    <type portal_type="JCRRepository" />
+    <type portal_type="JCRImage" />
+    <type portal_type="JCRFolder" />
+    <type portal_type="CinemaFolder" />
+  </factorytypes>
+</object>

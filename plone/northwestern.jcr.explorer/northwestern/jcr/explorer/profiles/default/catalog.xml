@@ -1,0 +1,11 @@
+<object name="portal_catalog" meta_type="Plone Catalog Tool">
+    <index name="film_code" meta_type="FieldIndex">
+        <indexed_attr value="film_code"/>
+    </index>
+    <index name="repository_id" meta_type="FieldIndex">
+        <indexed_attr value="repository_id"/>
+    </index>
+    
+    <column value="film_code"/>
+    <column value="repository_id"/>
+</object>

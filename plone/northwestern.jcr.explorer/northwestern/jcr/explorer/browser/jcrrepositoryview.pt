@@ -1,0 +1,93 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="northwestern.jcr.explorer">
+
+<head>
+<meta http-equiv="REFRESH" content="0;url=http://www.google.com"></HEAD>
+
+<body>
+
+<metal:css fill-slot="css_slot">
+    <style type="text/css" media="all"
+            tal:content="string: @import url(${context/++resource++northwestern-jcr-explorer.css});"></style>
+</metal:css>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+           tal:define="text context/description;">
+
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 class="documentFirstHeading">
+            <span metal:use-macro="python:context.widget('title', mode='view')" />
+        </h1>
+
+        <div tal:replace="structure provider:plone.belowcontenttitle" />
+
+        <label for="parent-fieldname-phone" i18n:translate="label_cinema_phone_number">Server URL:</label>
+        <div metal:use-macro="python:context.widget('url', mode='view')" />
+
+		<!--
+		<img tal:attributes="src python:context.absolute_url()">
+		-->
+		  
+        <div tal:replace="structure provider:plone.abovecontentbody" />
+
+		<!--
+        <div class="highlighted-films" tal:condition="view/have_highlighted_films">
+            <h3 i18n:translate="heading_featured_films">Featured films:</h3>
+            <div tal:repeat="film view/highlighted_films">
+                <a tal:attributes="href film/url; title film/summary">
+                    <img tal:replace="structure film/banner_tag" />
+                    <div tal:content="film/title" />
+                </a>
+            </div>
+        </div>
+		-->
+
+		<!--
+        <p tal:condition="python: not text and is_editable"
+           i18n:translate="no_body_text"
+           class="discreet">
+            This item does not have any body text, click the edit tab to change it.
+        </p>
+		-->
+
+		<div STYLE="color: red" class="documentDescription">
+            <span metal:use-macro="python:context.widget('description', mode='view')" />
+        </div>
+
+		<!--
+		<div STYLE="color: red" class="documentDescription">
+            <span metal:use-macro="python:context.message" />
+        </div>
+		-->
+		
+        <tal:areas condition="view/have_jcr_folders">
+            <h2 i18n:translate="title_cinemafolder_subareas">Folders</h2>
+            <dl>
+                <tal:block repeat="area view/jcr_folders">
+                    <dt>
+                        <a tal:attributes="href area/url"
+                           tal:content="area/title">Area title</a>
+                    </dt>
+                    <dd tal:content="area/description" />
+                </tal:block>
+            </dl>
+        </tal:areas>
+
+		  
+        <div metal:use-macro="context/document_relateditems/macros/relatedItems">
+            show related items if they exist
+        </div>
+    
+        <div tal:replace="structure provider:plone.belowcontentbody" />
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>

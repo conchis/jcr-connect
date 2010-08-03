@@ -1,0 +1,44 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="northwestern.jcr.explorer">
+<body>
+
+<metal:css fill-slot="css_slot">
+    <style type="text/css" media="all"
+            tal:content="string: @import url(${context/++resource++northwestern-jcr-explorer.css});"></style>
+</metal:css>
+
+<metal:main fill-slot="main">
+    <tal:main-macro metal:define-macro="main"
+           tal:define="text context/description;">
+
+		<!--
+        <div tal:replace="structure provider:plone.abovecontenttitle" />
+
+        <h1 class="documentFirstHeading">
+            <span metal:use-macro="python:context.widget('title', mode='view')" />
+        </h1>
+
+        <label for="parent-fieldname-phone" i18n:translate="label_cinema_phone_number">Server URL:</label>
+        <div metal:use-macro="python:context.widget('url', mode='view')" />
+
+		  <br>
+		-->
+		  
+
+		  <!--
+<form action="http://www.google.com/search" name=f><table cellpadding=0 cellspacing=0><tr valign=top><td width=25%>&nbsp;</td><td align=center nowrap><input name=hl type=hidden value=en><input name=source type=hidden value=hp><input autocomplete="off" maxlength=2048 name=q size=55 class=lst title="Google Search" value=""><br><input name=btnG type=submit value="Google Search" class=lsb><input name=btnI type=submit value="I&#39;m Feeling Lucky" class=lsb></td><td nowrap width=25% align=left id=sbl><font size=-2>&nbsp;&nbsp;<a href="/advanced_search?hl=en">Advanced Search</a><br>&nbsp;&nbsp;<a href="/language_tools?hl=en">Language Tools</a></font></td></tr></table></form>		  
+-->
+
+<iframe src ="http://sauer.at.northwestern.edu/chicago/" width="750" height="490" frameborder="0">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+
+    </tal:main-macro>
+</metal:main>
+
+</body>
+</html>

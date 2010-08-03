@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<object name="JCRFolder"
+        meta_type="Factory-based Type Information with dynamic views"
+        i18n:domain="northwestern.jcr.explorer"
+        xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+  <property name="title" i18n:translate="">JCR Folder</property>
+  <property name="description" i18n:translate="">
+      A folder which can contain films.
+  </property>
+  <property name="content_meta_type">JCRFolder</property>
+  <!--
+  <property name="content_icon">folder_icon.gif</property>
+  -->
+  <property name="content_icon">++resource++jcrfolder_icon</property>
+  <property name="product">northwestern.jcr.explorer</property>
+  <property name="factory">addJCRFolder</property>
+  <property name="immediate_view">atct_edit</property>
+  <property name="global_allow">False</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types">
+      <element value="JCRImage" />
+  </property>
+  <property name="allow_discussion">False</property>
+  <property name="default_view">jcrfolder_view</property>
+  <property name="view_methods">
+      <element value="jcrfolder_view" />
+      <element value="folder_summary_view"/>
+      <element value="jcrfolder_search" />
+  <element value="folder_tabular_view"/>
+  <element value="atct_album_view"/>
+  <element value="folder_listing"/>
+  </property>
+  <alias from="(Default)" to="(dynamic view)" />
+  <alias from="edit" to="atct_edit" />
+  <alias from="sharing" to="@@sharing" />
+  <alias from="view" to="(selected layout)" />
+  <alias from="search" to="jcrfolder_search" />
+  <action title="View" action_id="view" category="object" condition_expr=""
+          url_expr="string:${folder_url}/" visible="True">
+    <permission value="View" />
+  </action>
+  <action title="Search" action_id="search" category="object" condition_expr=""
+    url_expr="string:${object_url}/search" visible="True">
+    <permission value="Modify portal content" />
+  </action>
+  <action title="Edit" action_id="edit" category="object" condition_expr=""
+          url_expr="string:${object_url}/edit" visible="True">
+    <permission value="Modify portal content" />
+  </action>
+</object>

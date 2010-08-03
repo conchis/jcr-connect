@@ -1,0 +1,29 @@
+/* Styles specific to the optilux.cinemacontent views.
+
+   This is explicitly included from various page templates, since it only
+   pertains to a handful of them. If we wanted something more sitewide,
+   we could have used the portal_css registry instead.
+ */
+
+.jcrimage-banner {
+    float: left;
+    margin: 1em 1em 0 0;
+}
+
+.highlighted-films {
+    float: right;
+    margin: 0 0 0 1em;
+}
+
+.highlighted-films a {
+    display: block;
+}
+
+/* Make some fields render inline so that they get a label on the same line */
+#parent-fieldname-phone,  
+#parent-fieldname-startDate, 
+#parent-fieldname-endDate,
+#parent-fieldname-effectiveDate,
+#parent-fieldname-expirationDate {
+    display: inline;
+}

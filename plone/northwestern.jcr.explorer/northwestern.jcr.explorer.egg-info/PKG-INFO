@@ -1,0 +1,62 @@
+Metadata-Version: 1.0
+Name: northwestern.jcr.explorer
+Version: 0.2dev
+Summary: JCR Repository Explorer
+Home-page: UNKNOWN
+Author: Xin Xiang
+Author-email: x-xinag@northwestern.edu
+License: GPL
+Description: .. contents::
+        
+        .. Note!
+        -----
+        Update the following URLs to point to your:
+        
+        - code repository
+        - bug tracker
+        - questions/comments feedback mail
+        (do not set a real mail, to avoid spams)
+        
+        Or remove it if not used.
+        
+        - Code repository: http://svn.somewhere.com/...
+        - Questions and comments to somemailing_list
+        - Report bugs at http://bug.somewhere.com/..
+        
+        
+        Change history
+        **************
+        
+        Changelog
+        =========
+        
+        0.1 (2010-02-10)
+        ----------------
+        
+        - Created recipe with ZopeSkel
+        [Xin Xiang, Northwestern University]
+        
+        Detailed Documentation
+        **********************
+        
+        How to use the JCR Repository Explorer :
+        ========================================
+        
+        todo
+        
+        
+        Contributors
+        ************
+        
+        Xin Xiang, Author
+        
+        
+        Download
+        ********
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python
+Classifier: Framework :: Plone
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)

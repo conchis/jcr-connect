@@ -1,0 +1,2 @@
+recursive-include northwestern *
+global-exclude *pyc *rev
