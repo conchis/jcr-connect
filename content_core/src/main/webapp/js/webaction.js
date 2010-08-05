@@ -297,7 +297,7 @@ eval(this.exports);};
 new function(_){var trees=new base2.Package(this,{name:"trees",version:"0.1",imports:"paths,observers",exports:"TreeNode"});eval(this.imports);var TreeNode=Broadcaster.extend({constructor:function(name,properties){this.base();this.name=name;this.child_map={};this.parent=null;this.children=[];this.index=-1;this.properties={};this.visible={};if(typeof(properties)=="object")
 this.reset(properties);for(var index=2;index<arguments.length;index+=1)
 this.addChild(arguments[index]);},addChild:function(child,index){if(typeof child.name!="string")
-throw new Error("Category must be named");var children=this.children;if(typeof index=="undefined")
+throw new Error("Node must be named");var children=this.children;if(typeof index=="undefined")
 index=children.length;var child_map=this.child_map;var name=child.name;var prior_child=child_map[name];if(prior_child&&prior_child!==child)
 prior_child.remove();if(child.parent===this&&child.index<index)
 index-=1;if(child.parent!=null)
@@ -344,7 +344,7 @@ return changes;},class_name:'TreeNode',toString:function(){var parts=[this.name]
 parts.push(children[index].toString());return this.class_name+"("+parts.join(', ')+")";}});eval(this.exports);};
 
 // core/connectors.js
-new function(_){var connectors=new base2.Package(this,{name:"connectors",version:"0.1",imports:"paths,trees,options,observers",exports:"Connector,Category"});eval(this.imports);var Connector=base2.Base.extend({constructor:function(url,options){this.base(options);this.requests=[];this.server_url=url;var root_node=new Node('/');root_node.setConnector(this);this.root_node=root_node;this.user=null;this.loadUser();},request:function(options){var request=new Request(options);request.addedTo(this);this.requests.push(request);this.next();},next:function(){var requests=this.requests;if(requests.length==0)return;var next_request=requests[0];requests.splice(0,1);next_request.start();},loadUser:function(continuation){if(this.user!=null&&continuation)
+new function(_){var connectors=new base2.Package(this,{name:"connectors",version:"0.1",imports:"paths,trees,options,observers",exports:"Connector,Node"});eval(this.imports);var Connector=base2.Base.extend({constructor:function(url,options){this.base(options);this.requests=[];this.server_url=url;var root_node=new Node('/');root_node.setConnector(this);this.root_node=root_node;this.user=null;this.loadUser();},request:function(options){var request=new Request(options);request.addedTo(this);this.requests.push(request);this.next();},next:function(){var requests=this.requests;if(requests.length==0)return;var next_request=requests[0];requests.splice(0,1);next_request.start();},loadUser:function(continuation){if(this.user!=null&&continuation)
 continuation(this.user);var url=paths.join(this.server_url,'whoami');var self=this;this.request({url:url,success:function(user){self.user=user;if(continuation)
 continuation(user);}});},load:function(path,continuation){var node=this.root_node.addNode(path);if(node.is_loaded)
 continuation(node);else{var url=paths.join(this.server_url,path);jQuery.get(url,{},function(json){var node_data=eval('('+json+')');node.initializeFrom(node_data);continuation(node);});}},find:function(path,depth,continuation){},create:function(path){var node=this.root_node.addNode(path);node.is_new=true;return node;},save:function(continuation){var self=this;this.root_node.eachNode(function(node){if(node.isChanged())

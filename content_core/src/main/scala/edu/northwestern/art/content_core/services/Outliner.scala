@@ -21,6 +21,7 @@ package edu.northwestern.art.content_core.services
 
 import java.util.HashSet
 import edu.northwestern.art.content_core.utilities.Storage
+import edu.northwestern.art.jcr_access.services.SearchService
 
 class Outliner extends javax.ws.rs.core.Application {
   Storage.unit("Testing")
@@ -28,6 +29,7 @@ class Outliner extends javax.ws.rs.core.Application {
   override def getClasses: java.util.Set[Class[_]] = {
     val classes = new HashSet[Class[_]]
     classes.add(classOf[TaxonomyService])
+    classes.add(classOf[SearchService])
     classes
   }
 }

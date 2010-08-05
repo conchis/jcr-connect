@@ -54,9 +54,14 @@ class LocalConnectorSpec extends FlatSpec with ShouldMatchers {
     assert(connector.isItem("/content/ec_100647"))
   }
 
-  it should "Provide a way to generate a catalog of any content folder" in {
-    val folder = connector.catalog("/content")
+  it should "Support free-text search of a repository" in {
+    val folder = connector.search("Water")
     println(folder)
   }
+
+  //it should "Provide a way to generate a catalog of any content folder" in {
+  //  val folder = connector.catalog("/content")
+  //  println(folder)
+  //}
 
 }

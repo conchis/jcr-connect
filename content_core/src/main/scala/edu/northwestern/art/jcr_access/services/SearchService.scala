@@ -19,9 +19,27 @@
 
 package edu.northwestern.art.jcr_access.services
 
-import javax.ws.rs.Path
+import edu.northwestern.art.jcr_access.repositories.LocalConnector
+import javax.ws.rs.{Produces, QueryParam, GET, Path}
 
 @Path("/search")
 class SearchService {
+
+  val repository_url = "http://localhost:8080/jackrabbit/rmi"
+  val user = "admin"
+  val pass = "admin"
+
+  val connector = new LocalConnector(repository_url, user, pass)
+
+  @GET @Path("/")
+  @Produces(Array("application/json"))
+  def search(@QueryParam("q") query: String) = {
+    if (query == null)
+       "Ready"
+    else {
+      val results = connector.search(query)
+      results.toJSON.toString
+    }
+  }
   
 }

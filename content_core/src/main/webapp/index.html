@@ -29,7 +29,7 @@ function status(message) {
 
 function search(text) {
 	status("Searching..");
-    jQuery.getJSON("search", {q: text}, function (data) {
+    jQuery.getJSON("service/search", {q: text}, function (data) {
         var index_array = makeIndexArray(data);
 		status("" + index_array.length + " items found");
         makeIndex(index_array);

@@ -19,7 +19,6 @@
 
 package edu.northwestern.art.content_core.content
 
-import java.util.ArrayList
 import javax.persistence._
 
 import scala.collection.JavaConversions._
@@ -28,6 +27,7 @@ import org.json.JSONObject
 
 import edu.northwestern.art.content_core.utilities.Storage
 import edu.northwestern.art.content_core.properties.{Properties, JSONSerializable}
+import java.util.{Date, ArrayList}
 
 @Entity
 class Item extends JSONSerializable {
@@ -43,6 +43,14 @@ class Item extends JSONSerializable {
 
   @ManyToMany
   var categories: java.util.List[Category] = new ArrayList
+
+  /**Time stamp for node creation. */
+  @Temporal(TemporalType.TIMESTAMP)
+  var created: Date = null
+
+  /**Time stamp for node changes. */
+  @Temporal(TemporalType.TIMESTAMP)
+  var updated: Date = null
 
   /**
    *  Returns true only if this item is in a specified category.

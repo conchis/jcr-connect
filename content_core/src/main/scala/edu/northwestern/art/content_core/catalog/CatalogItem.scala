@@ -1,5 +1,5 @@
-/** 
- * Copyright 2010 Northwestern University.
+/**
+ *  Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,15 +14,22 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 29 July 2010
+ * @version 14 July 2010
  */
 
-package edu.northwestern.art.jcr_access.repositories
+package edu.northwestern.art.content_core.catalog
 
-/**
- * Converts Items to JCR nodes and visa versa.
- */
+import edu.northwestern.art.content_core.properties.JSONSerializable
+import java.util.Date
 
-class LocalConverter {
+abstract class CatalogItem(
+          val kind: String,
+          val name: String,
+          val title: String,
+          val creators: List[String] = List(),
+          val modified: Date = null
+        )
+        extends JSONSerializable {
 
+  override def toString = toJSON.toString
 }

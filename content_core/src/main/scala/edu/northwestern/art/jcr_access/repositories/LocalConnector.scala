@@ -21,8 +21,10 @@ package edu.northwestern.art.jcr_access.repositories
 
 import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.content_core.content.Item
+import javax.jcr.query.Query
 import edu.northwestern.art.content_core.catalog
 
+import catalog.{CatalogImageItem, Thumbnail, Catalog, CatalogItem}
 import org.apache.jackrabbit.rmi.repository.URLRemoteRepository
 import org.json.JSONObject
 import javax.jcr.{Node, PathNotFoundException, Session}
@@ -56,31 +58,52 @@ class LocalConnector(repository_url: String, user: String,
 
   def put(path: String, item: Item) = null
 
+  def catalog(path: String): Catalog = {
+    session((jcr_session: Session) => {
+      val container = jcr_session.getNode(path)
+      var items: List[CatalogItem] = List()
+      val iterator = container.getNodes
+      while (iterator.hasNext())
+        items ::= makeCatalogItem(iterator.nextNode)
+      new edu.northwestern.art.content_core.catalog.Catalog(container.getName, "", items.reverse)
+    })
+  }
+
+  /**
+   * Free text search of the repository. Returns a Folder of results.
+   */
+
+  def search(text: String): Catalog = {
+    val results =
+      session((session: Session) => {
+        var results: List[CatalogItem] = List()
+        val statement = "//element(*, nt:file)[jcr:contains(jcr:content, '" + text + "')]"
+        val query = session.getWorkspace.getQueryManager.createQuery(statement, Query.XPATH);
+        val iterator = query.execute.getNodes
+        while (iterator.hasNext()) {
+          val node = iterator.nextNode
+          results ::= makeCatalogItem(node.getParent)
+        }
+        results
+      })
+    new edu.northwestern.art.content_core.catalog.Catalog(
+      "content", "Search Results", results.reverse)
+  }
+
   private def getItemJSON(node: Node): JSONObject = {
     val contents = node.getNode("contents.json/jcr:content");
     new JSONObject(contents.getProperty("jcr:data").getString)
   }
 
-  def catalog(path: String): edu.northwestern.art.content_core.catalog.Folder = {
-    session((jcr_session: Session) => {
-      val container = jcr_session.getNode(path)
-      var items: List[edu.northwestern.art.content_core.catalog.Item] = List()
-      val iterator = container.getNodes
-      while (iterator.hasNext())
-        items ::= makeCatalogItem(iterator.nextNode)
-      new edu.northwestern.art.content_core.catalog.Folder(container.getName, "", items.reverse)
-    })
-  }
-
-  private def makeCatalogItem(node: Node): edu.northwestern.art.content_core.catalog.Item = {
+  private def makeCatalogItem(node: Node): CatalogItem = {
     val content = getContentJSON(node)
     val name: String = node.getName
     val metadata = content.getJSONObject("metadata")
     val creators = getCreators(metadata)
     val title: String = metadata.getString("title")
     val modified = node.getProperty("jcr:created").getDate.getTime
-    new edu.northwestern.art.content_core.catalog.ImageItem(name, title, creators, getCatalogThumb(name, content),
-      modified)
+    new CatalogImageItem(
+      name, title, creators, getCatalogThumb(name, content), modified)
   }
 
   private def getContentJSON(node: Node) = {
@@ -104,7 +127,7 @@ class LocalConnector(repository_url: String, user: String,
     val format = thumb.getString("format")
     val width  = thumb.getInt("width")
     val height = thumb.getInt("height")
-    new edu.northwestern.art.content_core.catalog.Thumbnail(node_name + "/" + name + "." + format, width, height)
+    new Thumbnail(node_name + "/" + name + "." + format, width, height)
   }
 
 }

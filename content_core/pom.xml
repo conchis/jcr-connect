@@ -232,7 +232,7 @@
                     <argLine>-Xmx512m</argLine>
                     <includes>
                         <include>**/*Unit.java</include>
-                        <include>**/*Spec.java</include>
+                        <!-- include>**/*Spec.java</include -->
                     </includes>
                 </configuration>
             </plugin>
@@ -240,7 +240,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <attachClasses>true</attachClasses>
-                    <warName>category_marker</warName>
+                    <warName>content</warName>
                 </configuration>
             </plugin>
             <plugin>
@@ -251,11 +251,11 @@
                     <!-- Container configuration -->
                     <container>
                         <containerId>tomcat6x</containerId>
-                        <home>/Users/jonathan/Projects/category_marker/apache-tomcat-6.0.26</home>
+                        <home>/Users/jonathan/Projects/jcr-connect/content_core/apache-tomcat-6.0.26</home>
                     </container>
                     <configuration>
                         <type>existing</type>
-                        <home>/Users/jonathan/Projects/category_marker/apache-tomcat-6.0.26</home>
+                        <home>/Users/jonathan/Projects/jcr-connect/content_core/apache-tomcat-6.0.26</home>
                     </configuration>
                 </configuration>
             </plugin>

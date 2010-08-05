@@ -1,5 +1,5 @@
 /**
- * Copyright 2010 Northwestern University.
+ *  Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -20,7 +20,7 @@
 package edu.northwestern.art.jcr_access.access
 
 import edu.northwestern.art.content_core.content.Item
-import edu.northwestern.art.content_core.catalog.Folder
+import edu.northwestern.art.content_core.catalog.Catalog
 import org.apache.jackrabbit.rmi.repository.URLRemoteRepository
 import javax.jcr.{SimpleCredentials, Session}
 
@@ -99,6 +99,12 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
    * be true.
    */
 
-  def catalog(path: String): Folder
+  def catalog(path: String): Catalog
+
+  /**
+   * Free text search of the repository. Returns a Folder of results.
+   */
+
+  def search(text: String): Catalog
 
 }

@@ -20,7 +20,7 @@ var DOM = new base2.Package(this, {
   version: "1.0",
   imports: "Function2",
   exports:
-    "Interface,Binding,Category,Document,Element,AbstractView,HTMLDocument,HTMLElement,"+
+    "Interface,Binding,Node,Document,Element,AbstractView,HTMLDocument,HTMLElement,"+
     "Selector,Traversal,CSSParser,XPathParser,NodeSelector,DocumentSelector,ElementSelector,"+
     "StaticNodeList,Event,EventTarget,DocumentEvent,ViewCSS,CSSStyleDeclaration,ClassList",
   
@@ -133,7 +133,7 @@ var Binding = Interface.extend(null, {
 });
 
 // =========================================================================
-// DOM/Category.js
+// DOM/Node.js
 // =========================================================================
 
 // http://www.w3.org/TR/DOM-Level-3-Core/core.html#ID-1950641247

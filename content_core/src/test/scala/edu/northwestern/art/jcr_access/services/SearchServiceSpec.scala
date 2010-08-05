@@ -1,5 +1,5 @@
-/**
- *  Copyright 2010 Northwestern University.
+/** 
+ *Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,18 +14,21 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 14 July 2010
+ * @version 05 [08] 2010
  */
 
-package edu.northwestern.art.content_core.catalog
+package edu.northwestern.art.jcr_access.services
 
-import edu.northwestern.art.content_core.properties.Properties
-import java.util.Date
+import org.scalatest.matchers.ShouldMatchers
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FlatSpec
 
-class ImageItem(name: String, title: String, creators: List[String] = List(),
-          val thumbnail: Thumbnail = null, modified: Date)
-        extends Item("ImageItem", name, title, creators, modified) {
+@RunWith(classOf[JUnitRunner])
+class SearchServiceSpec extends FlatSpec with ShouldMatchers {
 
-  override def toJSON = Properties("type"-> kind, "name" -> name, "title" -> title,
-    "creators" -> creators, "thumbnail" -> thumbnail, "modified" -> modified).toJSON
+  "A Search Service" should "do something" in {
+    assert(true)
+  }
+
 }

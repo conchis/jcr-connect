@@ -21,8 +21,8 @@ package edu.northwestern.art.content_core.catalog
 
 import edu.northwestern.art.content_core.properties.Properties
 
-class Folder(name: String, title: String, val children: List[Item] = List())
-        extends Item("Folder", name, title) {
+class Catalog(name: String, title: String, val children: List[CatalogItem] = List())
+        extends CatalogItem("Folder", name, title) {
 
   override def toJSON = Properties("name" -> name, "type" -> kind,
     "children" -> children).toJSON
