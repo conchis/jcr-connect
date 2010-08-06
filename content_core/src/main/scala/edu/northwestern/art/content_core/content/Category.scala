@@ -67,7 +67,7 @@ class Category extends JSONSerializable {
 
   /**Time stamp for node changes. */
   @Temporal(TemporalType.TIMESTAMP)
-  var updated: Date = null
+  var modified: Date = null
 
   /**
    * Category id is in the form "taxonomy:category" where taxonomy is the
@@ -130,7 +130,7 @@ class Category extends JSONSerializable {
       child.parent = this
       subcategories.add(new_index, child)
     }
-    updated = new Date
+    modified = new Date
   }
 
   /**
@@ -142,7 +142,7 @@ class Category extends JSONSerializable {
       subcategories.remove(child)
       child.parent = null
       reorderChildren(child.index, 0)
-      updated = new Date
+      modified = new Date
       true
     }
     else
@@ -244,7 +244,7 @@ object Category extends Storage[Category] {
     // Initialize fields
     category.name = name
     category.created = new Date()
-    category.updated = new Date()
+    category.modified = new Date()
 
     // Add subcategories
     subcategories.foreach(category.add(_))

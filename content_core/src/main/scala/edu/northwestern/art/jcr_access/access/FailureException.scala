@@ -17,7 +17,7 @@
  * @version 06 [08] 2010
  */
 
-package edu.northwestern.art.jcr_access.repositories
+package edu.northwestern.art.jcr_access.access
 
 /**
  * Exception thrown when a repository or communications with a repository

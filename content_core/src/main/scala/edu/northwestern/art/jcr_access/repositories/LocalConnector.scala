@@ -19,17 +19,20 @@
 
 package edu.northwestern.art.jcr_access.repositories
 
-import java.util.Date
+import java.io.ByteArrayInputStream
 import collection.mutable.ListBuffer
+
+import org.json.{JSONException, JSONArray, JSONObject}
 
 import javax.jcr.query.Query
 import javax.jcr.{Node, PathNotFoundException, Session}
 
-import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.content_core.catalog.{CatalogImageItem, Thumbnail, Catalog, CatalogItem}
 import edu.northwestern.art.content_core.content.{Metadata, Item}
 import edu.northwestern.art.content_core.images.{ImageSource, ImageItem}
-import org.json.{JSONException, JSONArray, JSONObject}
+import edu.northwestern.art.content_core.utilities.Path
+import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException, RepositoryConnector}
+import java.util.{Calendar, Date}
 
 /**
  * Simple connector to a local repository storing content in a straightforward
@@ -82,7 +85,7 @@ class LocalConnector(repository_url: String, user: String,
       modified: Date): ImageItem = {
     
     ImageItem(name, metadata = makeMetadata(json),
-        sources = List())
+        modified = modified, sources = List())
   }
 
   /**                         
@@ -127,9 +130,54 @@ class LocalConnector(repository_url: String, user: String,
     sources.toList
   }
 
+  /**
+   * Creates or replaces an item in the repository.
+   */
 
   def put(path: String, item: Item) = {
-    
+    session((jcr_session: Session) => {
+      if (!isItem(path)) {
+        val location = Path(path)
+        val parent = jcr_session.getNode(location.parent)
+        createItem(parent, item)
+      }
+      else {
+        val item_node = jcr_session.getNode(path)
+        updateItem(item_node, item)
+      }
+    })
+  }
+
+  def createItem(parent: Node, item: Item) {
+    val item_json = item.toJSON.toString
+    val item_node = parent.addNode(item.name, "nt:folder")
+    addFileNode(item_node, "contents.json", "application/json",
+      item_json.toString.getBytes, item.modified)
+  }
+
+  def updateItem(node: Node, item: Item) {
+    val item_json = item.toJSON.toString
+    val contents = node.getNode("contents.json")
+    setFileNode(contents, "application/json", item_json.getBytes,
+      item.modified)
+  }
+
+  def addFileNode(parent: Node, name: String, mime_type: String,
+      bytes: Array[Byte], modified: Date) {
+    val file_node = parent.addNode(name, "nt:file")
+    val content_node = file_node.addNode("jcr:content", "nt:unstructured")
+    setFileNode(file_node, mime_type, bytes, modified)
+  }
+
+  def setFileNode(file_node: Node, mime_type: String, bytes: Array[Byte],
+      modified: Date = new Date) {
+    val content_node = file_node.getNode("jcr:content")
+    content_node.setProperty("jcr:mimeType", mime_type)
+    val byte_stream = new ByteArrayInputStream(bytes)
+    content_node.setProperty("jcr:data", byte_stream)
+    val modified_calendar = Calendar.getInstance
+    modified_calendar.setTime(modified)
+    content_node.setProperty("jcr:lastModified", modified_calendar)
   }
 
   /**

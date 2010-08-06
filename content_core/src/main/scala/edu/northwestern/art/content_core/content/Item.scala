@@ -50,7 +50,7 @@ class Item extends JSONSerializable {
 
   /**Time stamp for node changes. */
   @Temporal(TemporalType.TIMESTAMP)
-  var updated: Date = null
+  var modified: Date = null
 
   /**
    *  Returns true only if this item is in a specified category.
@@ -124,25 +124,26 @@ class Item extends JSONSerializable {
 
   def toJSON: JSONObject =
     Properties("id" -> id, "metadata" -> metadata,
-      "categories" -> categoryIds, "updated" -> updated).toJSON
+      "categories" -> categoryIds, "modified" -> modified).toJSON
 
 }
 
 object Item extends Storage[Item] {
 
   def initialize(item: Item, name: String, metadata: Metadata,
-      categories: Iterable[Category]) = {
+      modified: Date, categories: Iterable[Category]) = {
     item.name = name
     item.metadata = metadata
+    item.modified = modified
     item.categories = new ArrayList(categories)
     item
   }
 
   def create(name: String, metadata: Metadata = null,
-      categories: Iterable[Category] = List()): Item = {
+      modified: Date, categories: Iterable[Category] = List()): Item = {
     val item = new Item
     persist(item)
-    initialize(item, name, metadata, categories)
+    initialize(item, name, metadata, modified, categories)
   }
   
 }
