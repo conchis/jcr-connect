@@ -57,5 +57,10 @@ object ImageItem extends Storage[ImageItem] {
     persist(item)
     initialize(item, name, metadata, categories, sources)
   }
+
+  def apply(name: String, metadata: Metadata,
+      categories: Iterable[Category] = List(),
+      sources: Iterable[ImageSource] = List()) =
+    initialize(new ImageItem, name, metadata, categories, sources)
 }
 

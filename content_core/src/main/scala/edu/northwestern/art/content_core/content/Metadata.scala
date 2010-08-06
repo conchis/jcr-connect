@@ -56,15 +56,15 @@ class Metadata extends Serializable with JSONSerializable {
 object Metadata {
 
   def apply(title: String, description: String = null,
-            creators: Array[String] = Array(), rights: Array[String] = Array(),
-            types: Array[String] = Array()): Metadata = {
+            creators: Iterable[String] = List(), rights: Iterable[String] = List(),
+            types: Iterable[String] = List()): Metadata = {
     val metadata = new Metadata
 
     metadata.title = title
     metadata.description = description
-    metadata.creators    = creators
-    metadata.rights      = rights
-    metadata.types       = types
+    metadata.creators    = creators.toArray
+    metadata.rights      = rights.toArray
+    metadata.types       = types.toArray
 
     metadata
   }
