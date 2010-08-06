@@ -55,8 +55,15 @@ class LocalConnectorSpec extends FlatSpec with ShouldMatchers {
   }
 
   it should "Support free-text search of a repository" in {
-    val folder = connector.search("Water")
-    println(folder)
+    val folder = connector.search("Water").toString
+    folder should include("Photographer: Chicago Daily News")
+    folder should include("Old 68th Street Water Intake Crib")
+    folder should include("Commercial Fishermen along the Chicago River, 1911")
+  }
+
+  it should "provide a method to retrieve an item given a path" in {
+    val item = connector.get("/content/ec_100647")
+    println(item)
   }
 
   //it should "Provide a way to generate a catalog of any content folder" in {

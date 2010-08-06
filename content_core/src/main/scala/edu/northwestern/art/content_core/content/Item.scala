@@ -124,7 +124,7 @@ class Item extends JSONSerializable {
 
   def toJSON: JSONObject =
     Properties("id" -> id, "metadata" -> metadata,
-      "categories" -> categoryIds).toJSON
+      "categories" -> categoryIds, "updated" -> updated).toJSON
 
 }
 

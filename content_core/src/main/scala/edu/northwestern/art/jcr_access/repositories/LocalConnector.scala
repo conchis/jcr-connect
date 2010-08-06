@@ -25,12 +25,11 @@ import collection.mutable.ListBuffer
 import javax.jcr.query.Query
 import javax.jcr.{Node, PathNotFoundException, Session}
 
-import org.json.{JSONArray, JSONObject}
-
 import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.content_core.catalog.{CatalogImageItem, Thumbnail, Catalog, CatalogItem}
 import edu.northwestern.art.content_core.content.{Metadata, Item}
 import edu.northwestern.art.content_core.images.{ImageSource, ImageItem}
+import org.json.{JSONException, JSONArray, JSONObject}
 
 /**
  * Simple connector to a local repository storing content in a straightforward
@@ -68,7 +67,9 @@ class LocalConnector(repository_url: String, user: String,
       }
       catch {
         case _: PathNotFoundException =>
-          throw new NoItemException        
+          throw new NoItemException
+        case except: JSONException =>
+          throw new FailureException(except)
       }
     })
   }
@@ -79,12 +80,9 @@ class LocalConnector(repository_url: String, user: String,
 
   private def makeImageItem(name: String, json: JSONObject,
       modified: Date): ImageItem = {
-    val metadata_json = json.getJSONObject("metadata")
-    val creators = extractJSONArray(metadata_json, "creators")
-    val title: String = metadata_json.getString("title")
-
-    ImageItem(name, metadata = makeMetadata(metadata_json),
-        sources = makeImageSources(json.getJSONArray("sources")))
+    
+    ImageItem(name, metadata = makeMetadata(json),
+        sources = List())
   }
 
   /**                         
@@ -114,8 +112,19 @@ class LocalConnector(repository_url: String, user: String,
     buffer.toList
   }
 
-  private def makeImageSources(json: JSONArray): List[ImageSource] = {
-    List();
+  /**
+   * Creates list of ImageSource objects for each image source specified
+   * in the JSON data.
+   */
+
+  private def makeImageSources(json: JSONObject): List[ImageSource] = {
+    val sources = new ListBuffer[ImageSource]
+    val sources_array = json.getJSONArray("sources")
+    for (index <- 0 until sources_array.length) {
+      val source_json = sources_array.getJSONObject(index)
+    }
+
+    sources.toList
   }
 
 
@@ -124,7 +133,7 @@ class LocalConnector(repository_url: String, user: String,
   }
 
   /**
-   *    Catalogs content under a specified folder.
+   *     Catalogs content under a specified folder.
    */
 
   def catalog(path: String): Catalog = {
