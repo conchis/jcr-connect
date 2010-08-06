@@ -109,9 +109,11 @@ class LocalConnector(repository_url: String, user: String,
 
   private def extractJSONArray(json: JSONObject, field: String) = {
     val buffer = new ListBuffer[String]
-    val json_array = json.getJSONArray(field)
-    for (index <- 0 until json_array.length)
-      buffer.append(json_array.getString(index))
+    if (json.has(field)) {
+      val json_array = json.getJSONArray(field)
+      for (index <- 0 until json_array.length)
+        buffer.append(json_array.getString(index))
+    }
     buffer.toList
   }
 
@@ -122,9 +124,10 @@ class LocalConnector(repository_url: String, user: String,
 
   private def makeImageSources(json: JSONObject): List[ImageSource] = {
     val sources = new ListBuffer[ImageSource]
-    val sources_array = json.getJSONArray("sources")
-    for (index <- 0 until sources_array.length) {
-      val source_json = sources_array.getJSONObject(index)
+    val sources_json = json.getJSONObject("sources")
+    val names = sources_json.keys
+    while (names.hasNext) {
+      val source_json = sources_json.getJSONObject(names.next.asInstanceOf[String])
     }
 
     sources.toList
@@ -183,17 +186,34 @@ class LocalConnector(repository_url: String, user: String,
   }
 
   /**
-   *     Catalogs content under a specified folder.
+   * Catalogs content under a specified folder.
    */
 
   def catalog(path: String): Catalog = {
+
     session((jcr_session: Session) => {
-      val container = jcr_session.getNode(path)
-      var items: List[CatalogItem] = List()
-      val iterator = container.getNodes
-      while (iterator.hasNext())
-        items ::= makeCatalogItem(iterator.nextNode)
-      new edu.northwestern.art.content_core.catalog.Catalog(container.getName, "", items.reverse)
+      try {
+        val container = jcr_session.getNode(path)
+        val items = new ListBuffer[CatalogItem]
+        val iterator = container.getNodes
+        while (iterator.hasNext()) {
+          try {
+            items.append(makeCatalogItem(iterator.nextNode))
+          }
+          catch {
+            case _: NoItemException       => ;
+            case _: JSONException         => ;
+            case _: PathNotFoundException => ;
+          }
+        }
+        new Catalog(container.getName, "", items.toList)
+      }
+      catch {
+        case _: PathNotFoundException =>
+          throw new NoItemException
+        case except: JSONException =>
+          throw new FailureException(except)
+      }
     })
   }
 

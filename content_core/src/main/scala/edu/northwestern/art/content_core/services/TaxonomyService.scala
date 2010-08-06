@@ -20,13 +20,12 @@
 package edu.northwestern.art.content_core.services
 
 import java.io.{OutputStream, OutputStreamWriter}
-import javax.ws.rs._
-import core.{Response, StreamingOutput}
+import javax.ws.rs.core.{Response, StreamingOutput}
 
 import edu.northwestern.art.content_core.utilities.Storage
 import edu.northwestern.art.content_core.utilities.Storage.transaction
 import edu.northwestern.art.content_core.content.{Category, NotFoundException, Taxonomy}
-
+import javax.ws.rs._
 
 @Path("/taxon")
 class TaxonomyService {
@@ -37,6 +36,7 @@ class TaxonomyService {
     try {
       val taxonomy = Taxonomy.find(taxonomyName)
       taxonomy.toString
+
     }
     catch {
       case except: NotFoundException =>
