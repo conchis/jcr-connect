@@ -140,7 +140,8 @@ object Item extends Storage[Item] {
   }
 
   def create(name: String, metadata: Metadata = null,
-      modified: Date, categories: Iterable[Category] = List()): Item = {
+      modified: Date = new Date,
+      categories: Iterable[Category] = List()): Item = {
     val item = new Item
     persist(item)
     initialize(item, name, metadata, modified, categories)

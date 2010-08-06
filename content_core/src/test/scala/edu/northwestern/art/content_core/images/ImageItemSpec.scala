@@ -27,13 +27,15 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 import edu.northwestern.art.content_core.content.Metadata
+import java.util.Date
 
 @RunWith(classOf[JUnitRunner])
 class ImageItemSpec extends FlatSpec with ShouldMatchers {
   Storage.unit("Testing")
 
   "An ImageItem" should "do something" in {
-    val item = ImageItem.create("IM1", Metadata("Test Image"), List(),
+    val item = ImageItem.create("IM1", Metadata("Test Image"),
+      new Date, List(),
       List(
         ImageURL.create("u1", "http://u1"),
         ImageURL.create("u2", "http://u2")))

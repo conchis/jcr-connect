@@ -135,9 +135,10 @@ class LocalConnector(repository_url: String, user: String,
    */
 
   def put(path: String, item: Item) = {
+    val location = Path(path)
+    item.name = location.name
     session((jcr_session: Session) => {
       if (!isItem(path)) {
-        val location = Path(path)
         val parent = jcr_session.getNode(location.parent)
         createItem(parent, item)
       }
@@ -145,6 +146,7 @@ class LocalConnector(repository_url: String, user: String,
         val item_node = jcr_session.getNode(path)
         updateItem(item_node, item)
       }
+      jcr_session.save
     })
   }
 

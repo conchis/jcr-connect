@@ -24,6 +24,9 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import javax.jcr.Session
+import edu.northwestern.art.content_core.images.ImageItem
+import edu.northwestern.art.content_core.content.Metadata
+import java.util.Date
 
 @RunWith(classOf[JUnitRunner])
 class LocalConnectorSpec extends FlatSpec with ShouldMatchers {
@@ -64,6 +67,17 @@ class LocalConnectorSpec extends FlatSpec with ShouldMatchers {
   it should "provide a method to retrieve an item given a path" in {
     val item = connector.get("/content/ec_100647")
     println(item)
+  }
+
+  it should "create new nodes from Item instances" in {
+    val now = new Date
+    val item = ImageItem("abc", Metadata("T1", "T1 Item"), now)
+    connector.put("/content/test1", item)
+
+    val item2 = connector.get("/content/test1")
+    item2.name should equal(item.name)
+    item2.metadata.title should equal(item.metadata.title)
+    println(item2)
   }
 
   //it should "Provide a way to generate a catalog of any content folder" in {
