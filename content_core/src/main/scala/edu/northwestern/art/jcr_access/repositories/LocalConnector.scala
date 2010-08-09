@@ -22,16 +22,16 @@ package edu.northwestern.art.jcr_access.repositories
 import java.io.ByteArrayInputStream
 import collection.mutable.ListBuffer
 
-import org.json.{JSONException, JSONArray, JSONObject}
-
+import java.util.{Calendar, Date}
 import javax.jcr.query.Query
 import javax.jcr.{Node, PathNotFoundException, Session}
+
+import org.json.{JSONException, JSONArray, JSONObject}
 
 import edu.northwestern.art.content_core.catalog.{CatalogImageItem, Thumbnail, Catalog, CatalogItem}
 import edu.northwestern.art.content_core.content.{Metadata, Item}
 import edu.northwestern.art.content_core.utilities.Path
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException, RepositoryConnector}
-import java.util.{Calendar, Date}
 import edu.northwestern.art.content_core.images.{TiledImageURL, ImageURL, ImageSource, ImageItem}
 
 /**
@@ -136,6 +136,11 @@ class LocalConnector(repository_url: String, user: String,
     sources.toMap
   }
 
+  /**
+   * Extracts a String valued property from a JSONObject. Allows the specification
+   * of a default value if the property is not set.
+   */
+
   private def extractString(json: JSONObject, name: String, default: String) = {
     if (json.has(name))
       json.getString(name)
@@ -143,12 +148,21 @@ class LocalConnector(repository_url: String, user: String,
       default
   }
 
+  /**
+   * Extracts an Int valued property from a JSONObject. Allows the specification
+   * of a default value if the property is not set.
+   */
+
   private def extractInt(json: JSONObject, name: String, default: Int) = {
     if (json.has(name))
       json.getInt(name)
     else
       default
   }
+
+  /**
+   * Builds an ImageSource object from a json representation.
+   */
 
   private def makeImageSource(source_json: JSONObject) = {
     val name = source_json.getString("name")
