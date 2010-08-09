@@ -19,19 +19,22 @@
 
 package edu.northwestern.art.content_core.images
 
+import java.util.{Date, ArrayList}
+
 import scala.collection.JavaConversions._
 
 import javax.persistence.{OneToMany, Entity}
+
 import edu.northwestern.art.content_core.properties.Properties
 import edu.northwestern.art.content_core.content.{Category, Item, Metadata}
 import edu.northwestern.art.content_core.utilities.Storage
-import java.util.{Date, ArrayList}
 
 @Entity
 class ImageItem extends Item {
 
   @OneToMany(mappedBy="item")
-  var sources: java.util.List[ImageSource] = new ArrayList
+  var sources: java.util.Map[String, ImageSource] =
+      new java.util.HashMap[String, ImageSource]
 
   override def toJSON = Properties(
       "name"      -> name,
@@ -44,15 +47,15 @@ object ImageItem extends Storage[ImageItem] {
 
   def initialize(item: ImageItem, name: String, metadata: Metadata,
       modified: Date, categories: Iterable[Category],
-      sources: Iterable[ImageSource]): ImageItem = {
+      sources: Map[String, ImageSource]): ImageItem = {
     Item.initialize(item, name, metadata, modified, categories)
-    item.sources = new ArrayList(sources)
+    item.sources = new java.util.HashMap(sources)
     item
   }
 
   def create(name: String, metadata: Metadata, modified: Date = new Date,
       categories: Iterable[Category] = List(),
-      sources: Iterable[ImageSource] = List()) = {
+      sources: Map[String, ImageSource] = Map()) = {
     val item = new ImageItem
     persist(item)
     initialize(item, name, metadata, modified, categories, sources)
@@ -60,7 +63,7 @@ object ImageItem extends Storage[ImageItem] {
 
   def apply(name: String, metadata: Metadata, modified: Date = new Date,
       categories: Iterable[Category] = List(),
-      sources: Iterable[ImageSource] = List()) =
+      sources: Map[String, ImageSource] = Map()) =
     initialize(new ImageItem, name, metadata, modified,
       categories, sources)
 }

@@ -29,10 +29,10 @@ import javax.jcr.{Node, PathNotFoundException, Session}
 
 import edu.northwestern.art.content_core.catalog.{CatalogImageItem, Thumbnail, Catalog, CatalogItem}
 import edu.northwestern.art.content_core.content.{Metadata, Item}
-import edu.northwestern.art.content_core.images.{ImageSource, ImageItem}
 import edu.northwestern.art.content_core.utilities.Path
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException, RepositoryConnector}
 import java.util.{Calendar, Date}
+import edu.northwestern.art.content_core.images.{TiledImageURL, ImageURL, ImageSource, ImageItem}
 
 /**
  * Simple connector to a local repository storing content in a straightforward
@@ -85,7 +85,7 @@ class LocalConnector(repository_url: String, user: String,
       modified: Date): ImageItem = {
     
     ImageItem(name, metadata = makeMetadata(json),
-        modified = modified, sources = List())
+        modified = modified, sources = makeImageSources(json))
   }
 
   /**                         
@@ -122,15 +122,50 @@ class LocalConnector(repository_url: String, user: String,
    * in the JSON data.
    */
 
-  private def makeImageSources(json: JSONObject): List[ImageSource] = {
-    val sources = new ListBuffer[ImageSource]
+  private def makeImageSources(json: JSONObject): Map[String, ImageSource] = {
+    val sources = new collection.mutable.HashMap[String, ImageSource]
     val sources_json = json.getJSONObject("sources")
     val names = sources_json.keys
     while (names.hasNext) {
-      val source_json = sources_json.getJSONObject(names.next.asInstanceOf[String])
+      val name = names.next.asInstanceOf[String]
+      val source_json = sources_json.getJSONObject(name)
+      val source = makeImageSource(source_json)
+      if (source != null)
+        sources(name) = source
     }
+    sources.toMap
+  }
 
-    sources.toList
+  private def extractString(json: JSONObject, name: String, default: String) = {
+    if (json.has(name))
+      json.getString(name)
+    else
+      default
+  }
+
+  private def extractInt(json: JSONObject, name: String, default: Int) = {
+    if (json.has(name))
+      json.getInt(name)
+    else
+      default
+  }
+
+  private def makeImageSource(source_json: JSONObject) = {
+    val name = source_json.getString("name")
+    val format = extractString(source_json, "format", null)
+    val width = extractInt(source_json, "width", 0)
+    val height = extractInt(source_json, "height", 0)
+    val type_name = source_json.getString("type")
+    type_name match {
+      case "ImageURL" =>
+        val url = extractString(source_json, "url", null)
+        ImageURL(name, url, format, width, height)
+      case "TiledImageURL" =>
+        val url = extractString(source_json, "url", null)
+        TiledImageURL(name, url, format, width, height)
+      case "BinaryImage" =>  // FIXME implement this
+        null
+    }
   }
 
   /**

@@ -93,6 +93,21 @@ class PropertiesSpec extends FlatSpec with ShouldMatchers {
     }
   }
 
+  class P(val x: Int, val y: Int) extends JSONSerializable {
+    def toJSON = Properties("class" -> "P", "x" -> x, "y" -> y).toJSON
+  }
+
+  Properties.defBuilder("P", (p: Properties) => new P(p("x"), p("y")))
+
+  it should "Support defined conversions from Properties" in {
+    val p = new P(3, 4)
+    val p_json = p.toJSON
+    val p_prop = Properties(p_json)
+    println(p_prop)
+    val p2: P = p_prop.as[P]
+    println(p2)
+  }
+
 }
 
 

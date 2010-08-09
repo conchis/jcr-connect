@@ -19,10 +19,18 @@
 
 package edu.northwestern.art.content_core.services
 
-import javax.ws.rs.Path
 import edu.northwestern.art.content_core.utilities.Storage.transaction
+import javax.ws.rs.{GET, Produces, Path, PathParam}
 
 @Path("/item")
 class ItemService {
+
+  @GET @Path("/{iid}")
+  @Produces(Array("application/json"))
+  def getItem(@PathParam("iid") item_id: String): String = {
+    "true"
+  }
+
+
   
 }

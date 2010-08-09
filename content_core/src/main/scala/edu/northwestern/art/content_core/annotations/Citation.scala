@@ -19,4 +19,8 @@
 
 package edu.northwestern.art.content_core.annotations
 
-class Citation
+import javax.persistence.Entity
+
+@Entity
+class Citation {
+}

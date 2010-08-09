@@ -58,6 +58,13 @@ object PropertyValue {
     new Properties(property_map)
   }
 
+  implicit def asPropertyValue(map: java.util.Map[_, _]) = {
+    val property_map = scala.collection.mutable.Map[String, PropertyValue]()
+    for ((name, value) <- map)
+      property_map.put(name.toString, apply(value))
+    new Properties(property_map.toMap)
+  }
+
   implicit def asPropertyValue(items: Array[_]) =
     new ArrayValue(items map apply)
 
@@ -90,6 +97,7 @@ object PropertyValue {
     case value: Iterable[_]             => asPropertyValue(value)
     case value: Array[_]                => asPropertyValue(value)
     case value: java.util.Collection[_] => asPropertyValue(value)
+    case value: java.util.Map[_, _]     => asPropertyValue(value)
     case value: JSONObject              => asPropertyValue(value)
     case value: JSONArray               => asPropertyValue(value)
     case value: JSONSerializable        => asPropertyValue(value)

@@ -19,8 +19,12 @@
 
 package edu.northwestern.art.content_core.annotations
 
+import javax.persistence.Entity
+
 /**
  * Coordinates for the attachment point of an Annotation
  */
 
-abstract class Marker
+@Entity
+abstract class Marker {
+}

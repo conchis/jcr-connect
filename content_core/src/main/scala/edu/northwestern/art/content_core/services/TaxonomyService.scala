@@ -20,15 +20,30 @@
 package edu.northwestern.art.content_core.services
 
 import java.io.{OutputStream, OutputStreamWriter}
+
+import javax.ws.rs._
 import javax.ws.rs.core.{Response, StreamingOutput}
 
 import edu.northwestern.art.content_core.utilities.Storage
 import edu.northwestern.art.content_core.utilities.Storage.transaction
 import edu.northwestern.art.content_core.content.{Category, NotFoundException, Taxonomy}
-import javax.ws.rs._
+
 
 @Path("/taxon")
 class TaxonomyService {
+
+  @GET @Path("/")
+  @Produces(Array("application/json"))
+  def showAll(): String = {
+    "\"Taxonomies\""
+  }
+
+  @POST @Path("/")
+  @Produces(Array("application/json"))
+  def createTaxonomy(@QueryParam("name") taxonomyName: String): String = {
+    val taxonomy: Taxonomy = transaction { Taxonomy.create(taxonomyName) }
+    return taxonomy.toString
+  }
 
   @GET @Path("/{tid}")
   @Produces(Array("application/json"))
@@ -42,13 +57,6 @@ class TaxonomyService {
       case except: NotFoundException =>
         throw new WebApplicationException(Response.Status.NOT_FOUND)
     }
-  }
-
-  @POST @Path("/")
-  @Produces(Array("application/json"))
-  def createTaxonomy(@QueryParam("name") taxonomyName: String): String = {
-    val taxonomy: Taxonomy = transaction { Taxonomy.create(taxonomyName) }
-    return taxonomy.toString
   }
   
   @POST @Path("/{tid}")

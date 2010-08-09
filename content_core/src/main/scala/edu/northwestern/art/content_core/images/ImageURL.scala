@@ -29,8 +29,14 @@ class ImageURL extends ImageSource {
 
   var url: String = ""
 
-  def toJSON = Properties("name" -> name, "format" -> format,
-      "width" -> width, "height" -> height, "url" -> url).toJSON
+  def toJSON =
+    if (width == 0 && height == 0)
+      Properties("name" -> name, "format" -> format,
+        "url" -> url, "type" -> "ImageURL").toJSON
+    else
+      Properties("name" -> name, "format" -> format,
+        "width" -> width, "height" -> height, "url" -> url,
+        "type" -> "ImageURL").toJSON
 }
 
 object ImageURL extends Storage[ImageURL] {
@@ -43,6 +49,14 @@ object ImageURL extends Storage[ImageURL] {
   }
 
   def create(name: String, url: String, format: String = null,
+      width: Int = 0, height: Int = 0): ImageURL = {
+    val source = new ImageURL
+    initialize(source, name, format, width, height, url)
+    persist(source)
+    source
+  }
+
+  def apply(name: String, url: String, format: String = null,
       width: Int = 0, height: Int = 0): ImageURL = {
     val source = new ImageURL
     initialize(source, name, format, width, height, url)

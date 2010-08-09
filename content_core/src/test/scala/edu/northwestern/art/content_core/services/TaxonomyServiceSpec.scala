@@ -33,11 +33,11 @@ import com.sun.jersey.core.util.MultivaluedMapImpl
 @RunWith(classOf[JUnitRunner])
 class TaxonomyServiceSpec extends FlatSpec with ShouldMatchers {
 
-  val serviceUrl = "http://localhost:8080/content_core/taxon"
+  val serviceUrl = "http://localhost:8080/content_core/service/taxon"
   val client = Client.create
 
 
-  "A TaxonomyService" should " allow the definiton of new taxonomies" in {
+  "A TaxonomyService" should "allow the definiton of new taxonomies" in {
     val resource = client.resource(serviceUrl)
 
     val parameters = new MultivaluedMapImpl

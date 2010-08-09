@@ -35,10 +35,11 @@ class ImageItemSpec extends FlatSpec with ShouldMatchers {
 
   "An ImageItem" should "do something" in {
     val item = ImageItem.create("IM1", Metadata("Test Image"),
-      new Date, List(),
-      List(
-        ImageURL.create("u1", "http://u1"),
-        ImageURL.create("u2", "http://u2")))
+      modified = new Date,
+      categories = List(),
+      sources = Map(
+        "thumbnail" -> ImageURL.create("u1", "http://u1"),
+        "large" -> TiledImageURL.create("u2", "http://u2")))
     println(item)
   }
 

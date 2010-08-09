@@ -37,6 +37,18 @@ object Properties {
   def apply(json_string: String): Properties =
     apply(new JSONObject(json_string))
 
+  type Builder[T] = (Properties) => T
+
+  private val builder_map =
+      new collection.mutable.HashMap[String, Builder[Any]]
+
+  def defBuilder[T](name: String, builder: Builder[T]) {
+    builder_map(name) = builder
+  }
+  
+  def getBuilder[T](name: String): Builder[T] =
+    builder_map(name).asInstanceOf[Builder[T]]
+
 }
 
 class Properties(val property_map: Map[String, PropertyValue])
@@ -76,6 +88,12 @@ class Properties(val property_map: Map[String, PropertyValue])
     for ((name, value) <- property_map)
       value.setIn(json_object, name)
     json_object
+  }
+
+  def as[T]: T = {
+    val class_name: String = this("class")
+    val builder = Properties.getBuilder(class_name)
+    builder(this)
   }
 }
 
