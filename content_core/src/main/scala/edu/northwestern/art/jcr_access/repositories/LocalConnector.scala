@@ -1,5 +1,5 @@
 /**
- *   Copyright 2010 Northwestern University.
+ * Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -124,15 +124,19 @@ class LocalConnector(repository_url: String, user: String,
 
   private def makeImageSources(json: JSONObject): Map[String, ImageSource] = {
     val sources = new collection.mutable.HashMap[String, ImageSource]
-    val sources_json = json.getJSONObject("sources")
-    val names = sources_json.keys
-    while (names.hasNext) {
-      val name = names.next.asInstanceOf[String]
-      val source_json = sources_json.getJSONObject(name)
-      val source = makeImageSource(source_json)
-      if (source != null)
-        sources(name) = source
+
+    if (json.has("sources")) {
+      val sources_json = json.getJSONObject("sources")
+      val names = sources_json.keys
+      while (names.hasNext) {
+        val name = names.next.asInstanceOf[String]
+        val source_json = sources_json.getJSONObject(name)
+        val source = makeImageSource(source_json)
+        if (source != null)
+          sources(name) = source
+      }
     }
+
     sources.toMap
   }
 
