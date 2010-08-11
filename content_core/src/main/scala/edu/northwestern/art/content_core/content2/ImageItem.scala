@@ -19,4 +19,26 @@
 
 package edu.northwestern.art.content_core.content2
 
-class ImageItem
+import org.json.JSONObject
+
+class ImageItem(
+    name: String,
+    metadata: Metadata,
+    val sources: Map[String, ImageSource] = Map()
+  )
+  extends Item(name, metadata) {
+
+  /**
+   * Applies a visitor to this object.
+   */
+
+  override def accept[T](visitor: ContentVisitor[T]): T =
+    visitor.visitImageItem(this)
+
+  /**
+   * Returns a JSON representation of this Metadata.
+   */
+
+  override def toJSON: JSONObject = accept(JSONVisitor)
+
+}

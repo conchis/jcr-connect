@@ -1,5 +1,5 @@
-/** 
- * Copyright 2010 Northwestern University.
+/**
+ *  Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -19,4 +19,28 @@
 
 package edu.northwestern.art.content_core.content2
 
-class ImageURL
+import org.json.JSONObject
+
+class ImageURL(
+    name:    String,
+    val url: String,
+    format:  String = "",
+    width:   Int    = 0,
+    height:  Int    = 0
+  )
+  extends ImageSource(name, format, width, height) {
+
+  /**
+   * Applies a visitor to this object.
+   */
+
+  override def accept[T](visitor: ContentVisitor[T]): T =
+    visitor.visitImageURL(this)
+
+  /**
+   * Returns a JSON representation of this object.
+   */
+
+  override def toJSON: JSONObject = accept(JSONVisitor)
+
+}

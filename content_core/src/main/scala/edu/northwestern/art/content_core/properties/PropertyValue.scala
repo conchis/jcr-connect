@@ -42,6 +42,12 @@ object PropertyValue {
   implicit def asPropertyValue(value: Date) =
     new DateValue(value)
 
+  implicit def asPropertyValue[T](value: Option[T]) =
+    value match {
+      case None => new NullValue
+      case Some(contained) => apply(contained)
+    }
+
   implicit def asPropertyValue(value: JSONSerializable) =
     new JSONValue(value)
 
@@ -93,6 +99,7 @@ object PropertyValue {
     case value: Boolean                 => asPropertyValue(value)
     case value: String                  => asPropertyValue(value)
     case value: Date                    => asPropertyValue(value)
+    case value: Option[_]               => asPropertyValue(value)
     case value: Map[_, _]               => asPropertyValue(value)
     case value: Iterable[_]             => asPropertyValue(value)
     case value: Array[_]                => asPropertyValue(value)

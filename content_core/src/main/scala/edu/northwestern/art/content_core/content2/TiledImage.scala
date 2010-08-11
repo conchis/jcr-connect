@@ -19,4 +19,28 @@
 
 package edu.northwestern.art.content_core.content2
 
-class TiledImage
+import org.json.JSONObject
+
+class TiledImage(
+    name:    String,
+    val url: String,
+    format:  String = "",
+    width:   Int    = 0,
+    height:  Int    = 0
+  )
+  extends ImageSource(name, format, width, height) {
+
+  /**
+   * Applies a visitor to this object.
+   */
+
+  override def accept[T](visitor: ContentVisitor[T]): T =
+    visitor.visitTiledImage(this)
+
+  /**
+   * Returns a JSON representation of this object.
+   */
+
+  override def toJSON: JSONObject = accept(JSONVisitor)
+
+}

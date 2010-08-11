@@ -1,5 +1,5 @@
-/** 
- * Copyright 2010 Northwestern University.
+/**
+ *Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,26 +14,25 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 10 August 2010
+ * @version 11 [08] 2010
  */
 
 package edu.northwestern.art.content_core.content2
 
-import edu.northwestern.art.content_core.properties.JSONSerializable
+import org.scalatest.matchers.ShouldMatchers
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FlatSpec
 
-abstract class ImageSource(
-    val name:   String,
-    val format: String,
-    val width:  Int     = 0,
-    val height: Int     = 0
-  )
-  extends JSONSerializable {
+@RunWith(classOf[JUnitRunner])
+class MetadataSpec extends FlatSpec with ShouldMatchers  {
 
-  /**
-   * Applies a visitor to this object.
-   */
-
-  def accept[T](visitor: ContentVisitor[T]): T =
-    visitor.visitImageSource(this)
+  "A Metadata" should "Provide a method for generating JSON" in {
+    val m1 = new Metadata("M1", description = "Test Mete")
+    val json_string = m1.toString
+    json_string should include("\"description\":\"Test Mete\"")
+    json_string should include("\"title\":\"M1\"")
+    json_string should include("\"creators\":[]")
+  }
 
 }

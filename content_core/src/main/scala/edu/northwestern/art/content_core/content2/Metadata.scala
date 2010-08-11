@@ -1,4 +1,4 @@
-/** 
+/**
  * Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
@@ -19,4 +19,32 @@
 
 package edu.northwestern.art.content_core.content2
 
-class Metadata
+import java.util.Date
+import edu.northwestern.art.content_core.properties.JSONSerializable
+import org.json.JSONObject
+
+
+class Metadata(
+    var title:        String        = "",
+    var description:  String        = "",
+    var creators:     List[String] = List(),
+    var rights:       List[String] = List(),
+    var types:        List[String] = List(),
+    var date:         Option[Date]  = None
+  )
+  extends JSONSerializable {
+
+  /**
+   * Applies a visitor to this object.
+   */
+
+  def accept[T](visitor: ContentVisitor[T]): T =
+    visitor.visitMetadata(this)
+
+  /**
+   * Returns a JSON representation of this Metadata.
+   */
+
+  override def toJSON: JSONObject = accept(JSONVisitor)
+
+}

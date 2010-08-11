@@ -1,5 +1,5 @@
 /** 
- * Copyright 2010 Northwestern University.
+ *Copyright 2010 Northwestern University.
  *
  * Licensed under the Educational Community License, Version 2.0 (the
  * "License"); you may not use this file except in compliance with the
@@ -14,21 +14,20 @@
  * under the License.
  *
  * @author Jonathan A. Smith
- * @version 10 August 2010
+ * @version 10 [08] 2010
  */
 
 package edu.northwestern.art.content_core.content2
 
-import java.util.Date
-import edu.northwestern.art.content_core.properties.JSONSerializable
 import org.json.JSONObject
+import edu.northwestern.art.content_core.properties.JSONSerializable
 
-class Item(
+class Category(
+    val taxonomy: Taxonomy,
     val name: String,
-    val metadata: Metadata,
-    val categories: List[Category] = List(),
-    val created: Date              = new Date,
-    val modified: Date             = new Date
+    val description: String,
+    val parent: Option[Category],
+    val children: Array[Category]
   )
   extends JSONSerializable {
 
@@ -37,7 +36,7 @@ class Item(
    */
 
   def accept[T](visitor: ContentVisitor[T]): T =
-    visitor.visitItem(this)
+    visitor.visitCategory(this)
 
   /**
    * Returns a JSON representation of this Metadata.
