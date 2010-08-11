@@ -70,13 +70,6 @@ class JCRRepositoryView(BrowserView):
         self.context.REQUEST.RESPONSE.redirect(folder.absolute_url_path() + '/' + tag)
 
         list = []
-        # for tag in folder:
-        #     if isinstance(folder[tag], JCRFolder) and tag == "content":
-        #         self.context.REQUEST.RESPONSE.redirect(folder.absolute_url_path() + '/' + tag)
-        #         list.append( dict(url = (folder.absolute_url_path() + '/' + tag), title = tag, description = '',) )
-        # 
-        # # is this the right place ?
-        # self.context.REQUEST.RESPONSE.redirect(folder.absolute_url_path() + '/' + tag)
 
         return list
     

@@ -23,6 +23,10 @@ class IJCRRepository(Interface):
                             description=_(u"URL of the JCR Repository"),
                             required=True)
                             
+    syncURL = schema.TextLine(title=_(u"Synchronization Service URL"),
+                            description=_(u"URL of the JCR Synchronization Service"),
+                            required=True)
+                            
     description = schema.Text(title=_(u"Description"),
                           description=_(u"Description of this cinema"),
                           required=True)

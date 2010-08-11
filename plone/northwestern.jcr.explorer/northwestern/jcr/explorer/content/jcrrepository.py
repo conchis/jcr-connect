@@ -1,3 +1,21 @@
+# 
+#   Copyright 2010 Northwestern University.
+# 
+# Licensed under the Educational Community License, Version 2.0 (the
+# "License"); you may not use this file except in compliance with the
+# License. You may obtain a copy of the License at
+# 
+#    http://www.osedu.org/licenses/ECL-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+# 
+# Author: Xin Xiang, Rick Moore
+# 
+
 """Definition of the JCRRepository content type
 """
 import urllib2
@@ -50,6 +68,15 @@ JCRRepositorySchema = folder.ATFolderSchema.copy() + atapi.Schema((
                                   size=50)
         ),
 
+    atapi.StringField('syncURL',
+        required=False,
+        searchable=True,
+        storage=atapi.AnnotationStorage(),
+        widget=atapi.StringWidget(label=_(u"Synchornization Service URL"),
+                                  description=_(u""),
+                                  size=50)
+        )
+
     # -*- Your Archetypes field definitions here ... -*-
 
 ))
@@ -82,20 +109,20 @@ class JCRRepository(folder.ATFolder):
     repository_id = atapi.ATFieldProperty('repositoryID')
     name = atapi.ATFieldProperty('title')
     url = atapi.ATFieldProperty('url')
+    syncURL = atapi.ATFieldProperty('syncURL')
     description = atapi.ATFieldProperty('description')
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
 
     def load_folders(self):
-        if self.url.find('sauer') > -1:
-            self.load_folders_http()
-        else:
-            self.load_folders_webdav()
+        # if self.url.find('sauer') > -1:
+        self.load_folders_http()
+        # else:
+        #     self.load_folders_webdav()
 
     def load_folders_http(self):
         tool = getToolByName(self, 'portal_membership')
         folder = tool.getHomeFolder()
 
-        # list = []
         types_tool = getToolByName(self, 'portal_types')            	
 
         if self.url.find("access") > -1:
@@ -104,7 +131,6 @@ class JCRRepository(folder.ATFolder):
             tag = "content"
 
         if tag not in folder:
-            print "url in repository: ", self.url
             new_id = types_tool.constructContent('JCRFolder', folder, tag, None, title=tag)
             transaction.savepoint(optimistic=True)
 
@@ -112,18 +138,12 @@ class JCRRepository(folder.ATFolder):
                 e = getattr(folder, new_id)
                 e.title = tag
                 e.url = self.url # + '/content'
+                e.syncURL = self.syncURL
             except Exception, inst:
                 print type(inst)
                 print inst.args
                 print inst
                 print "object not created: ", new_id
-
-        # print "adding to the list: ", tag                
-        # always add to the list
-        # list.append( dict(url = '/'.join(folder.getPhysicalPath()[1:]), title = tag, description = '',) )
-        # list.append( dict(url = tag, title = tag, description = '',) )
-
-        # return list
 
     def load_folders_webdav(self):
         path = self.url + '/jcr%3aroot'

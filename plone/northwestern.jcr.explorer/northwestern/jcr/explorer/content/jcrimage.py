@@ -1,3 +1,21 @@
+# 
+#   Copyright 2010 Northwestern University.
+# 
+# Licensed under the Educational Community License, Version 2.0 (the
+# "License"); you may not use this file except in compliance with the
+# License. You may obtain a copy of the License at
+# 
+#    http://www.osedu.org/licenses/ECL-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+# 
+# Author: Xin Xiang, Jonathan Smith, Rick Moore
+# 
+
 """Definition of the JCRImage content type
 """
 import urllib2
@@ -77,6 +95,14 @@ JCRImageSchema = ATContentTypeSchema.copy() + atapi.Schema( (
     #                                   "booking system."))
     #       ),
 
+    atapi.StringField('lastModified',
+          required=False,
+          searchable=True,
+          storage=atapi.AnnotationStorage(),
+          widget=atapi.StringWidget(
+                 visible = {'view' : 'invisible', 'edit' : 'invisible'})
+          ),
+
     atapi.TextField('url',
           required=False,
           searchable=True,
@@ -108,6 +134,13 @@ JCRImageSchema = ATContentTypeSchema.copy() + atapi.Schema( (
           searchable=0,
           widget=atapi.StringWidget()
           ),
+
+    # atapi.StringField ("modified",
+    #      default = '',
+    #      searchable=0,
+    #      widget=atapi.StringWidget (
+    #              visible = {'view' : 'invisible', 'edit' : 'invisible'})
+    #      ),
 
 ), marshall=atapi.PrimaryFieldMarshaller()
 
@@ -148,6 +181,8 @@ class JCRImage(atapi.OrderedBaseFolder, image.ATImage):
     url = atapi.ATFieldProperty('url')
     tileURL = atapi.ATFieldProperty('tileURL')
     tileURL = ''
+
+    lastModified = ''
     # shown_from = atapi.ATDateTimeFieldProperty('startDate')
     # shown_until = atapi.ATDateTimeFieldProperty('endDate')
 

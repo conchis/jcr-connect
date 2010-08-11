@@ -51,22 +51,6 @@ class JCRImageViewCollage(BrowserView):
         banner_provider = IBannerProvider(context)
         return banner_provider.tag
 
-    # The memoize decorator means that the function will be executed only
-    # once (for a given set of arguments, but in this case there are no
-    # arguments). On subsequent calls, the return value is looked up from a
-    # cache, meaning we can call this function several times without a 
-    # performance hit.
-    
-    # @memoize
-    # def annotations(self):
-    #     context = aq_inner(self.context)
-    #     catalog = getToolByName(context, 'portal_catalog')
-    # 
-    #     idList = self.getNoteIds()
-    # 
-    #     for id in idList:
-    #         print id
-
     def test(self):
         """
         test method

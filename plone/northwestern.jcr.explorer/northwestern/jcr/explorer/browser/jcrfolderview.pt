@@ -37,13 +37,89 @@
 		-->
 
 		  <!--
+		  <input type="button" value="Update" class="buttonDhide" />
+		  -->
+
+		  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+		  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+		  <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+          <!--
 		  <form id="repository_synch_form" name="repository_synch_form"
 		  action="synchToRepository" method="post" enctype="multipart/form-data"
 		  tal:attributes="action string:${here/absolute_url}/synchToRepository">
 		  <input class="form-button" type="submit" name="form.button.synch"
-		  value="Synch To Repository" />
+		  value="Synchronize to Repository" />
+		  
 		  </form>
-		  -->
+          -->
+          
+		  <input type="button" value="Synchronize to Repository" class="form-button" />
+          
+		  <span class="contentToChange"></span>
+		  <div class="progressbar" width="50%"></div>
+
+          
+		  <script>
+          function sendRequest(){
+        /* This requests the url "msgsrv.php"
+        When it complete (or errors)*/
+        $.getJSON("http://localhost:7070/Plone/Members/admin/content/synchToRepository", {}, function(){
+
+          });
+          
+        };
+
+function waitForMsg(){
+        /* This requests the url "msgsrv.php"
+        When it complete (or errors)*/
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:7070/Plone/Members/admin/content/getProgress",
+
+            async: true, /* If set to non-async, browser shows page as "Loading.."*/
+            cache: false,
+            timeout:50000, /* Timeout in ms */
+
+            success: function(data){ /* called when request to barge.php completes */
+		        // $("span.contentToChange").empty();
+		        // $("span.contentToChange").append(data);
+		        $("span.contentToChange").load("http://localhost:7070/Plone/Members/admin/content/getMessage");
+		        var p = parseInt(data);
+		        $("div.progressbar").progressbar("option", "value", p);
+		        if (p != 100) {
+                setTimeout(
+                    'waitForMsg()', /* Request next message */
+                    1000 /* ..after 1 seconds */
+                );
+		        }
+            },
+            error: function(XMLHttpRequest, textStatus, errorThrown){
+		        $("span.contentToChange").empty();
+                setTimeout(
+                    'waitForMsg()', /* Try again after.. */
+                    "15000"); /* milliseconds (15seconds) */
+            },
+        });
+    };
+		  
+		  // Code for example D
+$("input.buttonDhide").click(function(){
+		  // $("div.contentToChange").find("p.thirdparagraph").empty();
+		  $("span.contentToChange").load("http://localhost:7070/Plone/Members/admin/content/getMessage");
+		  });
+		  
+$("input.form-button").click(function(){
+		  $("div.progressbar").progressbar({ value: 0 });
+          // waitForMsg();
+          sendRequest();
+		  waitForMsg(); /* Start the inital request */
+		  });
+
+		  </script>
+
+		  
+		  
 		  
         <tal:areas condition="view/have_jcr_folders">
             <h2 i18n:translate="title_filmfolder_subareas">Folders</h2>

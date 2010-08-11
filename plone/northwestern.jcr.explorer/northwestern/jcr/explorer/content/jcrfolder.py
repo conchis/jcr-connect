@@ -1,11 +1,35 @@
+# 
+#   Copyright 2010 Northwestern University.
+# 
+# Licensed under the Educational Community License, Version 2.0 (the
+# "License"); you may not use this file except in compliance with the
+# License. You may obtain a copy of the License at
+# 
+#    http://www.osedu.org/licenses/ECL-2.0
+# 
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+# 
+# Author: Xin Xiang, Rick Moore
+# 
+
+
 """Definition of the JCRFolder content type
 """
+from time import time
+import datetime
+import urllib
 import urllib2
+import httplib
 import base64
 import elementtree.ElementTree as ET
 import transaction
 
 import simplejson as json
+
 
 from zope.interface import implements, directlyProvides
 
@@ -36,13 +60,14 @@ JCRFolderSchema = folder.ATFolderSchema.copy() + atapi.Schema((
           required=False,
           searchable=True,
           storage=atapi.AnnotationStorage(),
-          # validators=('isTidyHtmlWithCleanup',),
-          # default_output_type='text/x-html-safe',
-          # widget=atapi.RichWidget(label=_(u"URL"),
-          #                         description=_(u""),
-          #                         rows=25,
-          #                         allow_file_upload=False),
           widget=atapi.StringWidget(label=_(u"URL"),
+                                    description=_(u"")),
+          ),
+    atapi.TextField('syncURL',
+          required=False,
+          searchable=True,
+          storage=atapi.AnnotationStorage(),
+          widget=atapi.StringWidget(label=_(u"Synchronization URL"),
                                     description=_(u"")),
           )
 ))
@@ -59,6 +84,11 @@ schemata.finalizeATCTSchema(
     moveDiscussion=False
 )
 
+
+message = ""
+progress = 1
+
+
 class JCRFolder(folder.ATFolder):
     """A folder which can contain films."""
     security = ClassSecurityInfo()
@@ -72,20 +102,19 @@ class JCRFolder(folder.ATFolder):
     description = atapi.ATFieldProperty('description')
     
     url = atapi.ATFieldProperty('url')
+    syncURL = atapi.ATFieldProperty('syncURL')
 
     # -*- Your ATSchema to Python Property Bridges Here ... -*-
 
     def load_folders(self):
         relativePath = '/' + '/'.join(self.getPhysicalPath()[3:])
 
-        print "url in folder: ", self.url
-
-        if self.url.find('sauer') > -1:
-            relativePath = '/' + '/'.join(self.getPhysicalPath()[4:])
-            print relativePath
-            self.load_folders_http(relativePath)
-        else:
-            self.load_folders_webdav(relativePath)
+        # if self.url.find('sauer') > -1:
+        relativePath = '/' + '/'.join(self.getPhysicalPath()[4:])
+        print relativePath
+        self.load_folders_http(relativePath)
+        # else:
+        #     self.load_folders_webdav(relativePath)
 
     def load_folders_http(self, relativePath):
         # read from the Apache server
@@ -99,8 +128,6 @@ class JCRFolder(folder.ATFolder):
             path = self.url + relativePath
 
         jsonStr = self.retrieveContent(path + '/contents.json')
-
-        list = []
 
         if jsonStr == '':
             return
@@ -120,7 +147,7 @@ class JCRFolder(folder.ATFolder):
 
             tag = child["name"]
             title = child["title"]
-     
+
             if tag not in self:
                 itemPath = path + '/' + tag
                 new_id = types_tool.constructContent('JCRImage', self, tag, None, title=title)
@@ -129,6 +156,11 @@ class JCRFolder(folder.ATFolder):
                 try:
                     e = getattr(self, new_id)
                     e.url = itemPath
+                    # record local created time
+                    if "modified" in child:
+                        e.lastModified = child["modified"]
+                    else:
+                        e.lastModified = str(e.modified())
                 except:
                     print "object not created: ", new_id
             # end of if not in context
@@ -196,14 +228,6 @@ class JCRFolder(folder.ATFolder):
                     continue
                 tag = tag.replace(':', '_')
 
-            
-                # # JSON interpretation
-                # jsonStr = self.retrieveContent(path + '/' + tag + '/contents.json')
-                # if jsonStr != '':
-                #     # folder with a child named 'contents.json'
-                #     continue
-                # # end of JSON interpretation
-            
                 if tag not in self:
                     # add to context
                     # e = JCRFolder(tag)
@@ -217,40 +241,6 @@ class JCRFolder(folder.ATFolder):
                         print "object not created: ", new_id
                     continue
             
-                # jsonStr = self.retrieveContent(path + '/' + tag + '/contents.json/jcr:content/jcr:data')
-                # if jsonStr != '' and not jsonStr.startswith('<?xml'):
-                #     abc = json.loads(jsonStr)
-                #     title = abc["metadata"]["title"]
-                #     description = abc["metadata"]["description"]
-                #     data = self.retrieveContent(path + '/' + tag + '/small.jpg/jcr:content/jcr:data')
-                #     if data != '':
-                #         tag = tag + '_content'
-                # 
-                #         e = JCRImage(tag)
-                #         e.title = title
-                #         e.description = description
-                #         field = e.getPrimaryField()
-                # 
-                #         thumbnail_data = self.retrieveContent(path + '/' + tag + '/thumbnail.jpg/jcr:content/jcr:data')
-                #         large_data = self.retrieveContent(path + '/' + tag + '/large.jpg/jcr:content/jcr:data')
-                # 
-                #         try:
-                #             field.set(e, data)
-                #             e.image_large = large_data
-                #             e.image_preview = data
-                #             e.image_thumb = thumbnail_data
-                # 
-                #         except IOError, exception:
-                #             continue
-                #         if tag not in self:
-                #             print tag + ": " + title
-                # 
-                #             # add to context
-                #             self[tag] = e
-                #             self._p_changed = True
-                #     continue
-                # end of JSON interpretation
-
             if node[1][0][0].text is None or node[1][0][4][0][0].text != 'nt:file':
                 # dcr:name, dcr:nodetypename
                 continue
@@ -268,9 +258,6 @@ class JCRFolder(folder.ATFolder):
             	
             	if mimeType == 'image/jpeg':
             	    # image
-            	    # field = e.getPrimaryField()
-            	    # field.set(e, data)
-            	
             	    new_id = types_tool.constructContent('JCRImage', self, tag, None, image=data, title=tag)
             	
             	elif mimeType == 'text/html' or mimeType == 'text/xml':
@@ -281,9 +268,6 @@ class JCRFolder(folder.ATFolder):
             	    # all other types
             	    new_id = types_tool.constructContent('File', self, tag, None, file=data, title=tag)
 
-                # add to context
-                # self.context[tag] = e
-                # self.context._p_changed = True
                 transaction.savepoint(optimistic=True)
 
                 try:
@@ -348,6 +332,23 @@ class JCRFolder(folder.ATFolder):
 
         return data
 
+    def getInterval(self):
+        # get currentTimeMillis
+        currentServerTime = self.retrieveContent(self.syncURL)
+        
+        if currentServerTime != '':
+            currentServerTime = int(currentServerTime) / 1000
+        else:
+            # server time is not available
+            return datetime.timedelta(seconds=0)
+        
+        currentClientTime = time()
+
+        interval = datetime.datetime.fromtimestamp(currentServerTime) - datetime.datetime.fromtimestamp(currentClientTime)
+        print str(interval)
+        return interval
+        
+
     security.declarePublic('synchToRepository')
     def synchToRepository(self):
         """synchronize to repository"""
@@ -356,21 +357,112 @@ class JCRFolder(folder.ATFolder):
         jsonRequest["header"] = {}
         jsonRequest["header"]["destinationPath"] = "/content"
         jsonRequest["header"]["password"] = "3041f65dbefebc61cd2623e14cdd1dfc"
-        jsonRequest["header"]["basePath"] = self.absolute_url() # '/'.join(self.getPhysicalPath())
+        jsonRequest["header"]["basePath"] = self.absolute_url()
         jsonRequest["body"] = {}
+
+        # get the time difference
+        interval = self.getInterval()
         
         for child in self:
             jsonRequest["body"][self[child].id] = {}
             jsonRequest["body"][self[child].id]["path"] = "/" + self[child].id
             jsonRequest["body"][self[child].id]["uuid"] = ""
-            jsonRequest["body"][self[child].id]["modified"] = str(self[child].modified())
+
+            timestamp = datetime.datetime.fromtimestamp(self[child].modified())
+
+            if self[child].lastModified == '':
+                # new object
+                self[child].lastModified = str(self[child].modified())
+                timestamp += interval
+            elif self[child].lastModified == str(self[child].modified()):
+                # hasn't changed since creation from repository
+                timestamp = datetime.datetime(1970, 01, 01, 0, 0, 0)
+            else:
+                # changed
+                self[child].lastModified = str(self[child].modified())
+                timestamp += interval
+
+            # print str(timestamp)
+
+            jsonRequest["body"][self[child].id]["modified"] = str(timestamp)
+
+            if isinstance(self[child], JCRImage):
+                if self[child].tileURL == '':
+                    jsonRequest["body"][self[child].id]["type"] = "BinaryImage"
+                else:
+                    jsonRequest["body"][self[child].id]["type"] = "TiledImage"
+            elif isinstance(self[child], AnnotatedImage):
+                jsonRequest["body"][self[child].id]["type"] = "AnnotatedImage"
+            elif isinstance(self[child], JCRDocument):
+                jsonRequest["body"][self[child].id]["type"] = "Document"
+                
             jsonRequest["body"][self[child].id]["properties"] = {}
             jsonRequest["body"][self[child].id]["properties"]["title"] = self[child].title
             jsonRequest["body"][self[child].id]["properties"]["url"] = self[child].url
             jsonRequest["body"][self[child].id]["properties"]["description"] = self[child].description
             
+        # print json.dumps(jsonRequest)
 
-        print json.dumps(jsonRequest)
+        global message, progress
+        message = "synchronizing ..."
+        progress = 1
+
+        params = urllib.urlencode({'manifest': json.dumps(jsonRequest), 'path': "/def"})
+        req = urllib2.Request(self.syncURL, params)
+        try:
+            response = urllib2.urlopen(req)
+        except httplib.HTTPException:
+            # pass
+            print "HTTPException"
+            return ""
+        except Exception, inst:
+            print type(inst)     # the exception instance
+            print inst.args      # arguments stored in .args
+            print inst           # __str__ allows args to printed directly
+            return ""
+        return "true"
+
+    security.declarePublic('getMessage')
+    def getMessage(self):
+        """ returns the message """
+        global message, progress
+
+        if progress == 100:
+            m = message
+            message = ""
+            progress = 1
+            return m
+        return message
+    
+    security.declarePublic('getProgress')
+    def getProgress(self):
+        """ returns the progress """
+        global message, progress
+
+        # print "progress: " + str(progress)
+        
+        if progress == 100:
+            progress = 1
+            message = ""
+            return 100
+        return progress
+
+    security.declarePublic('updateSyncProgress')
+    def updateSyncProgress(self, n, c, t):
+        """update the progress of synchronization"""
+
+        name = n
+        completed = c
+        total = t
+        
+        global message, progress
+
+        if completed == total:
+            message = "finished synchronizing " + total + " items"
+            progress = 100
+        else:
+            message = "synchronizing " + name + " ... " + completed + "/" + total + " completed"
+            progress = 100 * int(completed) / int(total)
 
     def show(self):
         """test"""
