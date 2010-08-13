@@ -27,6 +27,7 @@ import httplib
 import base64
 import elementtree.ElementTree as ET
 import transaction
+import re
 
 import simplejson as json
 
@@ -111,7 +112,6 @@ class JCRFolder(folder.ATFolder):
 
         # if self.url.find('sauer') > -1:
         relativePath = '/' + '/'.join(self.getPhysicalPath()[4:])
-        print relativePath
         self.load_folders_http(relativePath)
         # else:
         #     self.load_folders_webdav(relativePath)
@@ -355,15 +355,20 @@ class JCRFolder(folder.ATFolder):
        
         jsonRequest = {}
         jsonRequest["header"] = {}
-        jsonRequest["header"]["destinationPath"] = "/content"
+        jsonRequest["header"]["destinationPath"] = re.split("Members/\w+", self.absolute_url())[1]
         jsonRequest["header"]["password"] = "3041f65dbefebc61cd2623e14cdd1dfc"
         jsonRequest["header"]["basePath"] = self.absolute_url()
+        jsonRequest["header"]["repositoryURL"] = self.url
         jsonRequest["body"] = {}
 
         # get the time difference
         interval = self.getInterval()
         
         for child in self:
+            if isinstance(self[child], JCRFolder):
+                # ignore folder
+                continue
+
             jsonRequest["body"][self[child].id] = {}
             jsonRequest["body"][self[child].id]["path"] = "/" + self[child].id
             jsonRequest["body"][self[child].id]["uuid"] = ""
@@ -439,8 +444,6 @@ class JCRFolder(folder.ATFolder):
         """ returns the progress """
         global message, progress
 
-        # print "progress: " + str(progress)
-        
         if progress == 100:
             progress = 1
             message = ""

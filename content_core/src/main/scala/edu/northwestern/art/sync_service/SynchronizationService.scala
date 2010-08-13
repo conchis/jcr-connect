@@ -57,6 +57,8 @@ import net.sf.json.JSONSerializer
 
 import javax.jcr.Session
 import edu.northwestern.art.jcr_access.repositories.LocalConnector
+import edu.northwestern.art.jcr_access.repositories.LocalConnectorFedora
+import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.jcr_access.access.NoItemException
 import edu.northwestern.art.content_core.catalog.Catalog
 import edu.northwestern.art.content_core.content.Metadata
@@ -71,7 +73,7 @@ class SynchronizationService {
   val user = "admin"
   val pass = "admin"
 
-  val connector = new LocalConnector(repository_url, user, pass)
+  var connector: RepositoryConnector = new LocalConnector(repository_url, user, pass)
 
   def getFolder(folderName: String): Catalog = {
     connector.session((jcr_session: Session) => {
@@ -150,7 +152,7 @@ class SynchronizationService {
   }
 
   @POST
-  def getClichedMessagePOST(@FormParam("manifest") manifest: String, @FormParam("path") path: String): String = {
+  def synchronizeItems(@FormParam("manifest") manifest: String, @FormParam("path") path: String): String = {
     var json = JSONSerializer.toJSON( manifest ).asInstanceOf[JSONObject]
     var body = json.getJSONObject("body")
     var header = json.getJSONObject("header")
@@ -159,6 +161,24 @@ class SynchronizationService {
 
     var destinationPath = header.getString("destinationPath")
     var basePath = header.getString("basePath")
+    var repositoryURL = header.getString("repositoryURL")
+
+    val RepositoryURLRE = """(.+)/repository/([^/]+)""".r
+
+    repositoryURL match {
+      case RepositoryURLRE(url, workspace) =>
+        if (url + "/rmi" != repository_url || workspace != "default") {
+          println("creating connector - URL: " + url + ", workspace: " + workspace)
+          workspace match {
+            case "default" => connector = new LocalConnector(url + "/rmi", user, pass)
+            case "fedora" => connector = new LocalConnectorFedora(url + "/rmi", user, pass)
+          }
+        }
+      case entry =>
+        val msg = "Unrecognized repository URL: " + entry
+        println(msg)
+        return msg
+    }
 
     // val folder = getFolder(destinationPath)
     // val folder = connector.catalog(destinationPath)
