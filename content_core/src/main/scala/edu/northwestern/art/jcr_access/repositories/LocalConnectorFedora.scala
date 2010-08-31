@@ -26,6 +26,8 @@ import java.util.{Calendar, Date}
 import javax.jcr.query.Query
 import javax.jcr.{Node, PathNotFoundException, Session}
 
+import scala.xml._
+
 import org.json.{JSONException, JSONArray, JSONObject}
 
 import edu.northwestern.art.content_core.catalog.{CatalogImageItem, Thumbnail, Catalog, CatalogItem}
@@ -324,16 +326,51 @@ class LocalConnectorFedora(repository_url: String, user: String,
    */
 
   private def getContentJSON(node: Node): JSONObject = {
+    // try {
+    //   val contents = node.getNode("contents.json/jcr:content");
+    //   new JSONObject(contents.getProperty("jcr:data").getString)
+    // }
+    // catch {
+    //     case except: PathNotFoundException =>
+    //       throw new NoItemException
+    //     case except =>
+    //       throw new FailureException(except)
+    // }
+
+    var jsonString = ""
+
     try {
-      val contents = node.getNode("contents.json/jcr:content");
-      new JSONObject(contents.getProperty("jcr:data").getString)
+      val mix = node.getNode("mix.thumbnail.xml").getNode("jcr:content").getProperty("jcr:data").getString
+      val someXML = XML.loadString(mix)
+      jsonString = """{"type":"ImageItem","sources":{"thumbnail":{"height":"""
+      jsonString += (someXML \\ "imageHeight").text
+      jsonString += ""","width":""" + (someXML \\ "imageWidth").text
+      jsonString += ""","name":"thumbnail","format":"jpg","type":"BinaryImage"},"tiled":{"height":"""
+      jsonString += (someXML \\ "imageHeight").text
+      jsonString += ""","width":""" + (someXML \\ "imageWidth").text
+      jsonString += ""","name":"tiled","type":"TiledImageURL","href":""""
+      val url = node.getNode("url.txt").getNode("jcr:content").getProperty("jcr:data").getString
+      jsonString += url + """"}},"metadata":{"creators":[""""
+      jsonString += node.getProperty("dc:creator").getString
+      jsonString += """"],"title":""""
+      jsonString += node.getProperty("dc:title").getString
+      jsonString += """","description":""""
+      jsonString += node.getProperty("dc:description").getString
+      jsonString += """","rights":[""""
+      jsonString += node.getProperty("dc:rights").getString
+      jsonString += """"],"types":[""""
+      jsonString += node.getProperty("dc:type").getString
+      jsonString += """"]}}"""
     }
     catch {
         case except: PathNotFoundException =>
           throw new NoItemException
         case except =>
+          except.printStackTrace
           throw new FailureException(except)
     }
+
+    return new JSONObject(jsonString)
   }
 
   /**
@@ -343,12 +380,13 @@ class LocalConnectorFedora(repository_url: String, user: String,
 
   private def getModified(node: Node): Date = {
     try {
-      // val contents = node.getNode("contents.json/jcr:content");
-      // contents.getProperty("jcr:lastModified").getDate.getTime
-      node.getProperty("jcr:created").getDate.getTime
+      val contents = node.getNode("contents.json/jcr:content");
+      contents.getProperty("jcr:lastModified").getDate.getTime
+      // node.getProperty("jcr:created").getDate.getTime
     }
     catch {
         case except: PathNotFoundException =>
+          except.printStackTrace
           throw new NoItemException
         case except =>
           throw new FailureException(except)

@@ -21,7 +21,9 @@ package edu.northwestern.art.jcr_access.services
 
 import java.io.{OutputStreamWriter, OutputStream}
 
+import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.jcr_access.repositories.LocalConnector
+import edu.northwestern.art.jcr_access.repositories.LocalConnectorFedora
 import javax.ws.rs.core.{StreamingOutput, Response}
 import javax.ws.rs._
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException}
@@ -29,11 +31,11 @@ import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException
 @Path("/access")
 class AccessService {
 
-  val repository_url = "http://localhost:8080/jackrabbit/rmi"
+  val repository_url = "http://localhost:4004/jackrabbit/rmi"
   val user = "admin"
   val pass = "admin"
 
-  val connector = new LocalConnector(repository_url, user, pass)
+  var connector: RepositoryConnector = new LocalConnector(repository_url, user, pass)
 
   private def getJSON(path: String): String = {
     val repository_path =
@@ -41,15 +43,22 @@ class AccessService {
         path
       else
         "/" + path
-      if (connector.isItem(repository_path))
-         connector.get(repository_path).toJSON.toString
-      else
-         connector.catalog("/" + path).toJSON.toString
+      if (connector.isItem(repository_path)) {
+        connector.get(repository_path).toJSON.toString
+      }
+      else {
+        connector.catalog("/" + path).toJSON.toString
+      }
   }
 
   @GET @Path("/{path: .*}")
   @Produces(Array("application/json"))
-  def getContent(@PathParam("path") path: String): StreamingOutput = {
+  def getContent(@PathParam("path") path: String, @QueryParam("ws") workspace: String): StreamingOutput = {
+    if (workspace != null)
+      workspace match {
+        case "fedora" => connector = new LocalConnectorFedora(repository_url, user, pass)
+      }
+
     val repository_path = "/" + path
     new StreamingOutput {
       def write(output: OutputStream) = {
