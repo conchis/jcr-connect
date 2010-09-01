@@ -127,6 +127,37 @@
             <artifactId>log4j</artifactId>
             <version>1.2.14</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.jersey-test-framework</groupId>
+            <artifactId>jersey-test-framework-grizzly</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey.jersey-test-framework</groupId>
+            <artifactId>jersey-test-framework-external</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+
+		<dependency>
+		  <groupId>flexjson</groupId>
+		  <artifactId>flexjson</artifactId>
+		  <version>1.8</version>
+		</dependency>
+
+		<dependency>
+		  <groupId>net.sf.json-lib</groupId>
+		  <artifactId>json-lib</artifactId>
+		  <version>2.3</version>
+		</dependency>
+
+
     </dependencies>
     <build>
         <resources>
@@ -181,6 +212,18 @@
 
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <inherited>true</inherited>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+					<excludes>
+					  <exclude>src/main/scala/**/*.scala</exclude>
+					</excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
                 <groupId>org.scala-tools</groupId>
                 <artifactId>maven-scala-plugin</artifactId>
                 <version>2.13.1</version>
@@ -232,7 +275,10 @@
                     <argLine>-Xmx512m</argLine>
                     <includes>
                         <include>**/*Unit.java</include>
-                        <!-- include>**/*Spec.java</include -->
+                        <include>**/*Test.java</include>
+                        <!--
+                        <include>**/*Spec.java</include>
+                        -->
                     </includes>
                 </configuration>
             </plugin>
@@ -240,7 +286,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <attachClasses>true</attachClasses>
-                    <warName>content</warName>
+                    <warName>category_marker</warName>
                 </configuration>
             </plugin>
             <plugin>
@@ -251,17 +297,28 @@
                     <!-- Container configuration -->
                     <container>
                         <containerId>tomcat6x</containerId>
-                        <home>/Users/jonathan/Projects/jcr-connect/content_core/apache-tomcat-6.0.26</home>
+                        <home>/Users/jonathan/Projects/category_marker/apache-tomcat-6.0.26</home>
                     </container>
                     <configuration>
                         <type>existing</type>
-                        <home>/Users/jonathan/Projects/jcr-connect/content_core/apache-tomcat-6.0.26</home>
+                        <home>/Users/jonathan/Projects/category_marker/apache-tomcat-6.0.26</home>
                     </configuration>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>tomcat-maven-plugin</artifactId>
+            </plugin>
+
+
+			<plugin>
+              <groupId>org.mortbay.jetty</groupId>
+              <artifactId>maven-jetty-plugin</artifactId>
+              <version>6.1.24</version>
+              <configuration>
+                <webApp>${basedir}/target/category_marker.war</webApp>
+                <contextPath>category_marker</contextPath>
+              </configuration>
             </plugin>
         </plugins>
     </build>
