@@ -22,6 +22,7 @@ package edu.northwestern.art.content_core.images
 import java.awt.image.BufferedImage
 import javax.persistence.{Lob, Entity}
 import edu.northwestern.art.content_core.properties.Properties
+import edu.northwestern.art.content_core.utilities.Storage
 
 @Entity
 class BinaryImage extends ImageSource {
@@ -30,5 +31,33 @@ class BinaryImage extends ImageSource {
   var image: BufferedImage = null
 
   def toJSON = Properties("name" -> name, "format" -> format,
-      "width" -> width, "height" -> height).toJSON
+                          "width" -> width, "height" -> height,
+                          "type" -> "BinaryImage").toJSON
+}
+
+// FIX ME !!! - Added by Xin (2010-09-01)
+object BinaryImage extends Storage[BinaryImage] {
+
+  def initialize(source: BinaryImage, name: String, format: String,
+      width: Int, height: Int, image: BufferedImage): BinaryImage = {
+    ImageSource.initialize(source, name, format, width, height)
+    source.image = image
+    source
+  }
+
+  def create(name: String, image: BufferedImage, format: String = null,
+      width: Int = 0, height: Int = 0): BinaryImage = {
+    val source = new BinaryImage
+    initialize(source, name, format, width, height, image)
+    persist(source)
+    source
+  }
+
+  def apply(name: String, image: BufferedImage, format: String = null,
+      width: Int = 0, height: Int = 0): BinaryImage = {
+    val source = new BinaryImage
+    initialize(source, name, format, width, height, image)
+    source
+  }
+
 }

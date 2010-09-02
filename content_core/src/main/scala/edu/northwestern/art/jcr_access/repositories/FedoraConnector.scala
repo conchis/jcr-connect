@@ -195,7 +195,7 @@ class FedoraConnector(repository_url: String, user: String,
         val url = extractString(source_json, "url", null)
         TiledImageURL(name, url, format, width, height)
       case "BinaryImage" =>  // FIXME implement this
-        null
+        BinaryImage(name, null, format, width, height)
     }
   }
 
@@ -329,18 +329,6 @@ class FedoraConnector(repository_url: String, user: String,
    */
 
   private def getContentJSON(node: Node): JSONObject = {
-    // try {
-    //   val contents = node.getNode("contents.json/jcr:content");
-    //   new JSONObject(contents.getProperty("jcr:data").getString)
-    // }
-    // catch {
-    //     case except: PathNotFoundException =>
-    //       throw new NoItemException
-    //     case except =>
-    //       throw new FailureException(except)
-    // }
-    // var jsonString = ""
-
     try {
       val url = node.getNode("url.txt").getNode("jcr:content").getProperty("jcr:data").getString
 
@@ -384,11 +372,8 @@ class FedoraConnector(repository_url: String, user: String,
       val tiledSource: ImageSource =
         TiledImageURL("tiled", url, "", (someXML \\ "imageWidth").text.toInt, (someXML \\ "imageHeight").text.toInt)
 
-      val sources = new collection.mutable.HashMap[String, ImageSource]
-      sources("thumbnail") = binarySource
-      sources("tiled") = tiledSource
-      
-      val item = ImageItem(node.getName, metadata, new Date, List(), sources.toMap)
+      val item = ImageItem(node.getName, metadata, new Date, 
+                           List(), Map("thumbnail" -> binarySource, "tiled" -> tiledSource))
 
       return item.toJSON
     }

@@ -23,7 +23,7 @@ import java.io.{OutputStreamWriter, OutputStream}
 
 import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.jcr_access.repositories.LocalConnector
-import edu.northwestern.art.jcr_access.repositories.LocalConnectorFedora
+import edu.northwestern.art.jcr_access.repositories.FedoraConnector
 import javax.ws.rs.core.{StreamingOutput, Response}
 import javax.ws.rs._
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException}
@@ -56,7 +56,7 @@ class AccessService {
   def getContent(@PathParam("path") path: String, @QueryParam("ws") workspace: String): StreamingOutput = {
     if (workspace != null)
       workspace match {
-        case "fedora" => connector = new LocalConnectorFedora(repository_url, user, pass)
+        case "fedora" => connector = new FedoraConnector(repository_url, user, pass)
       }
 
     val repository_path = "/" + path
