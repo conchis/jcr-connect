@@ -45,6 +45,6 @@ class Metadata(
    * Returns a JSON representation of this Metadata.
    */
 
-  override def toJSON: JSONObject = accept(JSONVisitor)
+  override def toJSON: JSONObject = null
 
 }

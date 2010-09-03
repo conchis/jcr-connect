@@ -41,6 +41,6 @@ class TiledImage(
    * Returns a JSON representation of this object.
    */
 
-  override def toJSON: JSONObject = accept(JSONVisitor)
+  override def toJSON: JSONObject = null
 
 }

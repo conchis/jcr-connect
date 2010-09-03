@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sun.grizzly:grizzly-rcm:1.9.18-i">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/grizzly/grizzly-rcm/1.9.18-i/grizzly-rcm-1.9.18-i.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/grizzly/grizzly-rcm/1.9.18-i/grizzly-rcm-1.9.18-i-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/grizzly/grizzly-rcm/1.9.18-i/grizzly-rcm-1.9.18-i-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
