@@ -22,7 +22,7 @@ package edu.northwestern.art.content_core.content2
 import edu.northwestern.art.content_core.properties.Properties
 import org.json.JSONObject
 
-object JSONVisitor extends ContentVisitor[JSONObject] {
+object JSONConverter extends ContentVisitor[JSONObject] {
 
   override def visitTaxonomy(taxonomy: Taxonomy) =
     Properties(
