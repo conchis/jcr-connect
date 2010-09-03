@@ -57,7 +57,7 @@ import net.sf.json.JSONSerializer
 
 import javax.jcr.Session
 import edu.northwestern.art.jcr_access.repositories.LocalConnector
-import edu.northwestern.art.jcr_access.repositories.LocalConnectorFedora
+import edu.northwestern.art.jcr_access.repositories.FedoraConnector
 import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.jcr_access.access.NoItemException
 import edu.northwestern.art.content_core.catalog.Catalog
@@ -171,7 +171,7 @@ class SynchronizationService {
           println("creating connector - URL: " + url + ", workspace: " + workspace)
           workspace match {
             case "default" => connector = new LocalConnector(url + "/rmi", user, pass)
-            case "fedora" => connector = new LocalConnectorFedora(url + "/rmi", user, pass)
+            case "fedora" => connector = new FedoraConnector(url + "/rmi", user, pass)
           }
         }
       case entry =>

@@ -14,7 +14,7 @@
  * under the License.
  *
  * @author Jonathan A. Smith, Xin Xiang
- * @version 29 July 2010
+ * @version September 1, 2010
  */
 
 package edu.northwestern.art.jcr_access.repositories
@@ -26,6 +26,9 @@ import java.util.{Calendar, Date}
 import javax.jcr.query.Query
 import javax.jcr.{Node, PathNotFoundException, Session}
 
+import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
+
 import scala.xml._
 
 import org.json.{JSONException, JSONArray, JSONObject}
@@ -34,14 +37,14 @@ import edu.northwestern.art.content_core.catalog.{CatalogImageItem, Thumbnail, C
 import edu.northwestern.art.content_core.content.{Metadata, Item}
 import edu.northwestern.art.content_core.utilities.Path
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException, RepositoryConnector}
-import edu.northwestern.art.content_core.images.{TiledImageURL, ImageURL, ImageSource, ImageItem}
+import edu.northwestern.art.content_core.images.{TiledImageURL, ImageURL, ImageSource, ImageItem, BinaryImage}
 
 /**
- * Simple connector to a local repository storing content in a straightforward
+ * Simple connector to a Fedora repository storing content in a straightforward
  * way -- simple files and folders.
  */
 
-class LocalConnectorFedora(repository_url: String, user: String,
+class FedoraConnector(repository_url: String, user: String,
           password: String) extends
         RepositoryConnector(repository_url, "fedora", user, password) {
 
@@ -192,7 +195,7 @@ class LocalConnectorFedora(repository_url: String, user: String,
         val url = extractString(source_json, "url", null)
         TiledImageURL(name, url, format, width, height)
       case "BinaryImage" =>  // FIXME implement this
-        null
+        BinaryImage(name, null, format, width, height)
     }
   }
 
@@ -326,41 +329,53 @@ class LocalConnectorFedora(repository_url: String, user: String,
    */
 
   private def getContentJSON(node: Node): JSONObject = {
-    // try {
-    //   val contents = node.getNode("contents.json/jcr:content");
-    //   new JSONObject(contents.getProperty("jcr:data").getString)
-    // }
-    // catch {
-    //     case except: PathNotFoundException =>
-    //       throw new NoItemException
-    //     case except =>
-    //       throw new FailureException(except)
-    // }
-
-    var jsonString = ""
-
     try {
-      val mix = node.getNode("mix.thumbnail.xml").getNode("jcr:content").getProperty("jcr:data").getString
-      val someXML = XML.loadString(mix)
-      jsonString = """{"type":"ImageItem","sources":{"thumbnail":{"height":"""
-      jsonString += (someXML \\ "imageHeight").text
-      jsonString += ""","width":""" + (someXML \\ "imageWidth").text
-      jsonString += ""","name":"thumbnail","format":"jpg","type":"BinaryImage"},"tiled":{"height":"""
-      jsonString += (someXML \\ "imageHeight").text
-      jsonString += ""","width":""" + (someXML \\ "imageWidth").text
-      jsonString += ""","name":"tiled","type":"TiledImageURL","href":""""
       val url = node.getNode("url.txt").getNode("jcr:content").getProperty("jcr:data").getString
-      jsonString += url + """"}},"metadata":{"creators":[""""
-      jsonString += node.getProperty("dc:creator").getString
-      jsonString += """"],"title":""""
-      jsonString += node.getProperty("dc:title").getString
-      jsonString += """","description":""""
-      jsonString += node.getProperty("dc:description").getString
-      jsonString += """","rights":[""""
-      jsonString += node.getProperty("dc:rights").getString
-      jsonString += """"],"types":[""""
-      jsonString += node.getProperty("dc:type").getString
-      jsonString += """"]}}"""
+
+      var mix = node.getNode("mix.thumbnail.xml").getNode("jcr:content").getProperty("jcr:data").getString
+      var someXML = XML.loadString(mix)
+
+      // jsonString = """{"type":"ImageItem","sources":{"thumbnail":{"height":"""
+      // jsonString += (someXML \\ "imageHeight").text
+      // jsonString += ""","width":""" + (someXML \\ "imageWidth").text
+      // jsonString += ""","name":"thumbnail","format":"jpg","type":"BinaryImage"},"tiled":{"height":"""
+      // jsonString += (someXML \\ "imageHeight").text
+      // jsonString += ""","width":""" + (someXML \\ "imageWidth").text
+      // jsonString += ""","name":"tiled","type":"TiledImageURL","href":""""
+      // jsonString += url + """"}},"metadata":{"creators":[""""
+      // jsonString += node.getProperty("dc:creator").getString
+      // jsonString += """"],"title":""""
+      // jsonString += node.getProperty("dc:title").getString
+      // jsonString += """","description":""""
+      // jsonString += node.getProperty("dc:description").getString
+      // jsonString += """","rights":[""""
+      // jsonString += node.getProperty("dc:rights").getString
+      // jsonString += """"],"types":[""""
+      // jsonString += node.getProperty("dc:type").getString
+      // jsonString += """"]}}"""
+
+      val metadata: Metadata = Metadata(node.getProperty("dc:title").getString, 
+                                        node.getProperty("dc:description").getString,
+                                        List(node.getProperty("dc:creator").getString),
+                                        List(node.getProperty("dc:rights").getString),
+                                        List(node.getProperty("dc:type").getString))
+
+      val image: BufferedImage = 
+        ImageIO.read(node.getNode("thumbnail.jpg").getNode("jcr:content").getProperty("jcr:data").getBinary().getStream())
+
+      val binarySource: ImageSource = 
+        BinaryImage("thumbnail", image, "jpg", (someXML \\ "imageWidth").text.toInt, (someXML \\ "imageHeight").text.toInt)
+
+      mix = node.getNode("mix.tiled.xml").getNode("jcr:content").getProperty("jcr:data").getString
+      someXML = XML.loadString(mix)
+
+      val tiledSource: ImageSource =
+        TiledImageURL("tiled", url, "", (someXML \\ "imageWidth").text.toInt, (someXML \\ "imageHeight").text.toInt)
+
+      val item = ImageItem(node.getName, metadata, new Date, 
+                           List(), Map("thumbnail" -> binarySource, "tiled" -> tiledSource))
+
+      return item.toJSON
     }
     catch {
         case except: PathNotFoundException =>
@@ -370,7 +385,8 @@ class LocalConnectorFedora(repository_url: String, user: String,
           throw new FailureException(except)
     }
 
-    return new JSONObject(jsonString)
+    // return new JSONObject(jsonString)
+    return null
   }
 
   /**
