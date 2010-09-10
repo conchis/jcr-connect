@@ -24,14 +24,16 @@ import java.io.{OutputStreamWriter, OutputStream}
 import edu.northwestern.art.jcr_access.access.RepositoryConnector
 import edu.northwestern.art.jcr_access.repositories.LocalConnector
 import edu.northwestern.art.jcr_access.repositories.FedoraConnector
+import edu.northwestern.art.jcr_access.repositories.XTFConnector
 import javax.ws.rs.core.{StreamingOutput, Response}
 import javax.ws.rs._
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException}
 
-@Path("/access")
+@Path("/")
 class AccessService {
 
-  val repository_url = "http://localhost:4004/jackrabbit/rmi"
+  // val repository_url = "http://localhost:4004/jackrabbit/rmi"
+  val repository_url = "http://localhost:8080/category_marker/rmi"
   val user = "admin"
   val pass = "admin"
 
@@ -57,6 +59,7 @@ class AccessService {
     if (workspace != null)
       workspace match {
         case "fedora" => connector = new FedoraConnector(repository_url, user, pass)
+        case "xtf" => connector = new XTFConnector(repository_url, user, pass)
       }
 
     val repository_path = "/" + path

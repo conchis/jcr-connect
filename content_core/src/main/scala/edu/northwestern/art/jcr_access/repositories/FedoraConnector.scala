@@ -378,15 +378,12 @@ class FedoraConnector(repository_url: String, user: String,
       return item.toJSON
     }
     catch {
-        case except: PathNotFoundException =>
-          throw new NoItemException
-        case except =>
-          except.printStackTrace
-          throw new FailureException(except)
+      case except: PathNotFoundException =>
+        throw new NoItemException
+      case except =>
+        except.printStackTrace
+        throw new FailureException(except)
     }
-
-    // return new JSONObject(jsonString)
-    return null
   }
 
   /**

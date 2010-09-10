@@ -22,6 +22,7 @@ package edu.northwestern.art.jcr_access.access
 import edu.northwestern.art.content_core.content.Item
 import edu.northwestern.art.content_core.catalog.Catalog
 import org.apache.jackrabbit.rmi.repository.URLRemoteRepository
+import org.apache.jackrabbit.rmi.repository.RMIRemoteRepository
 import javax.jcr.{SimpleCredentials, Session}
 
 /**
@@ -33,7 +34,9 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
     val user: String, val password: String) {
 
   /** JCR Repository accessed via this connector */
-  val repository = new URLRemoteRepository(repository_url)
+  // val repository = new URLRemoteRepository(repository_url)
+  // use local repository by default
+  val repository = new RMIRemoteRepository("//localhost/jackrabbit.repository");
 
   /** Login credentials for repository. */
   val credentials = new SimpleCredentials(user, password.toCharArray)
