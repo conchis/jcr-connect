@@ -18,6 +18,11 @@
         </init-param>
     </servlet>
 
+    <servlet>
+      <servlet-name>Key</servlet-name>
+      <servlet-class>edu.northwestern.art.jcr_access.services.auth.KeyService</servlet-class>
+    </servlet>
+
     <!-- ====================================================================== -->
     <!-- R E P O S I T O R Y   S T A R T U P  S E R V L E T                     -->
     <!-- ====================================================================== -->
@@ -261,6 +266,11 @@
     <servlet-mapping>
       <servlet-name>JAXRS</servlet-name>
       <url-pattern>/access/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>Key</servlet-name>
+      <url-pattern>/key/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

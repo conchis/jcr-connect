@@ -20,19 +20,30 @@ package edu.northwestern.art.jcr_access.services.auth
 
 import java.util.Date
 
+import java.security.SecureRandom
+
+import java.math.BigInteger
+
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.OneToMany
+import javax.persistence.Temporal
+import javax.persistence.TemporalType
  
 @Entity
-class AccessKey(url: String) {
+class AccessKey() {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   var id: Int = 0
 
+  @Temporal(TemporalType.DATE) 
   val date: Date = new Date
+
+  var url: String = ""
+
+  val key: String = new BigInteger(130, new SecureRandom).toString(32)
  
   def getId(): Int = {
     return id
@@ -46,7 +57,11 @@ class AccessKey(url: String) {
     return url
   }
  
-  // def setURL(url: String) = {
-  //   this.url = url
-  // }
+  def setURL(url: String) = {
+    this.url = url
+  }
+
+  def getKey: String = {
+    return key
+  }
 }

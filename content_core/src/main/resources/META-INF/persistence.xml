@@ -51,4 +51,24 @@
 		</properties>
     </persistence-unit>
 
+
+    <persistence-unit name="key">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
+        <class>edu.northwestern.art.jcr_access.services.auth.AccessKey</class>
+
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+			<property name="javax.persistence.jdbc.url" value="jdbc:h2:data/h2/development" />
+
+            <!-- The service works with an embedded db and no user / password.-->
+			<property name="javax.persistence.jdbc.user" value="" />
+			<property name="javax.persistence.jdbc.password" value="" />
+
+			<!-- EclipseLink should create the database schema automatically -->
+			<property name="eclipselink.ddl-generation" value="create-tables" />
+			<property name="eclipselink.ddl-generation.output-mode" value="database" />
+		</properties>
+    </persistence-unit>
+
 </persistence>

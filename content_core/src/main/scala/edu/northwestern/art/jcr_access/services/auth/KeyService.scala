@@ -23,7 +23,13 @@ import java.io.PrintWriter
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-// import javax.servlet.*;
+
+import javax.persistence.EntityManager
+import javax.persistence.EntityManagerFactory
+import javax.persistence.Persistence
+import javax.persistence.EntityTransaction
+import javax.persistence.RollbackException
+import javax.persistence.Query
 
 
 class KeyService extends HttpServlet {
@@ -31,7 +37,26 @@ class KeyService extends HttpServlet {
   override def doGet(req: HttpServletRequest, res: HttpServletResponse) = {
     val out: PrintWriter = res.getWriter
 
-    out.println("Hello, world!");
-    out.close();
+    val emf: EntityManagerFactory = Persistence.createEntityManagerFactory("key")
+    val em: EntityManager = emf.createEntityManager
+    val tx: EntityTransaction = em.getTransaction
+
+    val key = new AccessKey
+
+    try {
+      // tx = em.getTransaction
+      tx.begin
+
+      // Persist the entity
+      em.persist(key)	
+      tx.commit
+    } catch {
+      case e: RollbackException =>
+        if (tx != null)
+          tx.rollback
+    }
+
+    out.println(key.getId + ":" + key.getKey)
+    out.close
   }
 }
