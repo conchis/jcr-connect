@@ -28,6 +28,8 @@ import org.apache.jackrabbit.server.CredentialsProvider
 import org.apache.jackrabbit.server.SessionProvider
 import org.apache.jackrabbit.server.SessionProviderImpl
 
+import edu.northwestern.art.jcr_access.services.auth.CookieCredentialsProvider
+
 /**
  * A wrapper around SimpleWebdavServlet to implement cookie-based credentials.
  * 

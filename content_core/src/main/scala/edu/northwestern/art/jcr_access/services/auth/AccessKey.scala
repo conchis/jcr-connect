@@ -18,8 +18,6 @@
 
 package edu.northwestern.art.jcr_access.services.auth
 
-import java.util.Date
-
 import java.security.SecureRandom
 
 import java.math.BigInteger
@@ -31,7 +29,9 @@ import javax.persistence.Id
 import javax.persistence.OneToMany
 import javax.persistence.Temporal
 import javax.persistence.TemporalType
- 
+
+import java.util.Date
+
 @Entity
 class AccessKey() {
   @Id
@@ -63,5 +63,9 @@ class AccessKey() {
 
   def getKey: String = {
     return key
+  }
+
+  def getDate: Date = {
+    return date
   }
 }

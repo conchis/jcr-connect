@@ -29,7 +29,6 @@ import javax.persistence.EntityManagerFactory
 import javax.persistence.Persistence
 import javax.persistence.EntityTransaction
 import javax.persistence.RollbackException
-import javax.persistence.Query
 
 
 class KeyService extends HttpServlet {

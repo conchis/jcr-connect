@@ -16,6 +16,7 @@
  */
 package edu.northwestern.art.jcr_access.services.auth
 
+import org.apache.jackrabbit.core.config.LoginModuleConfig
 import org.apache.jackrabbit.core.security.authentication.AbstractLoginModule
 import org.apache.jackrabbit.core.security.authentication.Authentication
 import org.slf4j.Logger
@@ -43,6 +44,48 @@ import javax.persistence.Persistence
 class JCRLoginModule extends AbstractLoginModule {
 
   val log: Logger = LoggerFactory.getLogger(getClass)
+
+  var superUser = ""
+  var superPassword = ""
+
+  /**
+   * Initialize this LoginModule and sets the following fields for later usage:
+   * <ul>
+   * <li>{@link PrincipalProvider} for user-{@link Principal} resolution.</li>
+   * <li>{@link LoginModuleConfig#PARAM_ADMIN_ID} option is evaluated</li>
+   * <li>{@link LoginModuleConfig#PARAM_ANONYMOUS_ID} option is evaluated</li>
+   * </ul>
+   * Implementations are called via
+   * {@link #doInit(CallbackHandler, Session, Map)} to implement
+   * additional initalization
+   *
+   * @param subject         the <code>Subject</code> to be authenticated. <p>
+   * @param callbackHandler a <code>CallbackHandler</code> for communicating
+   *                        with the end user (prompting for usernames and
+   *                        passwords, for example). <p>
+   * @param sharedState     state shared with other configured
+   *                        LoginModules.<p>
+   * @param options         options specified in the login <code>Configuration</code>
+   *                        for this particular <code>LoginModule</code>.
+   * @see LoginModule#initialize(Subject, CallbackHandler, Map, Map)
+   * @see #doInit(CallbackHandler, Session, Map)
+   * @see #isInitialized()
+   */
+  override def initialize(subject: Subject, callbackHandler: CallbackHandler,
+                          sharedState: Map[String, _], options: Map[String, _]) = {
+    super.initialize(subject, callbackHandler, sharedState, options)
+
+    if (options.containsKey(LoginModuleConfig.PARAM_ADMIN_ID)) {
+      superUser = options.get(LoginModuleConfig.PARAM_ADMIN_ID).asInstanceOf[String]
+    }
+    else {
+      superUser = "admin"
+    }
+
+    if (options.containsKey("password")) {
+      superPassword = options.get("password").asInstanceOf[String]
+    }
+  }
 
   /**
    * @see AbstractLoginModule#doInit(javax.security.auth.callback.CallbackHandler, javax.jcr.Session, java.util.Map)
@@ -108,7 +151,12 @@ class JCRLoginModule extends AbstractLoginModule {
         //   return false
         // }
 
+        if (username == superUser && new String(password) == superPassword) {
+          return true
+        }
+
         if (username == "key") {
+          // limited-time key based authentication
           val keyDate = getDateByKey(new String(password))
           if (keyDate == null) {
             println("invalid key!")
@@ -124,10 +172,11 @@ class JCRLoginModule extends AbstractLoginModule {
         }
 
         if (username == "cookie") {
-
+          // cookie-based authentication
+          // to be added
         }
 
-        return true
+        return false
       }
     }
   }

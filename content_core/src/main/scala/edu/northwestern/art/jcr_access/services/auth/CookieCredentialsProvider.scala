@@ -110,11 +110,11 @@ class CookieCredentialsProvider(defaultHeaderValue: String) extends CredentialsP
       // println("authHeader: " + authHeader)
     
       // dump the headers
-      val headerNames = request.getHeaderNames
-      while(headerNames.hasMoreElements()) {
-        val name = headerNames.nextElement().asInstanceOf[String];
-        println(name + ": " + request.getHeader(name))
-      }
+      // val headerNames = request.getHeaderNames
+      // while(headerNames.hasMoreElements()) {
+      //   val name = headerNames.nextElement().asInstanceOf[String];
+      //   println(name + ": " + request.getHeader(name))
+      // }
     
       if (authHeader != null) {
         val authStr = authHeader.split(" ")
