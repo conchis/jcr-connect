@@ -361,11 +361,11 @@ class XTFConnector(repository_url: String, user: String,
       }
       
       if (node.hasProperty("rights")) {
-        rights = node.getProperty("rights").getString
+        rights = "" // node.getProperty("rights").getString
       }
       
       if (node.hasProperty("type")) {
-        t = node.getProperty("type").getString
+        t = "" // node.getProperty("type").getString
       }
       
       val metadata: Metadata = Metadata(node.getProperty("title").getString, 
