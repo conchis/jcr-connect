@@ -101,6 +101,7 @@ class JCRLoginModule extends AbstractLoginModule {
   def impersonate(principal: Principal, credentials: Credentials): Boolean = {
     principal match {
       case x: Group => return false
+      case _ =>
     }
 
     val impersSubject: Subject = getImpersonatorSubject(credentials)
@@ -312,9 +313,9 @@ class JCRLoginModule extends AbstractLoginModule {
             // println("isAnonymous: " + isAnonymous(creds))
             // println("isPreAuthenticated: " + isPreAuthenticated(creds))
             // println("isImpersonation: " + isImpersonation(creds))
-            if (getUserID(creds) == "superuser") {
-              throw new LoginException("Invalid user name!")
-            }
+            // if (getUserID(creds) == "superuser") {
+            //   throw new LoginException("Invalid user name!")
+            // }
           } 
           case _ => {
             credentials = new SimpleCredentials(getUserID(creds), new Array[Char](1))

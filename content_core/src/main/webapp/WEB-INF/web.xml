@@ -265,7 +265,7 @@
 
     <servlet-mapping>
       <servlet-name>JAXRS</servlet-name>
-      <url-pattern>/access/*</url-pattern>
+      <url-pattern>/service/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

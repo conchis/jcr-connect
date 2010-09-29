@@ -29,7 +29,7 @@ import javax.ws.rs.core.{StreamingOutput, Response}
 import javax.ws.rs._
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException}
 
-@Path("/")
+@Path("/access")
 class AccessService {
 
   // val repository_url = "http://localhost:4004/jackrabbit/rmi"

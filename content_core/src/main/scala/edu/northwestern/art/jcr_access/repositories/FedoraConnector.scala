@@ -291,14 +291,13 @@ class FedoraConnector(repository_url: String, user: String,
     val results =
       session((session: Session) => {
         var results: List[CatalogItem] = List()
-        // val statement = "//element(*, nt:file)[jcr:contains(jcr:content, '" + text + "')]"
         val statement = "//*[jcr:contains(@jcr:data, '" + text + "')]"
         val query = session.getWorkspace.getQueryManager.createQuery(statement, Query.XPATH);
         val iterator = query.execute.getNodes
         while (iterator.hasNext()) {
           val node = iterator.nextNode
           try {
-            results ::= makeCatalogItem(node.getParent)
+            results ::= makeCatalogItem(node)
           }
           catch {
             case _: NoItemException => ;
@@ -315,7 +314,7 @@ class FedoraConnector(repository_url: String, user: String,
 
   private def makeCatalogItem(node: Node): CatalogItem = {
     val content = getContentJSON(node)
-    val name = node.getName
+    val name = node.getName + "?ws=fedora"
     val metadata_json = content.getJSONObject("metadata")
     val creators = extractJSONArray(metadata_json, "creators")
     val title = metadata_json.getString("title")

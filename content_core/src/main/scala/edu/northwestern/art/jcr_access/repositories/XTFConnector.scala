@@ -293,19 +293,19 @@ class XTFConnector(repository_url: String, user: String,
     val results =
       session((session: Session) => {
         var results: List[CatalogItem] = List()
-        // val statement = "//element(*, nt:file)[jcr:contains(jcr:content, '" + text + "')]"
-        // val statement = "//*[jcr:contains(@jcr:data, '" + text + "')]"
-        val statement = "//element(*, nt:unstructured)[jcr:contains(@subject, 'renaissance') and jcr:contains(@facet-type-tab, 'image')]"
+        val statement = "//element(*, nt:unstructured)[jcr:contains(@subject, '" + text + "') and jcr:contains(@facet-type-tab, 'image')]"
 
         val query = session.getWorkspace.getQueryManager.createQuery(statement, Query.XPATH)
         val iterator = query.execute.getNodes
         while (iterator.hasNext()) {
           val node = iterator.nextNode
-          try {
-            results ::= makeCatalogItem(node.getParent)
-          }
-          catch {
-            case _: NoItemException => ;
+          if (node.hasProperty("fileLocation")) {
+            try {
+              results ::= makeCatalogItem(node)
+            }
+            catch {
+              case _: NoItemException => ;
+            }
           }
         }
         results
@@ -319,7 +319,7 @@ class XTFConnector(repository_url: String, user: String,
 
   private def makeCatalogItem(node: Node): CatalogItem = {
     val content = getContentJSON(node)
-    val name = node.getName
+    val name = node.getPath + "?ws=xtf"
     val metadata_json = content.getJSONObject("metadata")
     val creators = extractJSONArray(metadata_json, "creators")
     val title = metadata_json.getString("title")
@@ -334,26 +334,32 @@ class XTFConnector(repository_url: String, user: String,
 
   private def getContentJSON(node: Node): JSONObject = {
     try {
+      var title: String = ""
       var description: String = ""
       var creator: String = ""
       var rights: String = ""
       var t: String = ""
-      var property =  node.getProperty("description")
       var i = 0
 
-      if (property.getDefinition.isMultiple) {
-		val values = property.getValues();
-        
-		for (value <- values) {
-          if (i > 0) {
-            description += "\n\n"
-          }
+      var property: javax.jcr.Property = null
 
-		  description += value.getString
+      if (node.hasProperty("description")) {
+        property =  node.getProperty("description")
+        if (property.getDefinition.isMultiple) {
+		  val values = property.getValues();
+          
+		  for (value <- values) {
+            if (i > 0) {
+              description += "\n\n"
+            }
+            
+		    description += value.getString
+
+            i = i + 1
+          }
+        } else {
+          description = property.getString
         }
-      }
-      else {
-        description = property.getString
       }
 
       if (node.hasProperty("creator")) {
@@ -367,8 +373,24 @@ class XTFConnector(repository_url: String, user: String,
       if (node.hasProperty("type")) {
         t = "" // node.getProperty("type").getString
       }
+
+      property =  node.getProperty("title")
+      if (property.getDefinition.isMultiple) {
+		val values = property.getValues();
+
+        i = 0
+		for (value <- values) {
+          if (i > 0) {
+             title += " "
+          }
+          
+		  title += value.getString
+        }
+      } else {
+        title = property.getString
+      }
       
-      val metadata: Metadata = Metadata(node.getProperty("title").getString, 
+      val metadata: Metadata = Metadata(title,
                                         description,
                                         List(creator),
                                         List(rights),
@@ -380,15 +402,25 @@ class XTFConnector(repository_url: String, user: String,
       var source: ImageSource = null
       var image: BufferedImage = null
       var name: String = ""
+      var width: Int = 0
+      var height: Int = 0
 
 	  if (property.getDefinition.isMultiple) {
 		val values = property.getValues();
 
         i = 0
 		for (value <- values) {
-		  image = ImageIO.read(new URL(value.getString))
+
+          try {
+		    // image = ImageIO.read(new URL(value.getString))
+            width = 1 // image.getWidth
+            height = 1 // image.getHeight
+          } catch {
+            case e => width = height
+          }
+
           name = "image" + i
-          source = BinaryImage(name, image, "jpg", image.getWidth, image.getHeight)
+          source = ImageURL(name, value.getString, "jpg", width, height)
 
           if (source != null)
             sources(name) = source
@@ -396,10 +428,13 @@ class XTFConnector(repository_url: String, user: String,
 		}
 	  }
 	  else {
-		image = ImageIO.read(new URL(property.getString))
-        name = "image"
-        source = BinaryImage(name, image, "jpg", image.getWidth, image.getHeight)
+		// image = ImageIO.read(new URL(property.getString))
+        width = 1 // image.getWidth
+        height = 1 // image.getHeight
         
+        name = "image0"
+        source = ImageURL(name, property.getString, "jpg", width, height)
+
         if (source != null)
           sources(name) = source
 	  }
@@ -443,13 +478,14 @@ class XTFConnector(repository_url: String, user: String,
 
   private def getCatalogThumb(node_name: String, contents: JSONObject) = {
     val sources = contents.getJSONObject("sources")
-    val thumb = sources.getJSONObject("thumbnail")
+    // val thumb = sources.getJSONObject("thumbnail")
+    val thumb = sources.getJSONObject("image0")
 
     val name   = thumb.getString("name")
     val format = thumb.getString("format")
     val width  = thumb.getInt("width")
     val height = thumb.getInt("height")
-    new Thumbnail(node_name + "/" + name + "." + format, width, height)
+    // new Thumbnail(node_name + "/" + name + "." + format, width, height)
+    new Thumbnail(thumb.getString("url"), width, height)
   }
-
 }

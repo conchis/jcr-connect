@@ -167,6 +167,23 @@
 		  <version>2.3</version>
 		</dependency>
 
+        <!--
+        <dependency>
+          <groupId>edu.northwestern.jcr</groupId>
+          <artifactId>fedoraconnector</artifactId>
+          <version>0.8</version>
+          <scope>system</scope>
+          <systemPath>/Users/xxiang/Work/JCR/jcr-connect/fedorapm/dist/fedoraconnector.jar</systemPath>
+        </dependency>
+
+        <dependency>
+          <groupId>edu.northwestern.jcr</groupId>
+          <artifactId>xtfconnector</artifactId>
+          <version>0.8</version>
+          <scope>system</scope>
+          <systemPath>/Users/xxiang/Work/JCR/jcr-connect/xtfconnector/dist/xtfconnector.jar</systemPath>
+        </dependency>
+        -->
 
     </dependencies>
     <build>
