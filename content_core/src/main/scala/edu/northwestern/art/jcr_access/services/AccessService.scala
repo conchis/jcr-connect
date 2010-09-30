@@ -28,14 +28,18 @@ import edu.northwestern.art.jcr_access.repositories.XTFConnector
 import javax.ws.rs.core.{StreamingOutput, Response}
 import javax.ws.rs._
 import edu.northwestern.art.jcr_access.access.{FailureException, NoItemException}
+import javax.ws.rs.core.Context
+import javax.servlet.ServletConfig
 
 @Path("/access")
 class AccessService {
 
-  // val repository_url = "http://localhost:4004/jackrabbit/rmi"
-  val repository_url = "http://localhost:8080/category_marker/rmi"
-  val user = "admin"
-  val pass = "admin"
+  @Context 
+  val config: ServletConfig = null
+
+  var repository_url = ""
+  var user = ""
+  var pass = ""
 
   var connector: RepositoryConnector = new LocalConnector(repository_url, user, pass)
 
@@ -56,11 +60,15 @@ class AccessService {
   @GET @Path("/{path: .*}")
   @Produces(Array("application/json"))
   def getContent(@PathParam("path") path: String, @QueryParam("ws") workspace: String): StreamingOutput = {
-    if (workspace != null)
-      workspace match {
-        case "fedora" => connector = new FedoraConnector(repository_url, user, pass)
-        case "xtf" => connector = new XTFConnector(repository_url, user, pass)
-      }
+    repository_url = config.getInitParameter("repositoryurl")
+    user = config.getInitParameter("username")
+    pass = config.getInitParameter("password")
+
+    workspace match {
+      case "fedora" => connector = new FedoraConnector(repository_url, user, pass)
+      case "xtf" => connector = new XTFConnector(repository_url, user, pass)
+      case _ => connector = new LocalConnector(repository_url, user, pass)
+    }
 
     val repository_path = "/" + path
     new StreamingOutput {

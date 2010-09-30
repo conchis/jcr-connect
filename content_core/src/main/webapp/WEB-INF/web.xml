@@ -16,6 +16,18 @@
             <param-value>edu.northwestern.art.sync_service</param-value>
             -->
         </init-param>
+        <init-param>
+            <param-name>repositoryurl</param-name>
+            <param-value>http://localhost:8080/category_marker/rmi</param-value>
+        </init-param>
+        <init-param>
+            <param-name>username</param-name>
+            <param-value>admin</param-value>
+        </init-param>
+        <init-param>
+            <param-name>password</param-name>
+            <param-value>admin</param-value>
+        </init-param>
     </servlet>
 
     <servlet>

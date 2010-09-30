@@ -24,25 +24,33 @@ import edu.northwestern.art.jcr_access.repositories.LocalConnector
 import edu.northwestern.art.jcr_access.repositories.FedoraConnector
 import edu.northwestern.art.jcr_access.repositories.XTFConnector
 import javax.ws.rs.{Produces, QueryParam, GET, Path}
+import javax.ws.rs.core.Context
+import javax.servlet.ServletConfig
 
 @Path("/search")
 class SearchService {
 
-  // val repository_url = "http://localhost:8080/jackrabbit/rmi"
-  val repository_url = "http://localhost:8080/category_marker/rmi"
-  val user = "admin"
-  val pass = "admin"
+  @Context 
+  val config: ServletConfig = null
 
-  var connector: RepositoryConnector = new LocalConnector(repository_url, user, pass)
+  var repository_url = ""
+  var user = ""
+  var pass = ""
+
+  var connector: RepositoryConnector = null
 
   @GET @Path("/")
   @Produces(Array("application/json"))
   def search(@QueryParam("q") query: String, @QueryParam("ws") workspace: String) = {
-    if (workspace != null)
-      workspace match {
-        case "fedora" => connector = new FedoraConnector(repository_url, user, pass)
-        case "xtf" => connector = new XTFConnector(repository_url, user, pass)
-      }
+    repository_url = config.getInitParameter("repositoryurl")
+    user = config.getInitParameter("username")
+    pass = config.getInitParameter("password")
+
+    workspace match {
+      case "fedora" => connector = new FedoraConnector(repository_url, user, pass)
+      case "xtf" => connector = new XTFConnector(repository_url, user, pass)
+      case _ => connector = new LocalConnector(repository_url, user, pass)
+    }
 
     if (query == null)
        "Ready"
