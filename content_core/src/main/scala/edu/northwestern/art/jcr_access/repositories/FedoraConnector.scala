@@ -314,13 +314,13 @@ class FedoraConnector(repository_url: String, user: String,
 
   private def makeCatalogItem(node: Node): CatalogItem = {
     val content = getContentJSON(node)
-    val name = node.getName + "?ws=fedora"
+    val name = node.getName // node.getName + "?ws=fedora"
     val metadata_json = content.getJSONObject("metadata")
     val creators = extractJSONArray(metadata_json, "creators")
     val title = metadata_json.getString("title")
     val modified = getModified(node)
     new CatalogImageItem(
-      name, title, creators, getCatalogThumb(name, content), modified)
+      name, title, creators, getCatalogThumb(name, content), modified, "fedora", node.getPath)
   }
 
   /**

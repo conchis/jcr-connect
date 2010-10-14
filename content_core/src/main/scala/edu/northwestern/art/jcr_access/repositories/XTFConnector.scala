@@ -319,13 +319,13 @@ class XTFConnector(repository_url: String, user: String,
 
   private def makeCatalogItem(node: Node): CatalogItem = {
     val content = getContentJSON(node)
-    val name = node.getPath + "?ws=xtf"
+    val name = node.getName // node.getPath + "?ws=xtf"
     val metadata_json = content.getJSONObject("metadata")
     val creators = extractJSONArray(metadata_json, "creators")
     val title = metadata_json.getString("title")
     val modified = getModified(node)
     new CatalogImageItem(
-      name, title, creators, getCatalogThumb(name, content), modified)
+      name, title, creators, getCatalogThumb(name, content), modified, "xtf", node.getPath)
   }
 
   /**

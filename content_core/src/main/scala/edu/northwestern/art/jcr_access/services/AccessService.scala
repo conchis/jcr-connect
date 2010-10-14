@@ -41,7 +41,7 @@ class AccessService {
   var user = ""
   var pass = ""
 
-  var connector: RepositoryConnector = new LocalConnector(repository_url, user, pass)
+  var connector: RepositoryConnector = null
 
   private def getJSON(path: String): String = {
     val repository_path =

@@ -179,7 +179,7 @@ class LocalConnector(repository_url: String, user: String,
         val url = extractString(source_json, "url", null)
         ImageURL(name, url, format, width, height)
       case "TiledImageURL" =>
-        val url = extractString(source_json, "url", null)
+        val url = extractString(source_json, "href", null)
         TiledImageURL(name, url, format, width, height)
       case "BinaryImage" =>  // FIXME implement this
         null
@@ -307,7 +307,7 @@ class LocalConnector(repository_url: String, user: String,
     val title = metadata_json.getString("title")
     val modified = getModified(node)
     new CatalogImageItem(
-      name, title, creators, getCatalogThumb(name, content), modified)
+      name, title, creators, getCatalogThumb(name, content), modified, "local", node.getPath)
   }
 
   /**
