@@ -23,6 +23,9 @@ import edu.northwestern.art.content_core.utilities.Storage
 import java.util.ArrayList
 import javax.persistence._
 import edu.northwestern.art.content_core.properties.{Properties, JSONSerializable}
+import edu.northwestern.art.content_core.catalog.Catalog
+import scala.collection.JavaConversions._
+
 
 @Entity
 class Category(init_user: User, init_name: String) extends JSONSerializable {
@@ -50,6 +53,9 @@ class Category(init_user: User, init_name: String) extends JSONSerializable {
 
   def toJSON =
     Properties("name" -> name, "bookmarks" -> bookmarks).toJSON
+
+  def toCatalog =
+    new Catalog("C" + id, name, (bookmarks map (_.toCatalog)).toList)
 }
 
 object Category extends Storage[Category] {

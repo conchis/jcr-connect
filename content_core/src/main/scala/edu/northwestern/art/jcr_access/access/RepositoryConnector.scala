@@ -34,9 +34,9 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
     val user: String, val password: String) {
 
   /** JCR Repository accessed via this connector */
-  // val repository = new URLRemoteRepository(repository_url)
+  val repository = new URLRemoteRepository(repository_url)
   // use local repository by default
-  val repository = new RMIRemoteRepository("//localhost/jackrabbit.repository");
+  //val repository = new RMIRemoteRepository("//localhost/jackrabbit.repository");
 
   /** Login credentials for repository. */
   val credentials = new SimpleCredentials(user, password.toCharArray)
@@ -111,3 +111,28 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
   def search(text: String): Catalog
 
 }
+
+object RepositoryConnector {
+
+  type ConnectorFactory = () => RepositoryConnector
+
+  private val factories: collection.mutable.Map[String, ConnectorFactory] =
+      collection.mutable.Map()
+
+  private val connectors: collection.mutable.Map[String, RepositoryConnector] =
+      collection.mutable.Map()
+
+  def register(source: String, factory: => RepositoryConnector) {
+    factories(source) = factory _
+  }
+
+  def forSource(source: String) =
+    connectors.getOrElseUpdate(source, {
+      val factory = factories(source)
+      if (factory == null)
+        throw new ConnectorException("No connector for source: " + source)
+      factory()
+    })
+
+}
+

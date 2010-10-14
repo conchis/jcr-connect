@@ -24,6 +24,7 @@ import edu.northwestern.art.content_core.properties.{Properties, JSONSerializabl
 import javax.persistence._
 import java.util.ArrayList
 import scala.collection.JavaConversions._
+import edu.northwestern.art.content_core.catalog.Catalog
 
 @Entity
 class User(init_name: String) extends JSONSerializable {
@@ -64,6 +65,12 @@ class User(init_name: String) extends JSONSerializable {
 
   def toJSON =
     Properties("id" -> id, "user" -> name, "categories" -> categories.toList).toJSON
+
+  def toCatalog = {
+    val category_items =
+      categories map (category => new Catalog("C" + category.id, category.name, null))
+    new Catalog(name, name + "'s bookmarks", category_items.toList)
+  }
   
 }
 

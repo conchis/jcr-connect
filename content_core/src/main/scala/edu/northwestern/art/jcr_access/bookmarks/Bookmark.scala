@@ -25,6 +25,9 @@ import javax.persistence._
 import scala.collection.JavaConversions._
 
 import edu.northwestern.art.content_core.properties.{Properties, JSONSerializable}
+import edu.northwestern.art.jcr_access.access.RepositoryConnector
+import edu.northwestern.art.content_core.images.ImageItem
+import edu.northwestern.art.content_core.catalog.{CatalogItem, Thumbnail, CatalogImageItem}
 
 @Entity
 class Bookmark(init_user: User, init_workspace: String,
@@ -38,7 +41,7 @@ class Bookmark(init_user: User, init_workspace: String,
   @ManyToOne
   var user: User = init_user
 
-  var workspace: String = init_workspace
+  var source: String = init_workspace
 
   var path: String = init_path
 
@@ -64,8 +67,28 @@ class Bookmark(init_user: User, init_workspace: String,
     categories = new_categories
   }
 
-  def toJSON = Properties("workspace" -> workspace, "path" -> path,
+  def toJSON = Properties("workspace" -> source, "path" -> path,
       "categories" -> (categories.toList map (_.name))).toJSON
+
+  def toCatalog: CatalogItem = {
+    val connector = RepositoryConnector.forSource(source)
+    val item =
+      if (path.startsWith("/"))
+        connector.get(path)
+      else
+        connector.get("/" + path)
+
+    // FIXME should work for other types
+    val image_item = item.asInstanceOf[ImageItem]
+    val thumb_source = image_item.sources.getOrElse("thumbnail", null)
+    val thumb =
+      if (thumb_source != null)
+        new Thumbnail(thumb_source.name, thumb_source.width, thumb_source.height)
+      else
+        null
+    new CatalogImageItem(item.name, item.metadata.title,
+      item.metadata.creators.toList, thumb, item.modified, source, path)
+  }
 }
 
 object Bookmark extends Storage[Bookmark] {
@@ -81,12 +104,12 @@ object Bookmark extends Storage[Bookmark] {
     new_bookmark
   }
 
-  def find(user: User, workspace: String, path: String): Option[Bookmark] = {
+  def find(user: User, source: String, path: String): Option[Bookmark] = {
     val query = Bookmark.manager.createQuery(
       "SELECT b FROM Bookmark b WHERE " +
-         "b.user = :user AND b.workspace = :workspace AND b.path = :path")
+         "b.user = :user AND b.source = :source AND b.path = :path")
     query.setParameter("user", user)
-    query.setParameter("workspace", workspace)
+    query.setParameter("source", source)
     query.setParameter("path", path)
     try {
       Some(query.getSingleResult.asInstanceOf[Bookmark])
