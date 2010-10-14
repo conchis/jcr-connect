@@ -27,5 +27,6 @@ class CatalogImageItem(name: String, title: String, creators: List[String] = Lis
         extends CatalogItem("ImageItem", name, title, creators, modified) {
 
   override def toJSON = Properties("type"-> kind, "name" -> name, "title" -> title,
-    "creators" -> creators, "thumbnail" -> thumbnail, "modified" -> modified).toJSON
+    "creators" -> creators, "thumbnail" -> thumbnail, "modified" -> modified,
+    "source" -> source, "path" -> path).toJSON
 }

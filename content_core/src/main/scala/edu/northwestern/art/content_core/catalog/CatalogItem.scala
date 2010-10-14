@@ -27,7 +27,9 @@ abstract class CatalogItem(
           val name: String,
           val title: String,
           val creators: List[String] = List(),
-          val modified: Date = null
+          val modified: Date = null,
+          val source: String = null,
+          val path: String = null
         )
         extends JSONSerializable {
 
