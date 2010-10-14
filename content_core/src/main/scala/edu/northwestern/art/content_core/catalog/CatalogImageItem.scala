@@ -23,8 +23,9 @@ import edu.northwestern.art.content_core.properties.Properties
 import java.util.Date
 
 class CatalogImageItem(name: String, title: String, creators: List[String] = List(),
-          val thumbnail: Thumbnail = null, modified: Date)
-        extends CatalogItem("ImageItem", name, title, creators, modified) {
+          val thumbnail: Thumbnail = null, modified: Date, source: String = null,
+          path: String = null)
+        extends CatalogItem("ImageItem", name, title, creators, modified, source, path) {
 
   override def toJSON = Properties("type"-> kind, "name" -> name, "title" -> title,
     "creators" -> creators, "thumbnail" -> thumbnail, "modified" -> modified,
