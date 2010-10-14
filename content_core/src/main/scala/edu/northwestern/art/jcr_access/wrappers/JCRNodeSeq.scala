@@ -1,0 +1,49 @@
+/** 
+ *Copyright 2010 Northwestern University.
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance with the
+ * License. You may obtain a copy of the License at
+ *
+ *    http://www.osedu.org/licenses/ECL-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * @author Jonathan A. Smith
+ * @version 03 [09] 2010
+ */
+
+package edu.northwestern.art.jcr_access.wrappers
+
+class JCRNodeSeq(val sequence: Seq[javax.jcr.Node]) {
+
+  def this(iterator: Iterator[javax.jcr.Node]) = this(iterator.toSeq)
+
+  def iterator: Iterator[javax.jcr.Node] = sequence.iterator
+
+  def \ (path: String) = {
+    val results = sequence map (
+            (node: javax.jcr.Node) => new JCRNodeIterator(node.getNodes(path)))
+    new JCRNodeSeq(results flatMap (_.toSeq))
+  }
+}
+
+object JCRNodeSeq {
+
+  implicit def asJCRNodeSeq(sequence: Seq[javax.jcr.Node]): JCRNodeSeq =
+    new JCRNodeSeq(sequence)
+
+  implicit def asJCRNodeSeq(iterator: Iterator[javax.jcr.Node]): JCRNodeSeq  =
+    new JCRNodeSeq(iterator)
+
+  implicit def asNodeSeq(node_seq: JCRNodeSeq): Seq[javax.jcr.Node] =
+    node_seq.sequence
+
+  implicit def asNodeIterator(node_seq: JCRNodeSeq): Iterator[javax.jcr.Node] =
+    node_seq.iterator
+
+}
