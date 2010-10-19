@@ -19,4 +19,25 @@
 
 package edu.northwestern.art.jcr_access.access
 
-class RepositoryConnectorSpec
+import org.scalatest.matchers.ShouldMatchers
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
+import org.scalatest.FlatSpec
+import edu.northwestern.art.jcr_access.repositories.LocalConnector
+
+@RunWith(classOf[JUnitRunner])
+class RepositoryConnectorSpec extends FlatSpec with ShouldMatchers {
+
+  val repository_url = "http://localhost:8080/jackrabbit/rmi"
+  val user = "admin"
+  val pass = "admin"
+
+  "RepositoryConnector" should "Manage a pool of connector objects by source" in {
+    RepositoryConnector.register("local", new LocalConnector(repository_url, user, pass))
+
+    val c1 = RepositoryConnector.forSource("local")
+    val c2 = RepositoryConnector.forSource("local")
+    c1 should equal(c2)
+  }
+  
+}

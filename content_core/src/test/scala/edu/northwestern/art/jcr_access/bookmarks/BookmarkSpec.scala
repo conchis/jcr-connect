@@ -26,10 +26,15 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
+import edu.northwestern.art.jcr_access.access.RepositoryConnector
+import edu.northwestern.art.jcr_access.repositories.LocalConnector
 
 @RunWith(classOf[JUnitRunner])
 class BookmarkSpec extends FlatSpec with ShouldMatchers {
   Storage.unit("Testing")
+
+  val repository_url = "http://localhost:8080/jackrabbit/rmi"
+  RepositoryConnector.register("local", new LocalConnector(repository_url, "admin", "admin"))
 
   val user = User.create("jas2")
 
@@ -37,7 +42,7 @@ class BookmarkSpec extends FlatSpec with ShouldMatchers {
     transaction {
       val b = Bookmark.create(user, "W1", "p1")
       b.user.id should equal(user.id)
-      b.workspace should equal("W1")
+      b.source should equal("W1")
       b.path should equal("p1")
     }
   }
@@ -75,6 +80,13 @@ class BookmarkSpec extends FlatSpec with ShouldMatchers {
       b2b.path should equal("p2")
       b2b.id should equal(b2a.id)
     }
+  }
+
+  "A Bookmark" should "be able to provide a catalog for the item it refers to" in {
+    val b = Bookmark.findOrCreate(user, "local", "content/ec_100014")
+    val catalog = b.toCatalog
+
+    println(catalog)
   }
 
 }

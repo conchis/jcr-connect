@@ -21,7 +21,7 @@ package edu.northwestern.art.content_core.services
 
 import java.util.HashSet
 import edu.northwestern.art.content_core.utilities.Storage
-import edu.northwestern.art.jcr_access.services.{AccessService, SearchService}
+import edu.northwestern.art.jcr_access.services.{ShelfService, BookmarkService, AccessService, SearchService}
 
 class Outliner extends javax.ws.rs.core.Application {
   Storage.unit("Testing")
@@ -31,6 +31,8 @@ class Outliner extends javax.ws.rs.core.Application {
     classes.add(classOf[TaxonomyService])
     classes.add(classOf[SearchService])
     classes.add(classOf[AccessService])
+    classes.add(classOf[BookmarkService])
+    classes.add(classOf[ShelfService])
     classes
   }
 }

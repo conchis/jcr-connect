@@ -89,8 +89,11 @@ class BookmarkService {
     user.addBookmark("fedora", "ec_1772",   Array("Category F1", "Category F2", "Category F3"))
 
     // XTF
-    user.addBookmark("xtf", "ec_100014", Array("Category X1"))
-
+    user.addBookmark("xtf", "/cdl/13030/3g/tf9489p03g", Array("Category X1"))
+    user.addBookmark("xtf", "/cdl/13030/jg/tf0v19n4jg", Array("Category X1"))
+    user.addBookmark("xtf", "/cdl/13030/9k/tf3000029k", Array("Category X1"))
+    user.addBookmark("xtf", "/cdl/13030/12/tf0p300112", Array("Category X1"))
+    user.addBookmark("xtf", "/cdl/13030/39/kt6489n839", Array("Category X1"))
 
     user.toJSON.toString
   }

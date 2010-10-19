@@ -68,7 +68,7 @@ class User(init_name: String) extends JSONSerializable {
 
   def toCatalog = {
     val category_items =
-      categories map (category => new Catalog("C" + category.id, category.name, null))
+      categories map (category => new Catalog("" + category.id, category.name, null))
     new Catalog(name, name + "'s bookmarks", category_items.toList)
   }
   

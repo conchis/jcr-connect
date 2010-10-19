@@ -80,6 +80,7 @@ class Bookmark(init_user: User, init_workspace: String,
 
     // FIXME should work for other types
     val image_item = item.asInstanceOf[ImageItem]
+    println("found item: " + image_item)
     val thumb_source = image_item.sources.getOrElse("thumbnail", null)
     val thumb =
       if (thumb_source != null)

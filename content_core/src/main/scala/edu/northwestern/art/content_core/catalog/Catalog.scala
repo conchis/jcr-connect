@@ -25,5 +25,5 @@ class Catalog(name: String, title: String, val children: List[CatalogItem] = Lis
         extends CatalogItem("Folder", name, title) {
 
   override def toJSON = Properties("name" -> name, "type" -> kind,
-    "children" -> children).toJSON
+    "children" -> children, "title" -> title).toJSON
 }

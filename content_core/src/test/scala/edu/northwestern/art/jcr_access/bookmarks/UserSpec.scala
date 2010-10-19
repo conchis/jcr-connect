@@ -83,5 +83,22 @@ class UserSpec extends FlatSpec with ShouldMatchers {
     u1.addBookmark("ws", "p1", Array("C4", "C5"))
     println(u1.categories)
   }
+
+  "A User" can "Provide a catalog of all categories" in {
+    val u1 = User.findOrCreate("U5")
+    u1.addBookmark("ws", "p1", Array("C1", "C2", "C3", "C4"))
+    val catalog = u1.toCatalog
+    catalog.name should equal("U5")
+    val children = catalog.children
+    children.length should equal(4)
+    val c0 = children(0)
+    c0.name should equal("C" + u1.categories.get(0).id)
+    c0.title should equal("C1")
+    val c1 = children(1)
+    c1.name should equal("C" + u1.categories.get(1).id)
+    c1.title should equal("C2")
+
+    println(catalog.toString)
+  }
   
 }
