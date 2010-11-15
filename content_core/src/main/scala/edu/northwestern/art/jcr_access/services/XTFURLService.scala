@@ -56,18 +56,15 @@ class XTFURLService extends HttpServlet {
        case _ => 1
     }
 
-    println(mets)
-
     val metsXML = XML.load(new URL(mets).openConnection.getInputStream)
 
     val out = res.getOutputStream
 
 	val file = (metsXML \\ "file")(id - 1)
-    println((file \ "@MIMETYPE").text)
-	val urlString: String = (file \ "FLocat" \ "@{http://www.w3.org/TR/xlink}href").text
-    println((file \ "FLocat" \ "@LOCTYPE").text)
-    println((file \ "FLocat" \ "@{http://www.w3.org/TR/xlink}role").text)
-    println(urlString)
+	var urlString: String = (file \ "FLocat" \ "@{http://www.w3.org/1999/xlink}href").text
+    if (urlString == "") {
+      urlString = (file \ "FLocat" \ "@{http://www.w3.org/TR/xlink}href").text
+    }
     if (urlString == null || ! urlString.startsWith("http")) {
       out.close
     }

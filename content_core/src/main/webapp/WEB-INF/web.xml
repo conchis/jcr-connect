@@ -31,6 +31,11 @@
     </servlet>
 
     <servlet>
+      <servlet-name>XTFURL</servlet-name>
+      <servlet-class>edu.northwestern.art.jcr_access.services.XTFURLService</servlet-class>
+    </servlet>
+
+    <servlet>
       <servlet-name>Key</servlet-name>
       <servlet-class>edu.northwestern.art.jcr_access.services.auth.KeyService</servlet-class>
     </servlet>
@@ -283,6 +288,11 @@
     <servlet-mapping>
       <servlet-name>Key</servlet-name>
       <url-pattern>/key/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+      <servlet-name>XTFURL</servlet-name>
+      <url-pattern>/xtfurl/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
