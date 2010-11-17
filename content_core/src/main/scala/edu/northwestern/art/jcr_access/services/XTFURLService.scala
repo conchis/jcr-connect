@@ -28,13 +28,17 @@ import java.io.IOException
 import java.io.FileOutputStream
 import java.io.BufferedOutputStream
 import java.io.File
+
 import java.nio.ByteBuffer
 import java.nio.channels.Channels
 import java.nio.channels.ReadableByteChannel
+import java.nio.channels.WritableByteChannel
 
 import javax.imageio.ImageIO
+import java.awt.image.BufferedImage
 
 import scala.xml.XML
+import scala.xml.Node
 
 object Int {
   def unapply(s : String) : Option[Int] = try {
@@ -46,7 +50,7 @@ object Int {
 
 class XTFURLService extends HttpServlet {
 
-  override def doGet(req: HttpServletRequest, res: HttpServletResponse) = {
+  override def doGet(req: HttpServletRequest, res: HttpServletResponse): Unit = {
     // Get the value of a request parameter; the name is case-sensitive
     val mets =     req.getParameter("mets")
     val idString = req.getParameter("id")
@@ -58,53 +62,67 @@ class XTFURLService extends HttpServlet {
 
     val metsXML = XML.load(new URL(mets).openConnection.getInputStream)
 
-    val out = res.getOutputStream
+    val os = res.getOutputStream
 
-	val file = (metsXML \\ "file")(id - 1)
-	var urlString: String = (file \ "FLocat" \ "@{http://www.w3.org/1999/xlink}href").text
-    if (urlString == "") {
-      urlString = (file \ "FLocat" \ "@{http://www.w3.org/TR/xlink}href").text
+    var file: Node = null
+    var found = false
+    
+    var myID = id
+    do {
+      file = (metsXML \\ "file")(myID - 1)
+      val fileID = (file \ "@ID").text
+      if (id == 1 && (fileID.contains("thumbnail") || fileID.contains("THUMBNAIL")) ||
+        id == 2 && ! fileID.contains("thumbnail") && ! fileID.contains("THUMBNAIL")) {
+        found = true
+      }
+      myID += 1
+    } while (! found && myID <= (metsXML \\ "file").length)
+
+    if (! found) {
+      // use the default
+      file = (metsXML \\ "file")(id - 1)
     }
+
+    val flocatNode = (file \ "FLocat")(0)
+	var urlString: String = (flocatNode \ "@{http://www.w3.org/1999/xlink}href").text
+    if (urlString == "") {
+      urlString = (flocatNode \ "@{http://www.w3.org/TR/xlink}href").text
+    }
+
     if (urlString == null || ! urlString.startsWith("http")) {
-      out.close
+      os.close
+      return
     }
 
 	// retrieve the image
-    val url: URL = new URL(urlString);
-    val connection: HttpURLConnection = url.openConnection.asInstanceOf[HttpURLConnection]
-    // connection.setDoOutput(true);
+    var connection: HttpURLConnection = null
+    try {
+      val url: URL = new URL(urlString)
+      connection = url.openConnection.asInstanceOf[HttpURLConnection]
 
-    connection.setRequestMethod("GET")
-	
-    var is = connection.getInputStream();
+      connection.setRequestMethod("GET")
+	  
+      var is = connection.getInputStream
 
-	val channel = Channels.newChannel(is).asInstanceOf[ReadableByteChannel]
-	// Create a direct ByteBuffer
-    val buf = ByteBuffer.allocateDirect(10 * 1024 * 1024);
-	var numRead = 0
-	var length = 0
+	  val inputChannel = Channels.newChannel(is).asInstanceOf[ReadableByteChannel]
+      val outputChannel = Channels.newChannel(os).asInstanceOf[WritableByteChannel]
+	  // Create a direct ByteBuffer
+      val buf = ByteBuffer.allocateDirect(50 * 1024)
 
-	while (numRead >= 0) {
-      // Read bytes from the channel
-	  try {
-		numRead = channel.read(buf);
-	  } catch {
-		case e: IOException => e.printStackTrace();
-	  }
-
-	  if (numRead > 0) {
-		length += numRead;
-	  }
-    }	
-
-	val bytes: Array[Byte] = new Array(length);
-	// reset the position of the buffer to zero
-	buf.rewind;
-	buf.get(bytes);
-
-	connection.disconnect
-	
-	out.write(bytes, 0, length);
-    out.close
+      while (inputChannel.read(buf) > 0) {
+        buf.flip
+        outputChannel.write(buf)
+        buf.clear
+      }
+    } catch {
+       case e: IOException => {
+         // send a 1x1 image in case error occurs when retrieving the original image
+         val image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+         ImageIO.write(image, "png", os)
+       }
+    } finally {
+      connection.disconnect
+      os.close
+    }
   }
 }

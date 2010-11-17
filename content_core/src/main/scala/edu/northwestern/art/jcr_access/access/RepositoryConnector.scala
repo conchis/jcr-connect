@@ -108,7 +108,7 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
    * Free text search of the repository. Returns a Folder of results.
    */
 
-  def search(text: String): Catalog
+  def search(text: String, offset: Long, limit: Long): Catalog
 
 }
 

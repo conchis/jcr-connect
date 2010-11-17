@@ -41,7 +41,7 @@ class SearchService {
 
   @GET @Path("/")
   @Produces(Array("application/json"))
-  def search(@QueryParam("q") query: String, @QueryParam("ws") workspace: String) = {
+  def search(@QueryParam("q") query: String, @QueryParam("ws") workspace: String, @QueryParam("offset") offset: Long, @QueryParam("limit") limit: Long) = {
     repository_url = config.getInitParameter("repositoryurl")
     user = config.getInitParameter("username")
     pass = config.getInitParameter("password")
@@ -55,7 +55,7 @@ class SearchService {
     if (query == null)
        "Ready"
     else {
-      val results = connector.search(query)
+      val results = connector.search(query, offset, limit)
       results.toJSON.toString
     }
   }

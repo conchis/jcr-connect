@@ -287,12 +287,18 @@ class FedoraConnector(repository_url: String, user: String,
    *  Free text search of the repository. Returns a Folder of results.
    */
 
-  def search(text: String): Catalog = {
+  def search(text: String, offset: Long = 0, limit: Long = 0): Catalog = {
     val results =
       session((session: Session) => {
         var results: List[CatalogItem] = List()
         val statement = "//*[jcr:contains(@jcr:data, '" + text + "')]"
         val query = session.getWorkspace.getQueryManager.createQuery(statement, Query.XPATH);
+        if (offset > 0) {
+          query.setOffset(offset)
+        }
+        if (limit > 0) {
+          query.setLimit(limit)
+        }
         val iterator = query.execute.getNodes
         while (iterator.hasNext()) {
           val node = iterator.nextNode
