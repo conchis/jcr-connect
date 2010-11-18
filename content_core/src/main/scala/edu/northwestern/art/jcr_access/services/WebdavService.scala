@@ -61,8 +61,13 @@ class WebdavService extends org.apache.jackrabbit.webdav.simple.SimpleWebdavServ
    */
   def getRepository(): Repository = {
     if (repository == null) {
-      repository = RepositoryAccessServlet.getRepository(getServletContext());
+      // repository = RepositoryAccessServlet.getRepository(getServletContext());
+      // use JNDI to get the repository instance
+      val ctx = new javax.naming.InitialContext
+      val env = ctx.lookup("java:comp/env").asInstanceOf[javax.naming.Context]
+      repository = env.lookup("jcr/repository").asInstanceOf[javax.jcr.Repository]
     }
+
     return repository;
   }
 

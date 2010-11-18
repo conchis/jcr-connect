@@ -51,55 +51,54 @@ object Int {
 class XTFURLService extends HttpServlet {
 
   override def doGet(req: HttpServletRequest, res: HttpServletResponse): Unit = {
-    // Get the value of a request parameter; the name is case-sensitive
-    val mets =     req.getParameter("mets")
-    val idString = req.getParameter("id")
-
-    val id = idString match {
-       case Int(x) => x
-       case _ => 1
-    }
-
-    val metsXML = XML.load(new URL(mets).openConnection.getInputStream)
-
+    var connection: HttpURLConnection = null
     val os = res.getOutputStream
 
-    var file: Node = null
-    var found = false
-    
-    var myID = id
-    do {
-      file = (metsXML \\ "file")(myID - 1)
-      val fileID = (file \ "@ID").text
-      if (id == 1 && (fileID.contains("thumbnail") || fileID.contains("THUMBNAIL")) ||
-        id == 2 && ! fileID.contains("thumbnail") && ! fileID.contains("THUMBNAIL")) {
-        found = true
-      }
-      myID += 1
-    } while (! found && myID <= (metsXML \\ "file").length)
-
-    if (! found) {
-      // use the default
-      file = (metsXML \\ "file")(id - 1)
-    }
-
-    val flocatNode = (file \ "FLocat")(0)
-	var urlString: String = (flocatNode \ "@{http://www.w3.org/1999/xlink}href").text
-    if (urlString == "") {
-      urlString = (flocatNode \ "@{http://www.w3.org/TR/xlink}href").text
-    }
-
-    if (urlString == null || ! urlString.startsWith("http")) {
-      os.close
-      return
-    }
-
-	// retrieve the image
-    var connection: HttpURLConnection = null
     try {
+      // Get the value of a request parameter; the name is case-sensitive
+      val path = req.getRequestURI.split(req.getServletPath + '/')(1)
+      val idString = path.split('/')(0)
+      val mets = "http://" + path.substring(2) // supposing idString is one-digit long
+
+      val id = idString match {
+        case Int(x) => x
+        case _ => 1
+      }
+
+      val metsXML = XML.load(new URL(mets).openConnection.getInputStream)
+
+      var file: Node = null
+      var found = false
+      
+      var myID = id
+      do {
+        file = (metsXML \\ "file")(myID - 1)
+        val fileID = (file \ "@ID").text
+        if (id == 1 && (fileID.contains("thumbnail") || fileID.contains("THUMBNAIL")) ||
+            id >= 2 && ! fileID.contains("thumbnail") && ! fileID.contains("THUMBNAIL")) {
+              found = true
+              }
+        myID += 1
+      } while (! found && myID <= (metsXML \\ "file").length)
+
+      if (! found) {
+        // use the default
+        file = (metsXML \\ "file")(id - 1)
+      }
+
+      val flocatNode = (file \ "FLocat")(0)
+	  var urlString: String = (flocatNode \ "@{http://www.w3.org/1999/xlink}href").text
+      if (urlString == "") {
+        urlString = (flocatNode \ "@{http://www.w3.org/TR/xlink}href").text
+      }
+
+      if (urlString == null || ! urlString.startsWith("http")) {
+        throw new Exception("URL not valid!")
+      }
+
+	  // retrieve the image
       val url: URL = new URL(urlString)
       connection = url.openConnection.asInstanceOf[HttpURLConnection]
-
       connection.setRequestMethod("GET")
 	  
       var is = connection.getInputStream
@@ -115,13 +114,15 @@ class XTFURLService extends HttpServlet {
         buf.clear
       }
     } catch {
-       case e: IOException => {
-         // send a 1x1 image in case error occurs when retrieving the original image
+       case e: Exception => {
+         // send a 1x1 image in case error occurs when attempting to retrieve the original image
          val image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
          ImageIO.write(image, "png", os)
        }
     } finally {
-      connection.disconnect
+      if (connection != null) {
+        connection.disconnect
+      }
       os.close
     }
   }

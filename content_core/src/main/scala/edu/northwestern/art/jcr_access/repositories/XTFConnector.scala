@@ -467,14 +467,15 @@ class XTFConnector(repository_url: String, user: String,
     try {
       // val contents = node.getNode("contents.json/jcr:content");
       // contents.getProperty("jcr:lastModified").getDate.getTime
-      node.getNode(node.getName + ".mets.xml").getProperty("jcr:created").getDate.getTime
+      // node.getNode(node.getName + ".mets.xml").getProperty("jcr:created").getDate.getTime
+      new Date
     }
     catch {
-        case except: PathNotFoundException =>
-          except.printStackTrace
-          throw new NoItemException
-        case except =>
-          throw new FailureException(except)
+      case except: PathNotFoundException =>
+        except.printStackTrace
+      throw new NoItemException
+      case except =>
+        throw new FailureException(except)
     }
   }
 

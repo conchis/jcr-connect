@@ -34,9 +34,14 @@ abstract class RepositoryConnector(val repository_url: String, workspace: String
     val user: String, val password: String) {
 
   /** JCR Repository accessed via this connector */
-  val repository = new URLRemoteRepository(repository_url)
-  // use local repository by default
-  //val repository = new RMIRemoteRepository("//localhost/jackrabbit.repository");
+
+  // use RMI to access the repository
+  // val repository = new URLRemoteRepository(repository_url)
+  // val repository = new RMIRemoteRepository("//localhost/jackrabbit.repository");
+  // use JNDI to access the repository
+  val ctx = new javax.naming.InitialContext
+  val env = ctx.lookup("java:comp/env").asInstanceOf[javax.naming.Context]
+  val repository = env.lookup("jcr/repository").asInstanceOf[javax.jcr.Repository]
 
   /** Login credentials for repository. */
   val credentials = new SimpleCredentials(user, password.toCharArray)
