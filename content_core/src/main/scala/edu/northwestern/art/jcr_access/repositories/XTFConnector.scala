@@ -430,8 +430,15 @@ class XTFConnector(repository_url: String, user: String,
 
           if (source != null)
             sources(name) = source
+          
+          if (i == 1) {
+            source = TiledImageURL("tiled", "http://sauer.at.northwestern.edu:4005/" + value.getString.substring("http://".length), "jpg", 600, 450)
+            sources("tiled") = source
+          }
+
           i += 1
 		}
+
 	  }
 	  else {
 		// image = ImageIO.read(new URL(property.getString))
