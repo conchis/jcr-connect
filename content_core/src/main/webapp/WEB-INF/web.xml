@@ -35,15 +35,17 @@
       <servlet-class>edu.northwestern.art.jcr_access.services.XTFURLService</servlet-class>
     </servlet>
 
+    <!--
     <servlet>
       <servlet-name>Key</servlet-name>
       <servlet-class>edu.northwestern.art.jcr_access.services.auth.KeyService</servlet-class>
     </servlet>
-
+    -->
 
     <!-- ====================================================================== -->
     <!-- W E B D A V  S E R V L E T                                              -->
     <!-- ====================================================================== -->
+    <!--
     <servlet>
         <servlet-name>Webdav</servlet-name>
         <description>
@@ -58,6 +60,7 @@
                 defines the prefix for spooling resources out of the repository.
             </description>
         </init-param>
+        -->
         <!--
          <init-param>
              <param-name>missing-auth-mapping</param-name>
@@ -95,6 +98,7 @@
             - destinction between collections and non-collections
             - resource filtering
         -->
+        <!--
         <init-param>
             <param-name>resource-config</param-name>
             <param-value>/WEB-INF/config.xml</param-value>
@@ -104,52 +108,54 @@
         </init-param>
         <load-on-startup>4</load-on-startup>
     </servlet>
+    -->
 
     <!-- ====================================================================== -->
     <!-- R M I   B I N D I N G   S E R V L E T                                  -->
     <!-- ====================================================================== -->
+    <!--
     <servlet>
       <servlet-name>RMI</servlet-name>
       <servlet-class>org.apache.jackrabbit.servlet.remote.RemoteBindingServlet</servlet-class>
     </servlet>
-
-
+    -->
     <!--
     <servlet-mapping>
         <servlet-name>RepositoryStartup</servlet-name>
         <url-pattern>/admin/*</url-pattern>
     </servlet-mapping>
     -->
-
+    <!--
     <servlet-mapping>
       <servlet-name>Webdav</servlet-name>
       <url-pattern>/repository/*</url-pattern>
     </servlet-mapping>
-
+    -->
     <servlet-mapping>
       <servlet-name>JAXRS</servlet-name>
       <url-pattern>/service/*</url-pattern>
     </servlet-mapping>
-
+    <!--
     <servlet-mapping>
       <servlet-name>Key</servlet-name>
       <url-pattern>/key/*</url-pattern>
     </servlet-mapping>
-
+    -->
     <servlet-mapping>
       <servlet-name>XTFURL</servlet-name>
       <url-pattern>/xtfurl/*</url-pattern>
     </servlet-mapping>
-
+    <!--
     <servlet-mapping>
         <servlet-name>RMI</servlet-name>
         <url-pattern>/rmi</url-pattern>
     </servlet-mapping>
+    -->
 
     <resource-env-ref>
       <description>Content Repository</description>
       <resource-env-ref-name>jcr/repository</resource-env-ref-name>
       <resource-env-ref-type>javax.jcr.Repository</resource-env-ref-type>
     </resource-env-ref>
-
+    
 </web-app>

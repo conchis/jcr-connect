@@ -96,6 +96,9 @@
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
             <version>2.0</version>
+            <!-- exclude in the war file -->
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
@@ -107,11 +110,13 @@
             <artifactId>jackrabbit-core</artifactId>
             <version>2.1.0</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-servlet</artifactId>
             <version>2.1.0</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-rmi</artifactId>
