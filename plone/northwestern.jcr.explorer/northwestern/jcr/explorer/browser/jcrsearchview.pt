@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="northwestern.jcr.explorer">
+<body>
+<div metal:fill-slot="main">
+  <tal:main-macro metal:define-macro="main"
+  tal:define="testview view/test">
+
+
+  <!--
+  <span tal:content="testview/dummy">test</span>
+  -->
+
+  <!--
+  <form id="search_form" name="jcr_search_form"
+  action="search" method="post" enctype="multipart/form-data"
+  tal:attributes="action string:${here/absolute_url}/search">
+  <input type="text" name="term" /><br/><br/>
+  <input type="checkbox" name="repository" value="CDL" />&nbsp;California Digital Library
+  <input type="checkbox" name="repository" value="EOC" />&nbsp;Encyclopedia of Chicago Collection<br/><br/>
+  <input class="form-button" type="submit" name="form.button.synch"
+  value="search" />
+  
+  </form>
+
+  <br/>
+<a href="" class="discreet" tal:attributes="href string:http://sauer.at.northwestern.edu/content/index.html?user=${here/userName}">Test URL</a>
+  -->
+  
+  <tal:areas condition="view/createFolder"/>
+
+<iframe tal:attributes="src string:http://sauer.at.northwestern.edu:4004/category_marker/index.html?user=${here/userName}" width="750" height="490" frameborder="0">
+  <p>Your browser does not support iframes.</p>
+</iframe>
+
+  </tal:main-macro>
+</div>
+</body>
+</html>
