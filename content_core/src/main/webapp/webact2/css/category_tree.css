@@ -1,0 +1,141 @@
+
+
+.wa_ctree {
+	position: relative;
+	width: 350px;
+	height: 200px;
+	overflow: auto;
+	border: 1px solid #CCC;
+	font-size: 13px;
+}
+
+.wa_ctree ul {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+}
+
+.wa_ctree_label {
+	display:  block;
+	height: 16px;
+	padding: 4px 22px;
+}
+
+/* Items */
+
+.wa_ctree_1 {
+	padding-left: 10px;
+}
+
+.wa_ctree_2 {
+	padding-left: 20px;
+}
+
+.wa_ctree_3 {
+	padding-left: 30px;
+}
+
+.wa_ctree_4 {
+	padding-left: 40px;
+}
+
+.wa_ctree_5 {
+	padding-left: 50px;
+}
+
+/* Open Branches */
+
+wa_ctree_open {
+	list-style: none;
+	font-size: 13px;
+}
+
+.wa_ctree_open > span {
+	font-weight: bold;
+	border-top: 1px solid #FFF;
+	border-bottom: 1px solid #DDD;
+}
+
+.wa_ctree_open > .wa_ctree_1 {
+	background: #EEE url(../images/category-open.png) no-repeat 2px 2px;
+	padding-left: 20px;
+}
+
+.wa_ctree_open > .wa_ctree_2 {
+	background: #EEE url(../images/category-open.png) no-repeat 12px 2px;
+	padding-left: 30px;
+}
+
+.wa_ctree_open > .wa_ctree_3 {
+	background: #EEE url(../images/category-open.png) no-repeat 22px 2px;
+	padding-left: 40px;
+}
+
+.wa_ctree_open > .wa_ctree_4 {
+	background: #EEE url(../images/category-open.png) no-repeat 32px 2px;
+	padding-left: 50px;
+}
+
+.wa_ctree_open > .wa_ctree_5 {
+	background: #EEE url(../images/category-open.png) no-repeat 42px 2px;
+	padding-left: 60px;
+}
+
+/* Closed Branches */
+
+.wa_ctree_close {
+	list-style: none;
+	font-size: 13px;
+}
+
+.wa_ctree_close > span {
+	font-weight: bold;
+	border-top: 1px solid #FFF;
+	border-bottom: 1px solid #DDD;
+}
+
+.wa_ctree_close > .wa_ctree_1 {
+	background: #EEE url(../images/category-closed.png) no-repeat 2px 2px;
+	padding-left: 20px;
+}
+
+.wa_ctree_close > .wa_ctree_2 {
+	background: #EEE url(../images/category-closed.png) no-repeat 12px 2px;
+	padding-left: 30px;
+}
+
+.wa_ctree_close > .wa_ctree_3 {
+	background: #EEE url(../images/category-closed.png) no-repeat 22px 2px;
+	padding-left: 40px;
+}
+
+.wa_ctree_close > .wa_ctree_4 {
+	background: #EEE url(../images/category-closed.png) no-repeat 32px 2px;
+	padding-left: 50px;
+}
+
+.wa_ctree_close > .wa_ctree_5 {
+	background: #EEE url(../images/category-closed.png) no-repeat 42px 2px;
+	padding-left: 60px;
+}
+
+.wa_ctree_close > span {
+	font-weight: bold;
+}
+
+.wa_ctree_close > ul {
+	position:  absolute;
+	visibility: hidden;
+}
+
+.wa_ctree_item {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
+	font-size: 13px;
+}
+
+.wa_ctree_selected {
+	color:  white;
+	background-color: #336;;
+}

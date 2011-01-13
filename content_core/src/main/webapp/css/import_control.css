@@ -1,0 +1,50 @@
+
+.wa_import {
+	position: absolute;
+	width: 345px;
+	height: 95px;
+    font-weight: bold;
+}
+
+.wa_import span {
+}
+
+.wa_import_field {
+    position: absolute;
+    left: 108px;
+    width: 225px;
+    height: 14px;
+    background-color: #EEE;
+    border: 1px solid #999;
+    margin-left: 5px;
+}
+
+.wa_import_list {
+    position: absolute;
+    display: block;
+    margin: 0;
+    padding: 0;
+    left: 113px;
+    top: 18px;
+    width: 227px;
+    height: 71px;
+    background-color: white;
+    border-left: 1px solid #999;
+    border-bottom: 1px solid #999;
+    border-right: 1px solid #999;
+    list-style: none;
+    overflow: auto;
+    font-weight: normal;
+}
+
+.wa_import_list a {
+    display: block;
+    padding: 2px 3px;
+    margin: 1px 0;
+    width: 205px;
+}
+
+.wa_import_list a:hover {
+    color: #FFF;
+    background-color: #003366;
+}

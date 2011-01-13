@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<title>Test Buttons</title>
+	
+<!-- Import jQuery -->
+<script type="text/javascript" src="../../js/jquery-1.4.2.min.js"></script>
+
+<!-- Import modules -->
+<script type="text/javascript" src="../../js/packages.js"></script>
+<script type="text/javascript" src="../../js/observers.js"></script>
+<script type="text/javascript" src="../../js/paths.js"></script>
+<script type="text/javascript" src="../../js/controls.js"></script>
+<script type="text/javascript" src="../../js/buttons.js"></script>
+<script type="text/javascript" src="../../js/dialogs.js"></script>
+	
+<style type="text/css">
+@import url("../../css/styles.css");
+@import url("../../css/buttons.css");
+@import url("../../css/dialogs.css");
+</style>
+
+<script type="text/javascript">
+
+eval(webact.imports("buttons"));
+eval(webact.imports("dialogs"));
+
+var category_tree;
+
+$(document).ready(function () {
+	var d1 = makeDialog({width: 300, height: 140});
+	d1.create($("#container"));
+
+	var b1 = makeButton({label: "Press 1"}); 
+	d1.add(b1);
+	
+	var b2 = makeButton({label: "Press 2", toggles: true}); 
+	d1.add(b2);
+	
+	var b3 = makeButton({label: "Press 3", active: false}); 
+	d1.add(b3);
+});
+
+</script>
+
+</head>
+<body>
+
+<div id="container">
+</div>
+
+</body>
+</html>

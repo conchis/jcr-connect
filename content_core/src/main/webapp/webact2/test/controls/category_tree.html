@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+	<title>Test Category Tree</title>
+	
+<!-- Import jQuery -->
+<script type="text/javascript" src="../../js/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="../../js/jquery-ui/js/jquery-ui-1.8.2.custom.min.js"></script>
+
+<!-- Import modules -->
+<script type="text/javascript" src="../../js/packages.js"></script>
+<script type="text/javascript" src="../../js/observers.js"></script>
+<script type="text/javascript" src="../../js/controls.js"></script>
+<script type="text/javascript" src="../../js/categories.js"></script>
+<script type="text/javascript" src="../../js/category_tree.js"></script>
+	
+<style type="text/css">
+@import url("../../css/styles.css");
+@import url("../../css/category_tree.css");
+</style>
+
+<script type="text/javascript">
+
+eval(webact.imports("categories"));
+eval(webact.imports("category_tree"));
+
+var model = makeTree({ 
+  children: [
+	{title: "Branch 1", children: [
+		{title: "Branch 1.1", children: [
+			{title: "Item 1.1.1"},
+			{title: "Item 1.1.2"},
+		]},
+		{title: "Branch 1.2", children: [
+			{title: "Item 1.2.1"},
+			{title: "Item 1.2.2"},
+		]},
+	]},
+	{title: "Branch 2", children: [
+		{title: "Item 2.1"},
+		{title: "Item 2.2"},
+		{title: "Item 2.3"},
+		{title: "Item 2.4"},
+		{title: "Item 2.5"}
+	]},
+	{title: "Branch 3", children: [
+		{title: "Item 3.1"},
+		{title: "Item 3.2"},
+		{title: "Item 3.3"},
+		{title: "Item 3.4"},
+		{title: "Item 3.5"}
+	]}
+  ]
+});
+
+var category_tree;
+
+$(document).ready(function () {
+	//alert("ok");
+	jQuery(".target").sortable();
+	
+	var category_tree = makeCategoryTree({model: model}); 
+	category_tree.create($("#tree"));
+});
+
+</script>
+
+</head>
+<body>
+
+<div id="tree">
+</div>
+
+</body>
+</html>

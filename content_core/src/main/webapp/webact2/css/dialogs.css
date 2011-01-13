@@ -1,0 +1,19 @@
+
+.wa_dialog {
+	border: 1px outset #DDD;
+	padding: 5px;
+	position:  absolute;
+	width: 320px;
+	height: 210px;
+	background-color: white;
+}
+
+.wa_dialog_buttons {
+	position: absolute;
+	bottom: 5px;
+	right: 0px;
+}
+
+.wa_dialog_buttons .wa_button {
+	width: 50px;
+}

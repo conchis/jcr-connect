@@ -1,0 +1,21 @@
+{
+	"name": "outline",
+	"type": "Folder",	
+	"children": [
+		{
+			"name": "red",
+			"title": "Red Folder",
+			"type": "Folder"
+		},
+		{
+			"name": "green",
+			"title": "Green Folder",
+			"type": "Folder"
+		},
+		{
+			"name": "blue",
+			"title": "Blue Folder",
+			"type": "Folder"
+		},
+	]
+}

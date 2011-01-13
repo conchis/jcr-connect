@@ -1,0 +1,10 @@
+{
+	"name": "blue",
+	"title": "Blue Folder",
+	"type": "Folder"
+	"creators": [],
+	"thumbnail": {
+		"height": 96, "width": 150,
+		"path": "ec_6415/thumbnail.jpg",
+	}
+},
